@@ -1,0 +1,66 @@
+---
+import type { Experience } from '../data/experience';
+
+interface Props {
+  item: Experience;
+  showLogo?: boolean;
+}
+const { item, showLogo = true } = Astro.props;
+---
+
+<li class:list={['item', { 'no-logo': !showLogo || !item.logo }]}>
+  {showLogo && item.logo && <img class="logo" src={item.logo} alt="" width="56" height="56" loading="lazy" />}
+  <div>
+    <p class="meta">
+      <span>{item.company}</span>
+      <span aria-hidden="true">·</span>
+      <span>{item.period}</span>
+      <span aria-hidden="true">·</span>
+      <span>{item.location}</span>
+    </p>
+    <h3 class="role">{item.role}</h3>
+    <p class="desc">{item.description}</p>
+  </div>
+</li>
+
+<style>
+  .item {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: var(--space-6);
+    padding-block: var(--space-8);
+    border-top: 1px solid var(--color-line);
+  }
+  .item.no-logo {
+    grid-template-columns: 1fr;
+  }
+  .logo {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    object-fit: cover;
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+  }
+  .role {
+    margin-top: var(--space-2);
+    font-size: var(--text-xl);
+  }
+  .desc {
+    margin-top: var(--space-3);
+    max-width: 62ch;
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+  @media (max-width: 540px) {
+    .item {
+      grid-template-columns: 1fr;
+      gap: var(--space-4);
+    }
+  }
+</style>

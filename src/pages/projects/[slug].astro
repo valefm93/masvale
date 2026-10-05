@@ -1,0 +1,194 @@
+---
+import Base from '../../layouts/Base.astro';
+import Pill from '../../components/Pill.astro';
+import Gallery from '../../components/Gallery.astro';
+import RichText from '../../components/RichText.astro';
+import { projects, type Project } from '../../data/projects';
+
+export function getStaticPaths() {
+  return projects.map((project, i) => ({
+    params: { slug: project.slug },
+    props: { project, next: projects[(i + 1) % projects.length] },
+  }));
+}
+
+interface Props {
+  project: Project;
+  next: Project;
+}
+const { project, next } = Astro.props;
+---
+
+<Base title={project.client} description={project.summary}>
+  <header class="container head">
+    <a class="back" href="/#work">← All projects</a>
+    <p class="eyebrow">{project.client}</p>
+    <h1>{project.title}</h1>
+    <p class="summary">{project.summary}</p>
+    <div class="tags">{project.tags.map((t) => <Pill tone="accent">{t}</Pill>)}</div>
+  </header>
+
+  <div class="cover container">
+    <img src={project.cover} alt="" />
+  </div>
+
+  <article class="blocks">
+    {
+      project.blocks.map((b) => {
+        if (b.type === 'text')
+          return (
+            <section class="container text">
+              {b.title ? <h2>{b.title}</h2> : <span />}
+              <div class="prose">
+                {b.body.map((t) => (
+                  <RichText text={t} />
+                ))}
+              </div>
+            </section>
+          );
+        if (b.type === 'list')
+          return (
+            <section class="container text">
+              {b.title ? <h2>{b.title}</h2> : <span />}
+              <ul class="prose bullets">
+                {b.items.map((t) => (
+                  <RichText as="li" text={t} />
+                ))}
+              </ul>
+            </section>
+          );
+        if (b.type === 'pills')
+          return (
+            <section class="container text">
+              {b.title ? <h2>{b.title}</h2> : <span />}
+              <div class="pills">
+                {b.items.map((t) => (
+                  <Pill>{t}</Pill>
+                ))}
+              </div>
+            </section>
+          );
+        if (b.type === 'image')
+          return (
+            <figure class="container image">
+              <img src={b.src} alt={b.alt} loading="lazy" />
+              {b.caption && <figcaption>{b.caption}</figcaption>}
+            </figure>
+          );
+        if (b.type === 'gallery')
+          return (
+            <section class="gallery-block">
+              {b.title && <h2 class="container gallery-title">{b.title}</h2>}
+              <Gallery images={b.images} label={b.title ?? `${project.client} gallery`} />
+            </section>
+          );
+      })
+    }
+  </article>
+
+  <nav class="container next" aria-label="Next project">
+    <p class="eyebrow">Next project</p>
+    <a href={`/projects/${next.slug}`}>{next.title} <span aria-hidden="true">→</span></a>
+  </nav>
+</Base>
+
+<style>
+  .head {
+    padding-block: var(--space-16) var(--space-12);
+  }
+  .back {
+    display: inline-block;
+    margin-bottom: var(--space-12);
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+    text-decoration: none;
+  }
+  .back:hover {
+    color: var(--color-text);
+  }
+  h1 {
+    margin-top: var(--space-3);
+    max-width: 16ch;
+    font-size: var(--text-3xl);
+  }
+  .summary {
+    margin-top: var(--space-6);
+    max-width: 52ch;
+    font-size: var(--text-lg);
+    color: var(--color-muted);
+  }
+  .tags,
+  .pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .tags {
+    margin-top: var(--space-8);
+  }
+  .cover img {
+    width: 100%;
+    border-radius: var(--radius-lg);
+  }
+  .blocks {
+    display: grid;
+    gap: var(--space-16);
+    padding-block: var(--space-section);
+  }
+  .text {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: var(--space-12);
+  }
+  h2 {
+    font-size: var(--text-xl);
+  }
+  .prose {
+    display: grid;
+    gap: var(--space-4);
+    max-width: 62ch;
+    color: var(--color-muted);
+  }
+  .prose :global(strong) {
+    color: var(--color-text);
+  }
+  .bullets {
+    margin: 0;
+    padding-left: 1.2em;
+  }
+  .image {
+    margin-block: 0;
+  }
+  .image img {
+    width: 100%;
+    border-radius: var(--radius-md);
+  }
+  figcaption {
+    margin-top: var(--space-3);
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+  }
+  .gallery-title {
+    margin-bottom: var(--space-6);
+  }
+  .next {
+    padding-block: var(--space-16);
+    border-top: 1px solid var(--color-line);
+  }
+  .next a {
+    display: inline-block;
+    margin-top: var(--space-3);
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    text-decoration: none;
+  }
+  .next a:hover {
+    color: var(--color-accent);
+  }
+  @media (max-width: 760px) {
+    .text {
+      grid-template-columns: 1fr;
+      gap: var(--space-4);
+    }
+  }
+</style>

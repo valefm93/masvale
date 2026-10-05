@@ -1,0 +1,15 @@
+---
+// Convierte **texto** en negrita. Escapa el resto para que sea seguro.
+interface Props {
+  text: string;
+  as?: 'p' | 'span' | 'li';
+  class?: string;
+}
+const { text, as: Tag = 'p', class: className } = Astro.props;
+
+const escape = (s: string) =>
+  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const html = escape(text).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+---
+
+<Tag class={className} set:html={html} />

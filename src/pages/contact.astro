@@ -1,0 +1,77 @@
+---
+import Base from '../layouts/Base.astro';
+import { contact } from '../data/site';
+
+const items = [
+  { label: 'Email', value: contact.email, href: `mailto:${contact.email}` },
+  { label: 'LinkedIn', value: 'linkedin.com/in/valefm93', href: contact.linkedin, external: true },
+  { label: 'Phone', value: contact.phone, href: `tel:${contact.phone}` },
+];
+---
+
+<Base title="Contact" description="Get in touch with Vale Ferreira, Product Designer.">
+  <section class="container wrap">
+    <p class="eyebrow">Contact</p>
+    <h1>Here is how you can <em>contact me!</em></h1>
+    <ul>
+      {
+        items.map((i) => (
+          <li>
+            <span class="label">{i.label}</span>
+            <a href={i.href} {...(i.external ? { target: '_blank', rel: 'noopener' } : {})}>
+              {i.value} <span aria-hidden="true">↗</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</Base>
+
+<style>
+  .wrap {
+    padding-block: var(--space-24);
+  }
+  h1 {
+    margin-top: var(--space-4);
+    max-width: 14ch;
+    font-size: var(--text-3xl);
+  }
+  h1 em {
+    color: var(--color-accent);
+  }
+  ul {
+    margin: var(--space-16) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  li {
+    display: grid;
+    grid-template-columns: 10rem 1fr;
+    gap: var(--space-4);
+    align-items: baseline;
+    padding-block: var(--space-6);
+    border-top: 1px solid var(--color-line);
+  }
+  .label {
+    font-size: var(--text-xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+  a {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    text-decoration: none;
+    overflow-wrap: anywhere;
+  }
+  a:hover {
+    color: var(--color-accent);
+  }
+  @media (max-width: 600px) {
+    li {
+      grid-template-columns: 1fr;
+      gap: var(--space-1);
+    }
+  }
+</style>

@@ -1,0 +1,67 @@
+---
+import { contact, links } from '../data/site';
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="container">
+    <p class="eyebrow">Let’s work together</p>
+    <a class="mail" href={`mailto:${contact.email}`}>{contact.email}</a>
+    <div class="bottom">
+      <ul>
+        <li><a href={contact.linkedin} target="_blank" rel="noopener">LinkedIn</a></li>
+        {
+          links.map((l) => (
+            <li>
+              <a href={l.href} target="_blank" rel="noopener">
+                {l.label.split('.')[0]}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="muted">© {year} Vale Ferreira</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    padding-block: var(--space-section) var(--space-8);
+    border-top: 1px solid var(--color-line);
+  }
+  .mail {
+    display: inline-block;
+    margin-top: var(--space-4);
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    line-height: var(--leading-tight);
+    text-decoration: none;
+    overflow-wrap: anywhere;
+  }
+  .mail:hover {
+    color: var(--color-accent);
+  }
+  .bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-top: var(--space-16);
+    font-size: var(--text-sm);
+  }
+  ul {
+    display: flex;
+    gap: var(--space-6);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  ul a {
+    color: var(--color-muted);
+    text-decoration: none;
+  }
+  ul a:hover {
+    color: var(--color-text);
+  }
+</style>
