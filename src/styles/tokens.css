@@ -1,14 +1,22 @@
 /*
   Design tokens: todo el estilo visual del sitio sale de aquí.
-  Cambiar una variable (por ejemplo --font-display o --color-accent)
+  Cambiar una variable (por ejemplo --font-body o --color-accent)
   actualiza el sitio completo.
 */
 
 :root {
   /* Tipografía */
   --font-display: 'Instrument Serif', Georgia, serif;
-  --font-body: 'Instrument Sans Variable', system-ui, sans-serif;
+  --font-body: 'Inter Variable', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 
+  /*
+    Peso de los títulos y de los resaltados. Ahora van sin bold (prueba).
+    Para volver al bold: --weight-heading: 700 y --weight-strong: 600.
+  */
+  --weight-heading: 400;
+  --weight-strong: 500;
+
+  --text-2xs: 0.6875rem;  /* 11px */
   --text-xs: 0.8125rem;   /* 13px */
   --text-sm: 0.9375rem;   /* 15px */
   --text-base: 1.0625rem; /* 17px */
@@ -21,13 +29,22 @@
   --leading-normal: 1.55;
 
   /* Color */
-  --color-bg: #f6f3ee;
-  --color-surface: #ffffff;
-  --color-text: #1d1b19;
-  --color-muted: #6b655e;
-  --color-line: #e2ddd5;
-  --color-accent: #3d4cf0;
-  --color-accent-soft: #e6e8fd;
+  /* Paleta */
+  --accent: #e0ff56;
+  --dark: #131414;
+  --gray: #343434;
+  --gray-light: #ececec;
+  --white: #fcfcfc;
+
+  /* Roles: qué color de la paleta se usa para qué */
+  --color-bg: var(--white);
+  --color-surface: var(--gray-light);
+  --color-text: var(--dark);
+  --color-muted: var(--gray);
+  --color-line: var(--gray-light);
+  /* El acento es muy claro: va como fondo o resaltado, nunca como color de texto */
+  --color-accent: var(--accent);
+  --color-on-accent: var(--dark);
 
   /* Espaciado */
   --space-1: 0.25rem;
@@ -42,8 +59,23 @@
   --space-section: clamp(4rem, 2rem + 8vw, 9rem);
 
   /* Layout */
-  --container: 76rem;
-  --gutter: clamp(1rem, 0.5rem + 2.5vw, 2.5rem);
+  /*
+    Grilla editorial: el contenido ocupa todo el ancho con márgenes chicos,
+    sobre 12 columnas separadas por --grid-gap. Los bloques se alinean a esas columnas:
+    --col-4 es el ancho de 4 columnas (un tercio) y --col-6 el de 6 (la mitad).
+  */
+  --container: 100vw;
+  --gutter: clamp(1rem, 0.75rem + 0.6vw, 1.25rem);
+  --grid-gap: 1.25rem;
+  --col-4: calc((100% - 11 * var(--grid-gap)) / 3 + 3 * var(--grid-gap));
+  --col-6: calc((100% - var(--grid-gap)) / 2);
+
+  /* Cursor: flecha diagonal dentro de un círculo. Reemplaza al puntero sobre lo que abre otra página */
+  --cursor-arrow: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44' fill='none' stroke-linecap='round' stroke-linejoin='round'><circle cx='22' cy='22' r='20.5' fill='%23fcfcfc' stroke='%23131414' stroke-width='1.5'/><path d='M16 28 28 16M19 16h9v9' stroke='%23131414' stroke-width='1.75'/></svg>") 22 22, pointer;
+
+  /* Mismo círculo con icono de copiar, y con un check cuando ya se copió */
+  --cursor-copy: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44' fill='none' stroke-linecap='round' stroke-linejoin='round'><circle cx='22' cy='22' r='20.5' fill='%23fcfcfc' stroke='%23131414' stroke-width='1.5'/><rect x='19' y='19' width='10' height='10' rx='1.5' stroke='%23131414' stroke-width='1.75'/><path d='M16 25h-.5a1.5 1.5 0 0 1-1.500-1.500v-7a1.500 1.500 0 0 1 1.500-1.500h7a1.500 1.500 0 0 1 1.500 1.500v.5' stroke='%23131414' stroke-width='1.75'/></svg>") 22 22, copy;
+  --cursor-copied: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44' fill='none' stroke-linecap='round' stroke-linejoin='round'><circle cx='22' cy='22' r='20.5' fill='%23fcfcfc' stroke='%23131414' stroke-width='1.5'/><path d='M15 22.500l5 5 9.500-10.500' stroke='%23131414' stroke-width='1.75'/></svg>") 22 22, default;
 
   /* Formas y movimiento */
   --radius-sm: 8px;

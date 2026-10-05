@@ -2,41 +2,71 @@
 import Base from '../layouts/Base.astro';
 import ExperienceItem from '../components/ExperienceItem.astro';
 import Pill from '../components/Pill.astro';
-import { site, skills, software, links } from '../data/site';
+import { site, skills, software } from '../data/site';
 import { experience, education } from '../data/experience';
+
+const firstYear = experience[0].period.split('/')[0].trim();
+const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+const sections = [
+  { id: 'experience', label: 'Experience' },
+  { id: 'skills', label: 'Skills' },
+  { id: 'software', label: 'Software' },
+  { id: 'education', label: 'Education' },
+];
 ---
 
 <Base title="Resume" description="Experience, skills and education of Vale Ferreira, Product Designer.">
-  <section class="container head">
-    <img class="photo" src={site.photos.resume} alt="Vale Ferreira" />
-    <div>
-      <p class="eyebrow">Resume</p>
-      <h1>{site.name}</h1>
-      <p class="lead">{site.resumeIntro}</p>
-    </div>
-  </section>
+  <header class="container head">
+    <h1 class="visually-hidden">Resume</h1>
+    <p class="lead" data-reveal>{site.resumeIntro}</p>
+    <nav class="jump" aria-label="Resume sections" data-reveal style="--reveal-i:1">
+      {sections.map((sec) => <a href={`#${sec.id}`}>{sec.label}</a>)}
+    </nav>
+  </header>
 
-  <section class="container block">
-    <h2>Experience</h2>
-    <ul class="list">
-      {experience.map((item) => <ExperienceItem item={item} showLogo={false} />)}
+  <!-- Línea de tiempo: el año de la izquierda cambia según la experiencia que se está leyendo -->
+  <section id="experience" class="container timeline" data-timeline>
+    <h2 class="visually-hidden">Experience</h2>
+    <div class="rail" aria-hidden="true">
+      <p class="big-year" data-year-display>
+        {
+          firstYear.split('').map((d) => (
+            <span class="slot">
+              <span class="strip" style={`--d:${d}`}>
+                {digits.map((n) => (
+                  <span>{n}</span>
+                ))}
+              </span>
+            </span>
+          ))
+        }
+      </p>
+    </div>
+    <ul class="entries">
+      {experience.map((item) => <ExperienceItem item={item} />)}
     </ul>
   </section>
 
-  <section class="container block">
+  <section id="skills" class="container block" data-reveal>
     <h2>Skills</h2>
     <div class="pills">
       {skills.map((s) => <Pill>{s}</Pill>)}
     </div>
   </section>
 
-  <section class="container block">
+  <section id="software" class="container block" data-reveal>
     <h2>Software</h2>
     <ul class="software">
       {
         software.map((s) => (
           <li>
-            <img src={s.icon} alt="" width="40" height="40" loading="lazy" />
+            {s.icon ? (
+              <img src={s.icon} alt="" width="40" height="40" loading="lazy" />
+            ) : (
+              <span class="initial" aria-hidden="true">
+                {s.name[0]}
+              </span>
+            )}
             <span>{s.name}</span>
           </li>
         ))
@@ -44,7 +74,7 @@ import { experience, education } from '../data/experience';
     </ul>
   </section>
 
-  <section class="container block">
+  <section id="education" class="container block" data-reveal>
     <h2>Education</h2>
     <ul class="list">
       {
@@ -60,53 +90,101 @@ import { experience, education } from '../data/experience';
       }
     </ul>
   </section>
-
-  <section class="container block">
-    <h2>More</h2>
-    <ul class="list">
-      {
-        links.map((l) => (
-          <li class="edu">
-            <h3>
-              <a href={l.href} target="_blank" rel="noopener">
-                {l.label} <span aria-hidden="true">↗</span>
-              </a>
-            </h3>
-            <p class="muted">{l.description}</p>
-          </li>
-        ))
-      }
-    </ul>
-  </section>
 </Base>
 
 <style>
+  /* Encabezado: solo la frase y los accesos a cada sección */
   .head {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: var(--space-8);
-    align-items: center;
     padding-block: var(--space-24) var(--space-16);
-  }
-  .photo {
-    width: 140px;
-    height: 140px;
-    border-radius: 50%;
-    object-fit: cover;
-  }
-  h1 {
-    margin-top: var(--space-2);
-    font-size: var(--text-2xl);
+    text-align: center;
+    border-bottom: 1px solid var(--color-line);
   }
   .lead {
-    margin-top: var(--space-4);
-    max-width: 56ch;
-    color: var(--color-muted);
+    max-width: 30ch;
+    margin-inline: auto;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--text-2xl);
+    line-height: 1.1;
+    text-wrap: balance;
   }
+  .jump {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-2);
+    margin-top: var(--space-12);
+  }
+  .jump a {
+    padding: 0.9em 1.8em;
+    border: 1px solid var(--color-text);
+    border-radius: var(--radius-pill);
+    font-size: var(--text-xs);
+    line-height: 1;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition:
+      background var(--duration) var(--ease),
+      border-color var(--duration) var(--ease);
+  }
+  .jump a:hover {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+  /* Que el header fijo no tape el inicio de la sección al saltar */
+  section[id] {
+    scroll-margin-top: 64px;
+  }
+
+  /* Línea de tiempo */
+  .timeline {
+    display: grid;
+    grid-template-columns: var(--col-4) 1fr;
+    column-gap: var(--grid-gap);
+    padding-block: var(--space-16);
+  }
+  .rail {
+    position: sticky;
+    top: 12vh;
+    align-self: start;
+  }
+  .big-year {
+    display: flex;
+    height: 1em;
+    padding-inline: 0.06em;
+    overflow: hidden;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(6rem, 13vw, 12.5rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  /* Cada dígito es una tira del 0 al 9 que se desliza hasta el número que toca */
+  .slot {
+    margin-inline: -0.01em;
+  }
+  .strip {
+    display: flex;
+    flex-direction: column;
+    translate: 0 calc(var(--d) * -1em);
+    transition: translate 900ms var(--ease);
+  }
+  .strip span {
+    height: 1em;
+  }
+  .entries {
+    margin: 0;
+    padding: 0 0 0 var(--space-4);
+    list-style: none;
+    border-left: 1px solid var(--color-line);
+  }
+
   .block {
     display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: var(--space-12);
+    grid-template-columns: var(--col-4) 1fr;
+    gap: var(--grid-gap);
     padding-block: var(--space-12);
     border-top: 1px solid var(--color-line);
   }
@@ -135,6 +213,18 @@ import { experience, education } from '../data/experience';
     padding: 0;
     list-style: none;
   }
+  .software img,
+  .initial {
+    width: 40px;
+    height: 40px;
+  }
+  .initial {
+    display: grid;
+    place-items: center;
+    background: var(--color-text);
+    color: var(--color-bg);
+    font-weight: var(--weight-heading);
+  }
   .software li {
     display: grid;
     justify-items: center;
@@ -156,7 +246,8 @@ import { experience, education } from '../data/experience';
     text-decoration: none;
   }
   .edu a:hover {
-    color: var(--color-accent);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
   }
   .meta {
     font-size: var(--text-xs);
@@ -166,11 +257,62 @@ import { experience, education } from '../data/experience';
     font-size: var(--text-sm);
   }
 
+  @media (max-width: 860px) {
+    .timeline {
+      grid-template-columns: 1fr;
+    }
+    .rail {
+      display: none;
+    }
+    .entries {
+      padding-left: var(--space-6);
+    }
+  }
   @media (max-width: 760px) {
-    .head,
     .block {
       grid-template-columns: 1fr;
       gap: var(--space-6);
     }
   }
 </style>
+
+<script>
+  const timeline = document.querySelector<HTMLElement>('[data-timeline]');
+  if (timeline) {
+    const strips = [...timeline.querySelectorAll<HTMLElement>('[data-year-display] .strip')];
+    const items = [...timeline.querySelectorAll<HTMLElement>('[data-year]')];
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let current = '';
+    let queued = false;
+
+    const update = () => {
+      queued = false;
+      // La experiencia "activa" es la última cuyo inicio ya pasó la mitad de la pantalla
+      const line = window.innerHeight * 0.5;
+      const active = items.filter((el) => el.getBoundingClientRect().top < line).pop() ?? items[0];
+      // Movimiento de los logos: 0 = recién entra la experiencia, 1 = ya quedó en su lugar
+      const vh = window.innerHeight;
+      for (const el of reduce ? [] : items) {
+        const t = Math.min(1, Math.max(0, (vh * 0.95 - el.getBoundingClientRect().top) / (vh * 0.5)));
+        el.style.setProperty('--t', t.toFixed(4));
+      }
+      const year = active?.dataset.year ?? '';
+      if (year === current) return;
+      current = year;
+      strips.forEach((strip, i) => strip.style.setProperty('--d', year[i] ?? '0'));
+    };
+
+    update();
+    window.addEventListener('resize', update);
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!queued) {
+          queued = true;
+          requestAnimationFrame(update);
+        }
+      },
+      { passive: true },
+    );
+  }
+</script>

@@ -1,16 +1,18 @@
 ---
+import { nav } from '../data/site';
+
+interface Props {
+  /** Flota transparente sobre el hero de la home (el estado lo marca Hero.astro en <html data-hero-state>) */
+  overlay?: boolean;
+}
+const { overlay = false } = Astro.props;
 const path = Astro.url.pathname;
-const nav = [
-  { label: 'Work', href: '/#work' },
-  { label: 'Resume', href: '/resume' },
-  { label: 'Contact', href: '/contact' },
-];
-const isActive = (href: string) => !href.startsWith('/#') && path.startsWith(href);
+const isActive = (href: string) => href.startsWith('/') && path.startsWith(href);
 ---
 
-<header class="header">
+<header class:list={['header', { overlay }]}>
   <div class="container inner">
-    <a class="logo" href="/" aria-label="Vale Ferreira, home">Vale<em>Ferreira</em></a>
+    <a class="logo" href="/" >Vale Ferreira</a>
     <nav aria-label="Main">
       <ul>
         {
@@ -36,6 +38,19 @@ const isActive = (href: string) => !href.startsWith('/#') && path.startsWith(hre
     backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--color-line);
   }
+  /* En la home: escondido mientras dura el hero, aparece al terminar (lo marca Hero.astro) */
+  .overlay {
+    position: fixed;
+    left: 0;
+    right: 0;
+    transition:
+      translate var(--duration) var(--ease),
+      visibility var(--duration);
+  }
+  :global(html:not([data-hero-state='past'])) .overlay {
+    translate: 0 -100%;
+    visibility: hidden;
+  }
   .inner {
     display: flex;
     align-items: center;
@@ -43,29 +58,54 @@ const isActive = (href: string) => !href.startsWith('/#') && path.startsWith(hre
     min-height: 64px;
   }
   .logo {
-    font-family: var(--font-display);
-    font-size: 1.5rem;
+    font-size: var(--text-lg);
+    font-weight: var(--weight-heading);
+    letter-spacing: -0.02em;
     text-decoration: none;
-  }
-  .logo em {
-    margin-left: 0.2em;
-    color: var(--color-muted);
   }
   ul {
     display: flex;
-    gap: var(--space-6);
+    gap: var(--space-2);
     margin: 0;
     padding: 0;
     list-style: none;
   }
+  /* Mismo estilo que los botones del hero */
   nav a {
-    font-size: var(--text-sm);
+    display: block;
+    padding: 0.75em 1.5em;
+    border: 1px solid currentColor;
+    border-radius: var(--radius-pill);
+    font-size: var(--text-xs);
+    line-height: 1;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
     text-decoration: none;
-    color: var(--color-muted);
-    transition: color var(--duration) var(--ease);
+    transition:
+      background var(--duration) var(--ease),
+      border-color var(--duration) var(--ease),
+      color var(--duration) var(--ease);
   }
-  nav a:hover,
+  nav a:hover {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-on-accent);
+  }
   nav a[aria-current='page'] {
-    color: var(--color-text);
+    background: var(--color-text);
+    border-color: var(--color-text);
+    color: var(--color-bg);
+  }
+  @media (max-width: 540px) {
+    .logo {
+      font-size: var(--text-sm);
+    }
+    ul {
+      gap: var(--space-1);
+    }
+    nav a {
+      padding: 0.6em 0.75em;
+      font-size: var(--text-2xs);
+    }
   }
 </style>

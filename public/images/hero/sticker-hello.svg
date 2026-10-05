@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 130">
+  <g transform="rotate(-12 105 65)" text-anchor="middle" font-family="'Arial Rounded MT Bold', 'Arial Black', Helvetica, Arial, sans-serif" font-weight="900" font-size="58">
+    <g fill="#fbe04a" stroke="#fbe04a" stroke-width="24" stroke-linejoin="round" stroke-linecap="round"><text x="30" y="78" transform="rotate(-6 30 60)" >H</text><text x="68" y="75" transform="rotate(5 68 60)" >E</text><text x="102" y="80" transform="rotate(-4 102 60)" >L</text><text x="134" y="76" transform="rotate(6 134 60)" >L</text><text x="172" y="79" transform="rotate(-5 172 60)" >O</text></g>
+    <g fill="#4bae78" stroke="#4bae78" stroke-width="5" stroke-linejoin="round"><text x="30" y="78" transform="rotate(-6 30 60)" >H</text><text x="68" y="75" transform="rotate(5 68 60)" >E</text><text x="102" y="80" transform="rotate(-4 102 60)" >L</text><text x="134" y="76" transform="rotate(6 134 60)" >L</text><text x="172" y="79" transform="rotate(-5 172 60)" >O</text></g>
+  </g>
+</svg>

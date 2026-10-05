@@ -1,67 +1,267 @@
 ---
-import { contact, links } from '../data/site';
-const year = new Date().getFullYear();
+import { contact, links, footerNote, phoneNote } from '../data/site';
+
+const handle = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '');
+const social = (name: string) => links.find((l) => l.label.toLowerCase().startsWith(name))?.href;
+const behance = social('behance');
+const instagram = social('instagram');
+
+// Orden de lectura: fila por fila, dos columnas
+const items = [
+  // copy: al hacer clic se copia el dato en vez de abrir el correo o el teléfono
+  { label: 'Email', value: contact.email, href: `mailto:${contact.email}`, copy: true },
+  { label: 'LinkedIn', value: handle(contact.linkedin), href: contact.linkedin, external: true },
+  // El teléfono se muestra borroso y con dígitos de relleno: el número real no se publica en la página
+  { label: 'Phone', value: '+33 7 00 00 00 00', blurred: true },
+  behance && { label: 'Behance', value: handle(behance), href: behance, external: true },
+  { label: 'Location', value: contact.location },
+  instagram && { label: 'Instagram', value: handle(instagram), href: instagram, external: true },
+].filter((item) => !!item);
 ---
 
-<footer class="footer">
-  <div class="container">
-    <p class="eyebrow">Let’s work together</p>
-    <a class="mail" href={`mailto:${contact.email}`}>{contact.email}</a>
-    <div class="bottom">
-      <ul>
-        <li><a href={contact.linkedin} target="_blank" rel="noopener">LinkedIn</a></li>
-        {
-          links.map((l) => (
-            <li>
-              <a href={l.href} target="_blank" rel="noopener">
-                {l.label.split('.')[0]}
-              </a>
-            </li>
-          ))
-        }
-      </ul>
-      <p class="muted">© {year} Vale Ferreira</p>
+<footer id="contact" class="footer">
+  <div class="container inner">
+    <div class="about" data-typewriter data-text={footerNote}>
+      <button type="button" class="help" aria-label="About this site" aria-describedby="footer-note">?</button>
+      <p class="visually-hidden" id="footer-note">{footerNote}</p>
+      <p class="msg type-msg" aria-hidden="true">
+        <span data-typed></span><span class="type-caret"></span>
+      </p>
     </div>
+    <h2 class="title" data-reveal>
+      Let’s work<br />together
+      <svg class="sticker" viewBox="0 0 120 120" aria-hidden="true">
+        <g class="petals"><circle cx="94.0" cy="60.0" r="17" /><circle cx="84.0" cy="84.0" r="17" /><circle cx="60.0" cy="94.0" r="17" /><circle cx="36.0" cy="84.0" r="17" /><circle cx="26.0" cy="60.0" r="17" /><circle cx="36.0" cy="36.0" r="17" /><circle cx="60.0" cy="26.0" r="17" /><circle cx="84.0" cy="36.0" r="17" /><circle cx="60" cy="60" r="34" /></g>
+        <circle cx="50" cy="55" r="4" />
+        <circle cx="70" cy="55" r="4" />
+        <path d="M48 67 Q60 79 72 67" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
+      </svg>
+    </h2>
+    <dl class="list">
+      {
+        items.map((item, i) => (
+          <div data-reveal style={`--reveal-i:${i % 2}`}>
+            <dt>{item.label}</dt>
+            <dd>
+              {item.href ? (
+                <a
+                  href={item.href}
+                  target={item.external ? '_blank' : undefined}
+                  rel={item.external ? 'noopener' : undefined}
+                  data-copy={item.copy ? item.value : undefined}
+                >
+                  {item.value}
+                  {item.copy && (
+                    <span class="hint" data-hint aria-live="polite" />
+                  )}
+                </a>
+              ) : item.blurred ? (
+                <span class="private" data-typewriter data-text={phoneNote} tabindex="0">
+                  <span class="blurred" aria-hidden="true">
+                    {item.value}
+                  </span>
+                  <span class="visually-hidden">{phoneNote}</span>
+                  <span class="tip type-msg" aria-hidden="true">
+                    <span data-typed /><span class="type-caret" />
+                  </span>
+                </span>
+              ) : (
+                item.value
+              )}
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
   </div>
 </footer>
 
+<script>
+  // Copiar email / teléfono con un clic, sin tener que seleccionar el texto
+  document.querySelectorAll<HTMLAnchorElement>('a[data-copy]').forEach((link) => {
+    const hint = link.querySelector<HTMLElement>('[data-hint]');
+    let timer: number | undefined;
+
+    link.addEventListener('click', async (event) => {
+      event.preventDefault();
+      try {
+        await navigator.clipboard.writeText(link.dataset.copy ?? '');
+      } catch {
+        // Si el navegador no deja copiar, se comporta como un link normal
+        window.location.href = link.href;
+        return;
+      }
+      link.classList.add('is-copied');
+      if (hint) hint.textContent = 'Copied!';
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        link.classList.remove('is-copied');
+        if (hint) hint.textContent = '';
+      }, 2000);
+    });
+  });
+</script>
+
 <style>
+  /* Fondo oscuro para separarlo del resto de las secciones */
   .footer {
-    padding-block: var(--space-section) var(--space-8);
-    border-top: 1px solid var(--color-line);
+    background: var(--dark);
+    color: var(--white);
   }
-  .mail {
-    display: inline-block;
-    margin-top: var(--space-4);
-    font-family: var(--font-display);
-    font-size: var(--text-2xl);
-    line-height: var(--leading-tight);
-    text-decoration: none;
+  .inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-16);
+    position: relative;
+    min-height: 100svh;
+    padding-block: clamp(4rem, 14vh, 10rem);
+  }
+  .title {
+    position: relative;
+    align-self: start;
+    font-family: var(--font-body);
+    font-size: clamp(3.5rem, 1.5rem + 6.2vw, 7rem);
+    font-weight: var(--weight-heading);
+    line-height: 1;
+    letter-spacing: -0.035em;
+  }
+  .sticker {
+    position: absolute;
+    left: -0.35em;
+    bottom: -0.38em;
+    width: 0.8em;
+    height: 0.8em;
+    rotate: -8deg;
+    color: var(--color-on-accent);
+    fill: currentColor;
+  }
+  .petals {
+    fill: var(--color-accent);
+  }
+  .list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-16) var(--grid-gap);
+    /* ocupa las 8 columnas de la derecha: arranca en la columna 5 */
+    width: calc(100% - var(--col-4) - var(--grid-gap));
+    margin: 0 0 0 auto;
+    font-size: var(--text-base);
+  }
+  /* Icono "?" arriba a la derecha: al pasar el mouse se escribe el mensaje sobre el sitio */
+  .about {
+    position: absolute;
+    top: clamp(4rem, 14vh, 10rem);
+    right: var(--gutter);
+  }
+  .help {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: var(--text-base);
+    line-height: 1;
+    cursor: help;
+    transition:
+      background var(--duration) var(--ease),
+      border-color var(--duration) var(--ease),
+      color var(--duration) var(--ease);
+  }
+  .about:hover .help,
+  .help:focus-visible,
+  .about.is-typing .help {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+  .help:focus-visible {
+    outline-color: var(--white);
+  }
+  .msg {
+    position: absolute;
+    top: calc(100% + var(--space-3));
+    right: 0;
+    width: min(19rem, 72vw);
+  }
+  dt {
+    font-weight: var(--weight-strong);
+  }
+  dd {
+    margin: var(--space-1) 0 0;
     overflow-wrap: anywhere;
   }
-  .mail:hover {
-    color: var(--color-accent);
-  }
-  .bottom {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: var(--space-4);
-    margin-top: var(--space-16);
-    font-size: var(--text-sm);
-  }
-  ul {
-    display: flex;
-    gap: var(--space-6);
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-  ul a {
-    color: var(--color-muted);
+  a {
     text-decoration: none;
   }
-  ul a:hover {
-    color: var(--color-text);
+  a:hover {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+  /* Teléfono borroso: al pasar el mouse se escribe un mensaje en vez de mostrarse el número */
+  .private {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+  }
+  .blurred {
+    filter: blur(5px);
+    user-select: none;
+  }
+  .tip {
+    position: absolute;
+    top: calc(100% + var(--space-2));
+    left: 0;
+    z-index: 1;
+    width: min(15rem, 70vw);
+  }
+  .private:focus-visible {
+    outline-color: var(--white);
+  }
+  /* Email: cursor circular de copiar; con un clic se copian y el cursor pasa a un check */
+  a[data-copy] {
+    cursor: var(--cursor-copy);
+  }
+  a[data-copy].is-copied {
+    cursor: var(--cursor-copied);
+  }
+  .hint:not(:empty) {
+    margin-left: 0.6em;
+  }
+  .hint {
+    font-size: var(--text-2xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0;
+    transition: opacity var(--duration) var(--ease);
+  }
+  /* "Copied!" solo aparece después de copiar (sirve también en celulares, donde no hay cursor) */
+  a.is-copied .hint {
+    opacity: 1;
+  }
+  a.is-copied {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+  /* Los links que abren otra página muestran el cursor de flecha */
+  a[target='_blank'] {
+    cursor: var(--cursor-arrow);
+  }
+  a:focus-visible {
+    outline-color: var(--white);
+  }
+  @media (max-width: 600px) {
+    .inner {
+      min-height: auto;
+    }
+    .list {
+      width: 100%;
+      gap: var(--space-8) var(--space-6);
+    }
   }
 </style>

@@ -1,0 +1,390 @@
+---
+import { site, nav } from '../data/site';
+
+const { hero } = site;
+
+// Fecha del último build: "Monday, October 5"
+const updated = new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric' }).format(new Date());
+---
+
+<!--
+  Hero con scroll: arranca con la foto chica sobre el fondo de acento y,
+  al hacer scroll, la foto crece hasta ocupar toda la pantalla.
+  El script de abajo escribe el progreso (0 a 1) en --p y el CSS hace el resto.
+-->
+<section class="hero" data-hero>
+  <div class="stage">
+    <div class="photo">
+      <img src={hero.image} alt="" />
+    </div>
+
+    {
+      hero.stickers.map((s) => (
+        <img
+          class="sticker"
+          src={s.src}
+          alt=""
+          aria-hidden="true"
+          style={`--w:${s.width}; --x0:${s.from[0]}; --y0:${s.from[1]}; --x1:${s.to[0]}; --y1:${s.to[1]};`}
+        />
+      ))
+    }
+
+    <p class="updated">{hero.updateLabel}: {updated}</p>
+
+    <h1 class="title">
+      <span class="name">{hero.name}</span>
+      <span class="role-row">
+        <em class="role">{site.role}</em>
+        <span class="tagline" data-hero-tagline>{hero.tagline}</span>
+      </span>
+    </h1>
+
+    <nav class="hero-nav" aria-label="Main">
+      {nav.map((item) => <a href={item.href}>{item.label}</a>)}
+    </nav>
+
+    <p class="scroll-hint" aria-hidden="true">
+      {hero.scrollHint}
+      <span class="arrow">↓</span>
+    </p>
+  </div>
+</section>
+
+<noscript>
+  <style>
+    .hero {
+      --p: 1;
+      --ink-p: 1;
+      --in: 1;
+      --out: 0;
+      height: 100svh !important;
+    }
+  </style>
+</noscript>
+
+<script>
+  const hero = document.querySelector<HTMLElement>('[data-hero]');
+  const tagline = document.querySelector<HTMLElement>('[data-hero-tagline]');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  if (hero) {
+    const clamp = (n: number) => Math.min(1, Math.max(0, n));
+    const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+    let queued = false;
+
+    const update = () => {
+      queued = false;
+      state();
+      if (reduce.matches) return;
+      // El último 15% del scroll deja la foto quieta a pantalla completa
+      const distance = (hero.offsetHeight - window.innerHeight) * 0.85;
+      const raw = clamp(-hero.getBoundingClientRect().top / distance);
+      const p = ease(raw);
+      hero.style.setProperty('--p', p.toFixed(4));
+      // El texto pasa a blanco justo cuando la foto lo alcanza
+      hero.style.setProperty('--ink-p', clamp((p - 0.15) / 0.25).toFixed(4));
+      hero.style.setProperty('--in', clamp((raw - 0.65) / 0.3).toFixed(4));
+      hero.style.setProperty('--out', (1 - clamp(raw / 0.25)).toFixed(4));
+      hero.classList.toggle('is-open', raw > 0.8);
+    };
+    // Le avisa al header cuándo termina el hero, para que aparezca
+    const state = () => {
+      const { top, bottom } = hero.getBoundingClientRect();
+      const travel = (hero.offsetHeight - window.innerHeight) * 0.85;
+      const open = reduce.matches || -top / travel > 0.8;
+      document.documentElement.dataset.heroState = bottom <= 64 ? 'past' : open ? 'open' : 'start';
+    };
+    const measure = () => {
+      // "Product Designer" se corre a la izquierda la mitad de lo que ocupa la frase
+      if (tagline && !reduce.matches) hero.style.setProperty('--tagline-w', `${tagline.offsetWidth}px`);
+      update();
+    };
+    const queue = () => {
+      if (!queued) {
+        queued = true;
+        requestAnimationFrame(update);
+      }
+    };
+
+    measure();
+    document.fonts?.ready.then(measure);
+    window.addEventListener('scroll', queue, { passive: true });
+    window.addEventListener('resize', measure);
+  }
+</script>
+
+<style>
+  .hero {
+    --p: 0; /* progreso de la foto */
+    --in: 0; /* lo que aparece al final (frase y navegación) */
+    --out: 1; /* lo que desaparece al empezar (fecha y "scroll down") */
+    --ink-p: 0; /* texto: de oscuro a blanco */
+    --tagline-w: 0px;
+    --gap: 1.6vw;
+    --ink: color-mix(in srgb, var(--white) calc(var(--ink-p) * 100%), var(--dark));
+    /* por encima de la sección siguiente: al irse el hero, la destapa como un telón */
+    position: relative;
+    z-index: 1;
+    height: 240svh;
+  }
+  .stage {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    overflow: hidden;
+    background: var(--color-accent);
+    color: var(--ink);
+  }
+
+  /* Foto */
+  .photo {
+    position: absolute;
+    left: 50%;
+    top: calc(46.5% + 3.5% * var(--p));
+    width: calc(30% + 70% * var(--p));
+    height: calc(24% + 76% * var(--p));
+    translate: -50% -50%;
+  }
+  .photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .photo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--dark);
+    opacity: calc(var(--p) * 0.3);
+  }
+
+  /* Stickers: viajan desde la foto hacia los bordes */
+  .sticker {
+    position: absolute;
+    left: calc(var(--x0) + (var(--x1) - var(--x0)) * var(--p));
+    top: calc(var(--y0) + (var(--y1) - var(--y0)) * var(--p));
+    width: var(--w);
+    max-width: none;
+    translate: -50% -50%;
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  /* Título */
+  .title {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(46% - 2.5% * var(--p));
+    translate: 0 -50%;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: var(--font-display);
+    font-weight: 400;
+    line-height: 0.95;
+    letter-spacing: -0.015em;
+    white-space: nowrap;
+  }
+  .name {
+    font-size: 7.6vw;
+  }
+  .role-row {
+    position: relative;
+    translate: calc((var(--tagline-w) + var(--gap)) / -2 * var(--p)) 0;
+  }
+  .role {
+    font-size: 6.8vw;
+  }
+  .tagline {
+    position: absolute;
+    left: calc(100% + var(--gap));
+    top: 58%;
+    translate: 0 -50%;
+    font-family: var(--font-body);
+    font-size: clamp(1rem, 1.85vw, 1.75rem);
+    letter-spacing: 0;
+    line-height: 1.2;
+    opacity: var(--in);
+  }
+
+  /* Entrada al cargar: la foto y el título suben, los stickers aparecen con un pequeño rebote */
+  .photo,
+  .name,
+  .role-row,
+  .updated,
+  .scroll-hint {
+    animation: rise 900ms var(--ease) backwards;
+  }
+  .name {
+    animation-delay: 120ms;
+  }
+  .role-row {
+    animation-delay: 220ms;
+  }
+  .updated,
+  .scroll-hint {
+    animation-delay: 600ms;
+  }
+  .sticker {
+    animation: pop 700ms cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+    animation-delay: 550ms;
+  }
+  .sticker:nth-of-type(2) {
+    animation-delay: 650ms;
+  }
+  .sticker:nth-of-type(3) {
+    animation-delay: 750ms;
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(1.5rem);
+    }
+  }
+  @keyframes pop {
+    from {
+      opacity: 0;
+      transform: scale(0.4) rotate(-12deg);
+    }
+  }
+
+  /* Navegación */
+  .hero-nav {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 11%;
+    z-index: 4;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding-inline: var(--gutter);
+    opacity: var(--in);
+    translate: 0 calc((1 - var(--in)) * 12px);
+    visibility: hidden;
+  }
+  .hero.is-open .hero-nav {
+    visibility: visible;
+  }
+  .hero-nav a {
+    padding: 1em 2.2em;
+    border: 1px solid currentColor;
+    border-radius: var(--radius-pill);
+    background: rgb(252 252 252 / 0.12);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    font-size: 1rem;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition:
+      background var(--duration) var(--ease),
+      color var(--duration) var(--ease),
+      border-color var(--duration) var(--ease);
+  }
+  .hero-nav a:hover {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+  .hero-nav a:focus-visible {
+    outline-color: var(--white);
+  }
+
+  /* Textos chicos del estado inicial */
+  .updated,
+  .scroll-hint {
+    position: absolute;
+    z-index: 2;
+    font-size: var(--text-xs);
+    opacity: var(--out);
+  }
+  .updated {
+    top: var(--space-8);
+    right: var(--gutter);
+  }
+  .scroll-hint {
+    left: 0;
+    right: 0;
+    bottom: var(--space-8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: var(--text-sm);
+  }
+  .arrow {
+    font-size: var(--text-lg);
+    line-height: 1;
+    animation: nudge 1.8s var(--ease) infinite;
+  }
+  @keyframes nudge {
+    50% {
+      translate: 0 5px;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .photo {
+      width: calc(62% + 38% * var(--p));
+      height: calc(22% + 78% * var(--p));
+    }
+    .name {
+      font-size: 10.5vw;
+    }
+    .role {
+      font-size: 9.5vw;
+    }
+    .role-row {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      translate: none;
+    }
+    .tagline {
+      position: static;
+      translate: none;
+      margin-top: var(--space-4);
+      font-size: var(--text-base);
+    }
+    .sticker {
+      width: calc(var(--w) * 2.2);
+    }
+    .hero-nav a {
+      padding: 0.9em 1.3em;
+      font-size: var(--text-xs);
+    }
+  }
+
+  /* Sin animación: se muestra directo el estado final */
+  @media (prefers-reduced-motion: reduce) {
+    .hero {
+      --p: 1;
+      --ink-p: 1;
+      --in: 1;
+      --out: 0;
+      height: 100svh;
+    }
+    .hero-nav {
+      visibility: visible;
+    }
+    .role-row {
+      translate: none;
+    }
+    .tagline {
+      position: static;
+      display: block;
+      translate: none;
+      margin-top: var(--space-4);
+      text-align: center;
+    }
+    .arrow {
+      animation: none;
+    }
+  }
+</style>

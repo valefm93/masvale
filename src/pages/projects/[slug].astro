@@ -17,74 +17,116 @@ interface Props {
   next: Project;
 }
 const { project, next } = Astro.props;
+
+// Proyectos que no son case study: texto a la izquierda, imágenes a la derecha.
+const textBlocks = project.blocks.filter((b) => b.type === 'text' || b.type === 'list');
+const images = [
+  { src: project.cover, alt: project.title },
+  ...project.blocks.flatMap((b) =>
+    b.type === 'image' ? [{ src: b.src, alt: b.alt }] : b.type === 'gallery' ? b.images : [],
+  ),
+].filter((img, i, all) => all.findIndex((other) => other.src === img.src) === i);
 ---
 
 <Base title={project.client} description={project.summary}>
-  <header class="container head">
-    <a class="back" href="/#work">← All projects</a>
-    <p class="eyebrow">{project.client}</p>
-    <h1>{project.title}</h1>
-    <p class="summary">{project.summary}</p>
-    <div class="tags">{project.tags.map((t) => <Pill tone="accent">{t}</Pill>)}</div>
-  </header>
+  {
+    project.caseStudy ? (
+      <Fragment>
+      <header class="container head" data-reveal>
+        <a class="back" href="/portfolio">← All projects</a>
+        <p class="eyebrow">{project.client}</p>
+        <h1>{project.title}</h1>
+        <p class="summary">{project.summary}</p>
+        <div class="tags">{project.tags.map((t) => <Pill tone="accent">{t}</Pill>)}</div>
+      </header>
 
-  <div class="cover container">
-    <img src={project.cover} alt="" />
-  </div>
+      <div class="cover container" data-reveal style="--reveal-i:1">
+        <img src={project.cover} alt="" />
+      </div>
 
-  <article class="blocks">
-    {
-      project.blocks.map((b) => {
-        if (b.type === 'text')
-          return (
-            <section class="container text">
-              {b.title ? <h2>{b.title}</h2> : <span />}
+      <article class="blocks">
+        {
+          project.blocks.map((b) => {
+            if (b.type === 'text')
+              return (
+                <section class="container text" data-reveal>
+                  {b.title ? <h2>{b.title}</h2> : <span />}
+                  <div class="prose">
+                    {b.body.map((t) => (
+                      <RichText text={t} />
+                    ))}
+                  </div>
+                </section>
+              );
+            if (b.type === 'list')
+              return (
+                <section class="container text" data-reveal>
+                  {b.title ? <h2>{b.title}</h2> : <span />}
+                  <ul class="prose bullets">
+                    {b.items.map((t) => (
+                      <RichText as="li" text={t} />
+                    ))}
+                  </ul>
+                </section>
+              );
+            if (b.type === 'pills')
+              return (
+                <section class="container text" data-reveal>
+                  {b.title ? <h2>{b.title}</h2> : <span />}
+                  <div class="pills">
+                    {b.items.map((t) => (
+                      <Pill>{t}</Pill>
+                    ))}
+                  </div>
+                </section>
+              );
+            if (b.type === 'image')
+              return (
+                <figure class="container image" data-reveal>
+                  <img src={b.src} alt={b.alt} loading="lazy" />
+                  {b.caption && <figcaption>{b.caption}</figcaption>}
+                </figure>
+              );
+            if (b.type === 'gallery')
+              return (
+                <section class="gallery-block" data-reveal>
+                  {b.title && <h2 class="container gallery-title">{b.title}</h2>}
+                  <Gallery images={b.images} label={b.title ?? `${project.client} gallery`} />
+                </section>
+              );
+          })
+        }
+      </article>
+      </Fragment>
+    ) : (
+      <div class="container simple">
+        <div class="side" data-reveal>
+          <a class="back" href="/portfolio">← All projects</a>
+          <p class="eyebrow">{project.client}</p>
+          <h1>{project.title}</h1>
+          <div class="side-text">
+            {textBlocks.map((b) => (
               <div class="prose">
-                {b.body.map((t) => (
-                  <RichText text={t} />
-                ))}
+                {b.title && <h2>{b.title}</h2>}
+                {b.type === 'text' && b.body.map((t) => <RichText text={t} />)}
+                {b.type === 'list' && (
+                  <ul class="bullets">
+                    {b.items.map((t) => (
+                      <RichText as="li" text={t} />
+                    ))}
+                  </ul>
+                )}
               </div>
-            </section>
-          );
-        if (b.type === 'list')
-          return (
-            <section class="container text">
-              {b.title ? <h2>{b.title}</h2> : <span />}
-              <ul class="prose bullets">
-                {b.items.map((t) => (
-                  <RichText as="li" text={t} />
-                ))}
-              </ul>
-            </section>
-          );
-        if (b.type === 'pills')
-          return (
-            <section class="container text">
-              {b.title ? <h2>{b.title}</h2> : <span />}
-              <div class="pills">
-                {b.items.map((t) => (
-                  <Pill>{t}</Pill>
-                ))}
-              </div>
-            </section>
-          );
-        if (b.type === 'image')
-          return (
-            <figure class="container image">
-              <img src={b.src} alt={b.alt} loading="lazy" />
-              {b.caption && <figcaption>{b.caption}</figcaption>}
-            </figure>
-          );
-        if (b.type === 'gallery')
-          return (
-            <section class="gallery-block">
-              {b.title && <h2 class="container gallery-title">{b.title}</h2>}
-              <Gallery images={b.images} label={b.title ?? `${project.client} gallery`} />
-            </section>
-          );
-      })
-    }
-  </article>
+            ))}
+          </div>
+          <div class="tags">{project.tags.map((t) => <Pill tone="accent">{t}</Pill>)}</div>
+        </div>
+        <div class="media">
+          {images.map((img, i) => <img src={img.src} alt={img.alt} loading={i === 0 ? 'eager' : 'lazy'} data-reveal style={i === 0 ? '--reveal-i:1' : undefined} />)}
+        </div>
+      </div>
+    )
+  }
 
   <nav class="container next" aria-label="Next project">
     <p class="eyebrow">Next project</p>
@@ -109,13 +151,50 @@ const { project, next } = Astro.props;
   h1 {
     margin-top: var(--space-3);
     max-width: 16ch;
-    font-size: var(--text-3xl);
+    font-size: var(--text-2xl);
   }
   .summary {
     margin-top: var(--space-6);
     max-width: 52ch;
     font-size: var(--text-lg);
     color: var(--color-muted);
+  }
+  /* Plantilla simple (no case study): columna de texto angosta + columna de imágenes */
+  .simple {
+    display: grid;
+    grid-template-columns: var(--col-4) minmax(0, 1fr);
+    gap: var(--grid-gap);
+    align-items: start;
+    padding-block: var(--space-12) var(--space-section);
+  }
+  .side {
+    position: sticky;
+    top: calc(64px + var(--space-8));
+    padding-right: var(--space-8);
+  }
+  .side .back {
+    margin-bottom: var(--space-8);
+  }
+  .side h1 {
+    font-size: var(--text-xl);
+  }
+  .side h2 {
+    font-size: var(--text-base);
+    letter-spacing: -0.01em;
+    color: var(--color-text);
+  }
+  .side-text {
+    display: grid;
+    gap: var(--space-6);
+    margin-top: var(--space-6);
+    font-size: var(--text-sm);
+  }
+  .media {
+    display: grid;
+    gap: var(--grid-gap);
+  }
+  .media img {
+    width: 100%;
   }
   .tags,
   .pills {
@@ -128,7 +207,6 @@ const { project, next } = Astro.props;
   }
   .cover img {
     width: 100%;
-    border-radius: var(--radius-lg);
   }
   .blocks {
     display: grid;
@@ -137,8 +215,8 @@ const { project, next } = Astro.props;
   }
   .text {
     display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: var(--space-12);
+    grid-template-columns: var(--col-4) 1fr;
+    gap: var(--grid-gap);
   }
   h2 {
     font-size: var(--text-xl);
@@ -161,7 +239,6 @@ const { project, next } = Astro.props;
   }
   .image img {
     width: 100%;
-    border-radius: var(--radius-md);
   }
   figcaption {
     margin-top: var(--space-3);
@@ -178,12 +255,24 @@ const { project, next } = Astro.props;
   .next a {
     display: inline-block;
     margin-top: var(--space-3);
-    font-family: var(--font-display);
     font-size: var(--text-2xl);
+    font-weight: var(--weight-heading);
+    line-height: var(--leading-tight);
+    letter-spacing: -0.03em;
     text-decoration: none;
   }
   .next a:hover {
-    color: var(--color-accent);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+  @media (max-width: 860px) {
+    .simple {
+      grid-template-columns: 1fr;
+      gap: var(--space-8);
+    }
+    .side {
+      position: static;
+    }
   }
   @media (max-width: 760px) {
     .text {

@@ -1,7 +1,7 @@
 ---
 import '@fontsource/instrument-serif/400.css';
 import '@fontsource/instrument-serif/400-italic.css';
-import '@fontsource-variable/instrument-sans';
+import '@fontsource-variable/inter';
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
@@ -9,10 +9,13 @@ import Footer from '../components/Footer.astro';
 interface Props {
   title?: string;
   description?: string;
+  /** En la home el header flota transparente sobre el hero */
+  overlayHeader?: boolean;
 }
 
 const {
   title,
+  overlayHeader = false,
   description = 'Vale Ferreira — Product Designer. UX/UI, prototyping, user testing and branding.',
 } = Astro.props;
 const fullTitle = title ? `${title} · Vale Ferreira` : 'Vale Ferreira · Product Designer';
@@ -27,17 +30,78 @@ const fullTitle = title ? `${title} · Vale Ferreira` : 'Vale Ferreira · Produc
     <meta name="description" content={description} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
+    <script is:inline>
+      document.documentElement.classList.add('js');
+    </script>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
-    <Header />
+    <Header overlay={overlayHeader} />
     <main id="main">
       <slot />
     </main>
     <Footer />
   </body>
 </html>
+
+<script>
+  // Activa las micro-animaciones de entrada (ver data-reveal en global.css)
+  const targets = document.querySelectorAll('[data-reveal]');
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      }
+    },
+    { rootMargin: '0px 0px -8% 0px', threshold: 0.05 },
+  );
+  targets.forEach((el) => observer.observe(el));
+
+  // Mensajes tipo máquina de escribir (ver .type-msg en global.css)
+  const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const touch = window.matchMedia('(hover: none)').matches;
+  document.querySelectorAll<HTMLElement>('[data-typewriter]').forEach((host) => {
+    const typed = host.querySelector<HTMLElement>('[data-typed]');
+    if (!typed) return;
+    const text = host.dataset.text ?? '';
+    let timer: number | undefined;
+
+    const start = () => {
+      window.clearInterval(timer);
+      host.classList.add('is-typing');
+      if (still) {
+        typed.textContent = text;
+        return;
+      }
+      let i = 0;
+      typed.textContent = '';
+      timer = window.setInterval(() => {
+        typed.textContent = text.slice(0, ++i);
+        if (i >= text.length) window.clearInterval(timer);
+      }, 28);
+    };
+    const stop = () => {
+      window.clearInterval(timer);
+      host.classList.remove('is-typing');
+    };
+
+    if (!touch) {
+      host.addEventListener('mouseenter', start);
+      host.addEventListener('mouseleave', stop);
+      host.addEventListener('focusin', start);
+      host.addEventListener('focusout', stop);
+    } else if (host.dataset.typewriter === 'auto') {
+      // En pantallas táctiles no hay hover: se escribe una vez al entrar a la página
+      window.setTimeout(start, 700);
+    } else {
+      // ...o se abre y se cierra tocando
+      host.addEventListener('click', () => (host.classList.contains('is-typing') ? stop() : start()));
+    }
+  });
+</script>
 
 <style>
   .skip-link {

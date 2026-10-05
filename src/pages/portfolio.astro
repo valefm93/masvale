@@ -1,0 +1,154 @@
+---
+// Galería con todos los trabajos. Los que tienen `featured: true` también salen en la home.
+import Base from '../layouts/Base.astro';
+import PortfolioTile from '../components/PortfolioTile.astro';
+import { projects, categories } from '../data/projects';
+import { portfolioNote } from '../data/site';
+
+// Filtros: las categorías de projects.ts que tengan al menos un proyecto
+const tags = categories.filter((c) => projects.some((p) => p.categories.includes(c)));
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+
+<Base title="Portfolio" description="Product design work by Vale Ferreira.">
+  <section class="container section">
+    <header class="head" data-reveal>
+      <div class="title" data-typewriter="auto" data-text={portfolioNote}>
+        <h1 aria-describedby="portfolio-note">Portfolio</h1>
+        <p class="visually-hidden" id="portfolio-note">{portfolioNote}</p>
+        <p class="msg type-msg" aria-hidden="true">
+          <span data-typed></span><span class="type-caret"></span>
+        </p>
+      </div>
+      <p class="count" aria-live="polite"><span data-count>{pad(projects.length)}</span> projects</p>
+    </header>
+    <div class="filters" role="group" aria-label="Filter by type of work" data-filters data-reveal style="--reveal-i:1">
+      <button type="button" data-filter="" aria-pressed="true">All</button>
+      {
+        tags.map((t) => (
+          <button type="button" data-filter={t} aria-pressed="false">
+            {t}
+          </button>
+        ))
+      }
+    </div>
+    <div class="grid">
+      {projects.map((p, i) => <PortfolioTile project={p} index={i} />)}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+    padding-bottom: var(--space-8);
+    border-bottom: 1px solid var(--color-line);
+  }
+  h1 {
+    font-size: var(--text-3xl);
+  }
+  .count {
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+  /* Mensaje que se escribe solo al pasar el mouse por el título */
+  .title {
+    position: relative;
+  }
+  .msg {
+    position: absolute;
+    left: calc(100% + var(--space-6));
+    bottom: 22%;
+    width: min(19rem, 34vw);
+  }
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-8);
+  }
+  .filters button {
+    padding: 0.7em 1.3em;
+    border: 1px solid var(--color-text);
+    border-radius: var(--radius-pill);
+    background: transparent;
+    color: var(--color-text);
+    font: inherit;
+    font-size: var(--text-2xs);
+    line-height: 1;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition:
+      background var(--duration) var(--ease),
+      border-color var(--duration) var(--ease),
+      color var(--duration) var(--ease);
+  }
+  .filters button:hover {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+  .filters button[aria-pressed='true'] {
+    background: var(--color-text);
+    border-color: var(--color-text);
+    color: var(--color-bg);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--grid-gap);
+  }
+  @media (max-width: 860px) {
+    /* Sin espacio al costado: el mensaje va debajo del título */
+    .msg {
+      position: static;
+      width: auto;
+      max-width: 22rem;
+      min-height: 5.6em;
+      margin-top: var(--space-4);
+    }
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  const filters = document.querySelector<HTMLElement>('[data-filters]');
+  const tiles = [...document.querySelectorAll<HTMLElement>('[data-tile]')];
+  const count = document.querySelector<HTMLElement>('[data-count]');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  filters?.addEventListener('click', (event) => {
+    const button = (event.target as HTMLElement).closest<HTMLButtonElement>('button[data-filter]');
+    if (!button) return;
+    const tag = button.dataset.filter ?? '';
+
+    for (const b of filters.querySelectorAll('button')) b.setAttribute('aria-pressed', String(b === button));
+
+    let visible = 0;
+    for (const tile of tiles) {
+      const show = !tag || (tile.dataset.tags ?? '').split('|').includes(tag);
+      tile.hidden = !show;
+      if (!show) continue;
+      // Pequeña entrada escalonada de los proyectos que quedan
+      if (!reduce) {
+        tile.animate(
+          [
+            { opacity: 0, transform: 'translateY(12px)' },
+            { opacity: 1, transform: 'none' },
+          ],
+          { duration: 450, delay: visible * 60, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', fill: 'backwards' },
+        );
+      }
+      visible++;
+    }
+    if (count) count.textContent = String(visible).padStart(2, '0');
+  });
+</script>
