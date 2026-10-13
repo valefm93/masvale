@@ -6,9 +6,10 @@ import RichText from '../../components/RichText.astro';
 import { projects, type Project } from '../../data/projects';
 
 export function getStaticPaths() {
-  return projects.map((project, i) => ({
+  // Los proyectos con página propia (custom) no pasan por esta plantilla
+  return projects.filter((p) => !p.custom).map((project) => ({
     params: { slug: project.slug },
-    props: { project, next: projects[(i + 1) % projects.length] },
+    props: { project, next: projects[(projects.indexOf(project) + 1) % projects.length] },
   }));
 }
 
@@ -167,10 +168,16 @@ const images = [
     align-items: start;
     padding-block: var(--space-12) var(--space-section);
   }
+  /* La columna de texto queda fija y, si el texto es largo, tiene su propio scroll */
   .side {
     position: sticky;
     top: calc(64px + var(--space-8));
-    padding-right: var(--space-8);
+    max-height: calc(100svh - 64px - var(--space-8));
+    padding: 0 var(--space-8) var(--space-8) 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-line) transparent;
   }
   .side .back {
     margin-bottom: var(--space-8);
@@ -272,6 +279,9 @@ const images = [
     }
     .side {
       position: static;
+      max-height: none;
+      padding: 0;
+      overflow: visible;
     }
   }
   @media (max-width: 760px) {

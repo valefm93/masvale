@@ -1,0 +1,417 @@
+---
+// Proyecto de branding de Electis (separado del case study de producto).
+// Logo, paleta y tipografía: versión final (Figma). El contexto de marca sale de la presentación original.
+import '@fontsource/schibsted-grotesk/400.css';
+import '@fontsource/schibsted-grotesk/500.css';
+import '@fontsource/schibsted-grotesk/700.css';
+import Base from '../../layouts/Base.astro';
+import ProjectSplit from '../../components/ProjectSplit.astro';
+import { projects } from '../../data/projects';
+
+const project = projects.find((p) => p.slug === 'electis-branding')!;
+const next = projects[(projects.indexOf(project) + 1) % projects.length];
+
+const facts = [
+  { label: 'Role', value: 'Brand designer' },
+  { label: 'Scope', value: 'Logo · Color · Typography · Brand applications' },
+  { label: 'Tools', value: 'Figma · Illustrator' },
+];
+
+const personality = [
+  { title: 'Corporate and trustable', text: 'A personality organizations can rely on.' },
+  { title: 'A solutions provider', text: 'Not only elections: any decision a group needs to make.' },
+  { title: 'Verifiable transparency', text: 'Above all, anyone can check the result.' },
+];
+const keywords = ['Security', 'Transparency', 'Trust', 'Opinion', 'Technology', 'Democracy'];
+
+const colors = [
+  { name: 'Blue Whale', hex: '#052E66', cls: 'whale', light: true },
+  { name: 'Royal Blue', hex: '#2143E7', cls: 'royal', light: true },
+  { name: 'Sky Blue', hex: '#29ADFF', cls: 'sky', light: true },
+  { name: 'Green Fluor', hex: '#AED600', cls: 'green' },
+  { name: 'Light Orange', hex: '#FFBA18', cls: 'orange' },
+];
+const neutrals = ['#F7F7FF', '#E9ECFB', '#D5D8F7', '#132E65', '#0D2048', '#020518'];
+---
+
+<Base title="Electis branding" description={project.summary}>
+  <ProjectSplit project={project}>
+    <Fragment slot="text">
+      <p>
+        The brand identity for Electis, an electronic voting platform that doesn’t just focus on elections: it gives
+        groups of people trustable and protected data of their opinion.
+      </p>
+      <p>
+        The brief was to look like a trustworthy encryption company while staying friendly: a brand that facilitates
+        the secure expression of people’s thoughts within organizations.
+      </p>
+    </Fragment>
+    <Fragment slot="extra">
+      <dl class="facts">
+        {
+          facts.map((f) => (
+            <div>
+              <dt>{f.label}</dt>
+              <dd>{f.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+
+      <h2 class="side-title">Brand personality</h2>
+      <ol class="decisions">
+        {
+          personality.map((m) => (
+            <li>
+              <h3>{m.title}</h3>
+              <p>{m.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+
+      <h2 class="side-title">Key words</h2>
+      <ul class="keywords">
+        {keywords.map((k) => <li>{k}</li>)}
+      </ul>
+    </Fragment>
+
+    <!-- Versiones del logo -->
+    <section class="logos eb" data-reveal style="--reveal-i:1">
+      <div class="logo-card is-white"><img src="/images/electis-brand/logo.svg" alt="Electis logo on white" /></div>
+      <div class="logo-card is-navy"><img src="/images/electis-brand/logo-white.svg" alt="Electis logo on navy" /></div>
+      <div class="logo-card is-sky"><img src="/images/electis-brand/logo-sky.svg" alt="Electis logo on sky blue" /></div>
+    </section>
+
+    <section class="chapter" data-reveal>
+      <header>
+        <p class="n">01</p>
+        <h2>The logo</h2>
+        <p>
+          A minimal logo whose symbol is built from four circles: four radio buttons, one of them selected. It stands
+          for a decision made, the digital version of a check mark. The lowercase wordmark keeps it accessible, modern
+          and digital.
+        </p>
+      </header>
+    </section>
+
+    <!-- Color -->
+    <section class="chapter" data-reveal>
+      <header>
+        <p class="n">02</p>
+        <h2>Color palette</h2>
+        <p>
+          Blue is associated with trust and reliability, and green symbolizes transparency. The dark blue gives the
+          brand its corporate image; the brighter accents add the friendly touch.
+        </p>
+      </header>
+      <div class="palette eb">
+        {
+          colors.map((c) => (
+            <div class:list={['swatch', c.cls, { light: c.light }]} style={`background:${c.hex}`}>
+              <b>{c.name}</b>
+              <span>{c.hex.slice(1)}</span>
+            </div>
+          ))
+        }
+        <div class="neutrals" aria-label="Neutral scale">
+          {neutrals.map((n) => <span style={`background:${n}`} />)}
+        </div>
+      </div>
+    </section>
+
+    <!-- Tipografía -->
+    <section class="chapter" data-reveal>
+      <header>
+        <p class="n">03</p>
+        <h2>Typography</h2>
+        <p>
+          Schibsted Grotesk: a minimal sans serif with a geometric foundation, friendly and legible at every size.
+        </p>
+      </header>
+      <div class="type eb">
+        <p class="type-name">Font: Schibsted Grotesk</p>
+        <p class="type-sample">Vote numérique, transparent, conforme et accompagné.</p>
+        <p class="type-weights"><span>Regular</span><span class="w5">Medium</span><span class="w7">Bold</span></p>
+      </div>
+    </section>
+
+    <!-- Aplicaciones -->
+    <section class="chapter" data-reveal>
+      <header>
+        <p class="n">04</p>
+        <h2>In use</h2>
+        <p>The same system on the website and inside the product, on desktop and mobile.</p>
+      </header>
+      <div class="uses">
+        <figure class="is-tall">
+          <img src="/images/electis-brand/use-website.png" alt="The Electis website" loading="lazy" />
+        </figure>
+        <figure>
+          <img src="/images/electis-brand/use-product.png" alt="The Electis product on desktop" loading="lazy" />
+        </figure>
+        <figure>
+          <img src="/images/electis-brand/use-mobile.png" alt="The Electis product on mobile" loading="lazy" />
+        </figure>
+      </div>
+    </section>
+  </ProjectSplit>
+
+  <nav class="container next" aria-label="Next project">
+    <p class="eyebrow">Next project</p>
+    <a href={`/projects/${next.slug}`}>{next.title} <span aria-hidden="true">→</span></a>
+  </nav>
+</Base>
+
+<style>
+  /* Columna de texto */
+  .facts {
+    display: grid;
+    gap: var(--space-3);
+    margin: var(--space-8) 0 0;
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-line);
+  }
+  .facts div {
+    display: grid;
+    grid-template-columns: 6rem 1fr;
+    gap: var(--space-3);
+    font-size: var(--text-sm);
+  }
+  .facts dt {
+    font-size: var(--text-2xs);
+    letter-spacing: 0.08em;
+    line-height: 1.9;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+  .facts dd {
+    margin: 0;
+  }
+  .side-title {
+    margin-top: var(--space-8);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-line);
+    font-size: var(--text-base);
+    letter-spacing: -0.01em;
+  }
+  .decisions {
+    display: grid;
+    gap: var(--space-4);
+    margin: var(--space-4) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .decisions h3 {
+    font-size: var(--text-sm);
+    font-weight: var(--weight-strong);
+    letter-spacing: 0;
+  }
+  .decisions p {
+    margin-top: 2px;
+    font-size: var(--text-xs);
+    line-height: 1.5;
+    color: var(--color-muted);
+  }
+
+  .keywords {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: var(--space-4) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .keywords li {
+    padding: 0.3em 0.8em;
+    border: 1px solid var(--color-line);
+    border-radius: 999px;
+    font-size: var(--text-xs);
+  }
+
+  /* Marca Electis: colores y tipografía de la versión final */
+  .eb {
+    --eb-whale: #052e66;
+    --eb-ice: #f7f7ff;
+    font-family: 'Schibsted Grotesk', system-ui, sans-serif;
+    letter-spacing: 0;
+  }
+
+  /* Versiones del logo */
+  .logos {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border: 1px solid var(--color-line);
+  }
+  .logo-card {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 3 / 2;
+  }
+  .logo-card img {
+    width: 56%;
+  }
+  .logo-card.is-white {
+    background: #fff;
+  }
+  .logo-card.is-navy {
+    background: #052e66;
+  }
+  .logo-card.is-sky {
+    background: #29adff;
+  }
+
+  /* Capítulos */
+  .chapter {
+    display: grid;
+    gap: var(--grid-gap);
+    padding-top: var(--space-12);
+  }
+  .chapter header {
+    display: grid;
+    grid-template-columns: 3rem minmax(0, 1fr);
+    column-gap: var(--space-4);
+    align-items: baseline;
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-line);
+  }
+  .n {
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+  .chapter h2 {
+    font-size: var(--text-xl);
+  }
+  .chapter header p:last-child {
+    grid-column: 2;
+    max-width: 58ch;
+    margin-top: var(--space-3);
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+
+  /* Paleta */
+  .palette {
+    display: grid;
+    grid-template-columns: 1.4fr 1.4fr 1fr 3rem;
+    grid-template-rows: 9rem 9rem;
+    gap: var(--space-2);
+  }
+  .swatch {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: var(--space-4);
+    border-radius: 12px;
+    font-size: var(--text-sm);
+    color: var(--eb-whale);
+  }
+  .swatch.light {
+    color: #fff;
+  }
+  .swatch b {
+    font-weight: 700;
+  }
+  .swatch span {
+    font-size: var(--text-lg);
+    font-weight: 500;
+  }
+  .whale {
+    grid-row: span 2;
+  }
+  .neutrals {
+    display: grid;
+    grid-column: 4;
+    grid-row: 1 / span 2;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: inset 0 0 0 1px var(--color-line);
+  }
+
+  /* Tipografía */
+  .type {
+    padding: var(--space-8);
+    border-radius: 12px;
+    background: var(--eb-ice);
+    color: var(--eb-whale);
+  }
+  .type-name {
+    font-size: var(--text-sm);
+    font-weight: 700;
+  }
+  .type-sample {
+    max-width: 16ch;
+    margin-top: var(--space-6);
+    font-size: var(--text-2xl);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  .type-weights {
+    display: flex;
+    gap: var(--space-6);
+    margin-top: var(--space-8);
+    font-size: var(--text-lg);
+  }
+  .w5 {
+    font-weight: 500;
+  }
+  .w7 {
+    font-weight: 700;
+  }
+
+  /* Aplicaciones */
+  .uses {
+    display: grid;
+    grid-template-columns: 718fr 655fr;
+    gap: var(--grid-gap);
+    align-content: space-between;
+    padding: var(--space-8);
+    background: #f7f7ff;
+  }
+  .uses figure {
+    margin: 0;
+  }
+  .uses .is-tall {
+    grid-row: span 2;
+  }
+  .uses figure:last-child {
+    align-self: end;
+  }
+  .uses img {
+    display: block;
+    width: 100%;
+  }
+
+  .next {
+    padding-block: var(--space-16);
+    border-top: 1px solid var(--color-line);
+  }
+  .next a {
+    display: inline-block;
+    margin-top: var(--space-3);
+    font-size: var(--text-2xl);
+    font-weight: var(--weight-heading);
+    line-height: var(--leading-tight);
+    letter-spacing: -0.03em;
+    text-decoration: none;
+  }
+  .next a:hover {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+
+  @media (max-width: 720px) {
+    .uses {
+      grid-template-columns: 1fr;
+      padding: var(--space-4);
+    }
+    .palette {
+      grid-template-columns: 1fr 1fr 2.5rem;
+      grid-template-rows: repeat(3, 7rem);
+    }
+    .neutrals {
+      grid-column: 3;
+      grid-row: 1 / span 3;
+    }
+  }
+</style>

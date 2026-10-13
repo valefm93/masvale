@@ -14,3 +14,6 @@ npm-debug.log*
 
 # macOS
 .DS_Store
+
+# exportaciones sueltas (no son parte del sitio)
+exports/

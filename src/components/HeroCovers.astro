@@ -1,0 +1,598 @@
+---
+// Hero de la home: un slider de portadas tipográficas que pasa el visitante (clic o flechas).
+// Hay UN solo juego de palabras y de líneas; al pasar de un slide al siguiente
+// se mueven (y cambian de tamaño y peso) hasta su nuevo lugar, y el fondo se funde.
+// Posiciones, tamaños y colores salen de src/data/heroCovers.ts (lienzo de 1440 × 1024).
+// El hero anterior (foto que crece + nombre que cambia de tipografía) sigue en Hero.astro.
+import { site, nav } from '../data/site';
+import { slides } from '../data/heroCovers';
+
+interface Props {
+  /** A dónde lleva "Hire me" (el footer de contacto puede no estar en esta página) */
+  contactHref?: string;
+}
+const { contactHref = '#contact' } = Astro.props;
+
+const words = ['product', 'designer', 'valeria', 'ferreira'] as const;
+const label = { product: 'Product', designer: 'Designer', valeria: 'Valeria', ferreira: 'Ferreira' };
+const maxH = Math.max(...slides.map((s) => s.h.length));
+const maxV = Math.max(...slides.map((s) => s.v.length));
+---
+
+<section class="covers is-entering" data-covers data-slides={JSON.stringify(slides)}>
+  <div class="stage">
+    <h1 class="visually-hidden">{site.hero.name}, {site.role}</h1>
+
+    <svg class="canvas" viewBox="0 0 1440 1024" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <defs>
+        <!-- Desenfoque para las palabras que se difuminan al llegar (slide de la torre) -->
+        <filter id="soft" x="-10%" y="-30%" width="120%" height="160%">
+          <feGaussianBlur stdDeviation="5.5"></feGaussianBlur>
+        </filter>
+        {words.map((w) => <clipPath id={`clip-${w}`}><rect x="-3000" y="-3000" width="6000" height="6000" /></clipPath>)}
+      </defs>
+
+      <!-- Fondos: uno por slide, se funden -->
+      {
+        slides.map((s, i) => (
+          <g class:list={['bg', { 'is-on': i === 0 }]} data-bg>
+            <rect width="1440" height="1024" fill={s.color} />
+            {s.image && (
+              <image
+                class:list={['photo', { 'is-drift': s.drift }]}
+                href={s.image}
+                width="1440"
+                height="1024"
+                preserveAspectRatio="none"
+              />
+            )}
+            {s.objects?.map((o, k) => (
+              <image class={`obj from-${o.from}`} style={`--k:${k}`} href={o.src} x={o.x} y={o.y} width={o.w} height={o.h} />
+            ))}
+          </g>
+        ))
+      }
+
+      <!-- Líneas de la grilla -->
+      <g class="rules is-h">{Array.from({ length: maxH }, () => <line class="rule" x1="-20" x2="1460" y1="0" y2="0" data-h />)}</g>
+      <g class="rules is-v">{Array.from({ length: maxV }, () => <line class="rule" x1="0" x2="0" y1="-20" y2="1044" data-v />)}</g>
+
+      <!-- Palabras -->
+      {
+        words.map((w) => (
+          <g class="mover" data-word={w}>
+            <text class="sharp">{label[w]}</text>
+            <text class="soft" filter="url(#soft)" clip-path={`url(#clip-${w})`}>{label[w]}</text>
+          </g>
+        ))
+      }
+
+      <!-- Textos chicos -->
+      <g class="mover" data-based><text class="based">BASED IN PARIS</text></g>
+      <g class="mover" data-date><text class="date" text-anchor="end">Last update</text></g>
+
+      <!-- Indicador del borde derecho -->
+      <rect class="mover ind" x="1418" y="0" width="22" height="59" data-ind></rect>
+    </svg>
+
+    <button class="hit is-prev" type="button" aria-label="Previous cover" data-prev></button>
+    <button class="hit is-next" type="button" aria-label="Next cover" data-next></button>
+
+    <!-- Cursor del slider: mismo cristal que los botones (el cursor del sistema no admite desenfoque) -->
+    <div class="cursor" aria-hidden="true" data-cursor>
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16M14 6l6 6-6 6" /></svg>
+    </div>
+
+    <!-- Botones del menú, donde antes estaba "Scroll down" -->
+    <nav class="hero-nav" aria-label="Main">
+      {nav.map((item) => <a href={item.href === '#contact' ? contactHref : item.href}>{item.label}</a>)}
+    </nav>
+  </div>
+</section>
+
+<script>
+  import type { Slide } from '../data/heroCovers';
+
+  const root = document.querySelector<HTMLElement>('[data-covers]');
+  if (root) {
+    const slides: Slide[] = JSON.parse(root.dataset.slides || '[]');
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const q = <T extends Element>(s: string) => [...root.querySelectorAll<T>(s)];
+
+    const bgs = q<SVGGElement>('[data-bg]');
+    const hs = q<SVGLineElement>('[data-h]');
+    const vs = q<SVGLineElement>('[data-v]');
+    const words = q<SVGGElement>('[data-word]');
+    const based = root.querySelector<SVGGElement>('[data-based]')!;
+    const date = root.querySelector<SVGGElement>('[data-date]')!;
+    const ind = root.querySelector<SVGRectElement>('[data-ind]')!;
+    let current = -1;
+
+    // Fecha de hoy, en inglés: "Last update, Friday 09 October"
+    const today = new Date();
+    date.querySelector('text')!.textContent =
+      `Last update, ${today.toLocaleDateString('en-GB', { weekday: 'long' })} ` +
+      `${String(today.getDate()).padStart(2, '0')} ${today.toLocaleDateString('en-GB', { month: 'long' })}`;
+
+    // Se precargan los fondos para que el fundido no parpadee
+    const ready = new Set<number>();
+    slides.forEach((s, i) => {
+      const files = [s.image, ...(s.objects ?? []).map((o) => o.src)].filter(Boolean) as string[];
+      if (!files.length) return void ready.add(i);
+      let left = files.length;
+      files.forEach((src) => {
+        const pre = new Image();
+        pre.onload = pre.onerror = () => --left === 0 && ready.add(i);
+        pre.src = src;
+      });
+    });
+
+    const place = (el: SVGElement, x: number, y: number, rot = 0) => {
+      el.style.transform = `translate(${x}px, ${y}px)${rot ? ` rotate(${rot}deg)` : ''}`;
+    };
+
+    const show = (i: number, instant = false) => {
+      const s = slides[i];
+      root.classList.toggle('is-instant', instant || still.matches);
+      bgs.forEach((b, k) => b.classList.toggle('is-on', k === i));
+
+      // líneas: las que sobran se desvanecen donde están
+      hs.forEach((l, k) => {
+        if (k < s.h.length) place(l, 0, s.h[k]);
+        l.style.opacity = k < s.h.length ? '1' : '0';
+        l.style.stroke = s.line;
+      });
+      vs.forEach((l, k) => {
+        if (k < s.v.length) place(l, s.v[k], 0);
+        l.style.opacity = k < s.v.length ? '1' : '0';
+        l.style.stroke = s.line;
+        l.style.strokeDasharray = s.dash ? '4 4' : 'none';
+      });
+
+      // palabras
+      words.forEach((g) => {
+        const name = g.dataset.word as keyof Slide['words'];
+        const w = s.words[name];
+        g.classList.remove('is-soft');
+        if (!w) return void (g.style.opacity = '0');
+        place(g, w.x, w.y);
+        g.style.opacity = '1';
+        g.querySelectorAll<SVGTextElement>('text').forEach((text) => {
+          text.style.fontSize = `${w.size}px`;
+          text.style.fontWeight = String(w.weight);
+          text.style.letterSpacing = `${w.ls}px`;
+          text.style.fill = s.ink;
+        });
+        // el recorte se mide desde la palabra, que ya está en su lugar
+        const clip = root.querySelector<SVGRectElement>(`#clip-${name} rect`)!;
+        clip.setAttribute('x', String(s.clip ? s.clip[0] - w.x : -3000));
+        clip.setAttribute('width', String(s.clip ? s.clip[1] - s.clip[0] : 6000));
+        // se desenfoca cuando termina de llegar (el retraso está en el CSS)
+        if (w.blur) g.classList.add('is-soft');
+      });
+
+      // textos chicos e indicador
+      if (s.based) place(based, s.based.x, s.based.y, -90);
+      based.style.opacity = s.based ? '1' : '0';
+      if (s.date) place(date, s.date.x, s.date.y);
+      date.style.opacity = s.date ? '1' : '0';
+      [based, date].forEach((g) => (g.style.fill = s.ink));
+      root.style.setProperty('--ink', s.ink);
+      place(ind, 0, s.ind);
+      ind.style.fill = s.ink;
+
+      current = i;
+    };
+
+    const go = (step: number) => {
+      const next = (current + step + slides.length) % slides.length;
+      // no se pasa a un slide cuyo fondo todavía no terminó de cargar
+      if (!ready.has(next)) return;
+      show(next);
+    };
+    show(0, true);
+    // la entrada (ver .is-entering en el CSS) dura cerca de 2 segundos; después se quita la clase
+    window.setTimeout(() => root.classList.remove('is-entering'), 2400);
+
+    // El visitante pasa los slides: clic en la mitad derecha o izquierda, o flechas del teclado
+    root.querySelector('[data-next]')?.addEventListener('click', () => go(1));
+    root.querySelector('[data-prev]')?.addEventListener('click', () => go(-1));
+    window.addEventListener('keydown', (e) => {
+      if (document.documentElement.dataset.heroState === 'past') return;
+      if (e.key === 'ArrowRight') go(1);
+      if (e.key === 'ArrowLeft') go(-1);
+    });
+
+    // Cursor propio sobre las zonas de clic (solo con ratón)
+    const cursor = root.querySelector<HTMLElement>('[data-cursor]');
+    if (cursor && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      root.classList.add('has-cursor');
+      root.addEventListener('pointermove', (e) => {
+        const over = (e.target as Element).closest('[data-prev], [data-next]');
+        cursor.classList.toggle('is-on', !!over);
+        cursor.classList.toggle('is-prev', !!over?.matches('[data-prev]'));
+        cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+      });
+      root.addEventListener('pointerleave', () => cursor.classList.remove('is-on'));
+      root.addEventListener('pointerdown', () => cursor.classList.add('is-down'));
+      window.addEventListener('pointerup', () => cursor.classList.remove('is-down'));
+    }
+
+    // Si el visitante intenta bajar y no hay nada debajo, los botones dan un saltito:
+    // suben un poco y vuelven, invitando a hacer clic.
+    const navEl = root.querySelector<HTMLElement>('.hero-nav');
+    const nudge = () => {
+      if (!navEl || still.matches || navEl.classList.contains('is-nudging')) return;
+      // solo cuando la página no puede seguir bajando
+      const atEnd = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+      if (!atEnd) return;
+      navEl.classList.add('is-nudging');
+      window.setTimeout(() => navEl.classList.remove('is-nudging'), 900);
+    };
+    window.addEventListener('wheel', (e) => e.deltaY > 0 && nudge(), { passive: true });
+    window.addEventListener('keydown', (e) => ['ArrowDown', 'PageDown', ' '].includes(e.key) && nudge());
+    let touchY = 0;
+    window.addEventListener('touchstart', (e) => (touchY = e.touches[0].clientY), { passive: true });
+    window.addEventListener('touchmove', (e) => touchY - e.touches[0].clientY > 24 && nudge(), { passive: true });
+
+    // Header.astro usa este estado para aparecer cuando el hero ya pasó
+    const update = () => {
+      document.documentElement.dataset.heroState = root.getBoundingClientRect().bottom <= 64 ? 'past' : 'start';
+    };
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  }
+</script>
+
+<style>
+  /* Una pantalla de alto; el scroll sigue a la sección de la frase, que espera debajo */
+  .covers {
+    /* cursores del slider: flecha a la izquierda / a la derecha dentro del mismo círculo del sitio */
+    --cursor-prev: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44' fill='none' stroke-linecap='round' stroke-linejoin='round'><circle cx='22' cy='22' r='20.5' fill='%23fcfcfc' stroke='%23131414' stroke-width='1.5'/><path d='M30 22H14M20 16l-6 6 6 6' stroke='%23131414' stroke-width='1.75'/></svg>") 22 22, w-resize;
+    --cursor-next: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44' fill='none' stroke-linecap='round' stroke-linejoin='round'><circle cx='22' cy='22' r='20.5' fill='%23fcfcfc' stroke='%23131414' stroke-width='1.5'/><path d='M14 22h16M24 16l6 6-6 6' stroke='%23131414' stroke-width='1.75'/></svg>") 22 22, e-resize;
+    --move: 950ms cubic-bezier(0.7, 0, 0.2, 1);
+    position: relative;
+    z-index: 1;
+    height: 100svh;
+  }
+  .stage {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+    background: var(--color-bg);
+  }
+  .canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    font-family: var(--font-body);
+  }
+
+  .bg {
+    opacity: 0;
+    transition: opacity 700ms ease;
+  }
+  .bg.is-on {
+    opacity: 1;
+  }
+
+  /* Fotos de fondo: entran acercándose apenas */
+  .photo {
+    transform-box: fill-box;
+    transform-origin: center;
+    scale: 1.08;
+    transition: scale 1400ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .bg.is-on .photo {
+    scale: 1;
+  }
+  /* Fondos con textura: además se mueven muy despacio, todo el tiempo */
+  .bg.is-on .photo.is-drift {
+    animation: drift 26s ease-in-out 1400ms infinite alternate;
+  }
+  @keyframes drift {
+    to {
+      scale: 1.12;
+      translate: -1.5% 1.5%;
+      rotate: 0.6deg;
+    }
+  }
+
+  /* Piezas sueltas (ilustraciones, gafas, libreta, estampilla): entran una por una */
+  .obj {
+    opacity: 0;
+    transition:
+      opacity 300ms ease,
+      translate 300ms ease;
+  }
+  .obj.from-left {
+    translate: -70px 0;
+  }
+  .obj.from-right {
+    translate: 70px 0;
+  }
+  .obj.from-up {
+    translate: 0 -70px;
+  }
+  .obj.from-down {
+    translate: 0 70px;
+  }
+  .bg.is-on .obj {
+    opacity: 1;
+    translate: 0 0;
+    transition:
+      opacity 600ms ease,
+      translate 900ms cubic-bezier(0.2, 0.7, 0.2, 1);
+    transition-delay: calc(350ms + var(--k) * 130ms);
+  }
+
+  .rule {
+    fill: none;
+    stroke-width: 1;
+    transition:
+      transform var(--move),
+      opacity 500ms ease,
+      stroke 500ms ease;
+  }
+
+  .mover {
+    transition:
+      transform var(--move),
+      opacity 400ms ease,
+      fill 500ms ease;
+  }
+  .mover text {
+    transition:
+      font-size var(--move),
+      font-weight var(--move),
+      letter-spacing var(--move),
+      fill 500ms ease;
+  }
+  .based {
+    font-size: 15.55px;
+    letter-spacing: 14.6px;
+  }
+  .date {
+    font-size: 13.25px;
+    letter-spacing: 0.235em;
+  }
+
+  /* Desenfoque al llegar: la copia nítida se apaga y la difuminada aparece */
+  .mover .soft {
+    opacity: 0;
+    transition:
+      opacity 250ms ease,
+      font-size var(--move),
+      font-weight var(--move),
+      letter-spacing var(--move),
+      fill 500ms ease;
+  }
+  .mover .sharp {
+    transition:
+      opacity 250ms ease,
+      font-size var(--move),
+      font-weight var(--move),
+      letter-spacing var(--move),
+      fill 500ms ease;
+  }
+  .mover.is-soft .soft {
+    opacity: 1;
+    transition-duration: 700ms, 950ms, 950ms, 950ms, 500ms;
+    transition-delay: 900ms, 0s, 0s, 0s, 0s;
+  }
+  .mover.is-soft .sharp {
+    opacity: 0;
+    transition-duration: 700ms, 950ms, 950ms, 950ms, 500ms;
+    transition-delay: 900ms, 0s, 0s, 0s, 0s;
+  }
+
+  /* primer pintado y "reducir movimiento": sin transiciones */
+  .covers.is-instant .bg,
+  .covers.is-instant .photo,
+  .covers.is-instant .obj,
+  .covers.is-instant .rule,
+  .covers.is-instant .mover,
+  .covers.is-instant .mover text {
+    transition: none;
+  }
+
+  /*
+    Entrada al cargar la página: primero se trazan las líneas de la grilla,
+    después suben las palabras una tras otra, y al final aparecen los textos
+    chicos, el indicador y los botones.
+  */
+  .covers.is-entering .rules.is-h {
+    animation: draw-h 900ms cubic-bezier(0.7, 0, 0.2, 1) both;
+  }
+  .covers.is-entering .rules.is-v {
+    animation: draw-v 900ms cubic-bezier(0.7, 0, 0.2, 1) 150ms both;
+  }
+  .covers.is-entering .mover[data-word] .sharp {
+    animation: rise 800ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  .covers.is-entering .mover[data-word='valeria'] .sharp {
+    animation-delay: 550ms;
+  }
+  .covers.is-entering .mover[data-word='ferreira'] .sharp {
+    animation-delay: 650ms;
+  }
+  .covers.is-entering .mover[data-word='product'] .sharp {
+    animation-delay: 800ms;
+  }
+  .covers.is-entering .mover[data-word='designer'] .sharp {
+    animation-delay: 900ms;
+  }
+  .covers.is-entering .based,
+  .covers.is-entering .date,
+  .covers.is-entering .ind {
+    animation: fade 600ms ease 1300ms both;
+  }
+  .covers.is-entering .hero-nav a {
+    animation: rise-btn 600ms cubic-bezier(0.2, 0.7, 0.2, 1) 1450ms both;
+  }
+  .covers.is-entering .hero-nav a:nth-child(2) {
+    animation-delay: 1530ms;
+  }
+  .covers.is-entering .hero-nav a:nth-child(3) {
+    animation-delay: 1610ms;
+  }
+  @keyframes draw-h {
+    from {
+      clip-path: inset(0 100% 0 0);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+  @keyframes draw-v {
+    from {
+      clip-path: inset(0 0 100% 0);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      translate: 0 0.35em;
+    }
+  }
+  @keyframes rise-btn {
+    from {
+      opacity: 0;
+      translate: 0 14px;
+    }
+  }
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .covers.is-entering * {
+      animation: none !important;
+    }
+  }
+
+  /* Botones del menú: toman el color de tinta del slide (oscuro o claro) */
+  .hero-nav {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 7.5%;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding-inline: var(--gutter);
+    color: var(--ink, var(--color-text));
+    transition: color 500ms ease;
+    pointer-events: none;
+  }
+  .hero-nav a {
+    /* mismo tamaño que los botones del topbar */
+    padding: 0.75em 1.5em;
+    border: 1px solid currentColor;
+    border-radius: var(--radius-pill);
+    background: rgb(252 252 252 / 0.12);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    font-size: var(--text-xs);
+    line-height: 1;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    text-decoration: none;
+    pointer-events: auto;
+    transition:
+      background var(--duration) var(--ease),
+      color var(--duration) var(--ease),
+      border-color var(--duration) var(--ease);
+  }
+  /* Saltito de invitación: suben uno tras otro y vuelven */
+  .hero-nav.is-nudging a {
+    animation: nudge 700ms cubic-bezier(0.3, 0, 0.2, 1);
+  }
+  .hero-nav.is-nudging a:nth-child(2) {
+    animation-delay: 70ms;
+  }
+  .hero-nav.is-nudging a:nth-child(3) {
+    animation-delay: 140ms;
+  }
+  @keyframes nudge {
+    35% {
+      translate: 0 -18px;
+    }
+    70% {
+      translate: 0 3px;
+    }
+  }
+  .hero-nav a:hover {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+
+  /* Zonas de clic: mitad izquierda = anterior, mitad derecha = siguiente */
+  .hit {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 50%;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: var(--cursor-next);
+  }
+  /* con ratón se usa el cursor propio (cristal), no el del sistema */
+  .covers.has-cursor .hit {
+    cursor: none;
+  }
+  .cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    margin: -24px 0 0 -24px;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+    background: rgb(252 252 252 / 0.12);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    color: var(--ink, var(--color-text));
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity 200ms ease,
+      color 500ms ease;
+  }
+  .cursor.is-on {
+    opacity: 1;
+  }
+  .cursor svg {
+    transition: scale 150ms ease;
+  }
+  .cursor.is-prev svg {
+    rotate: 180deg;
+  }
+  .cursor.is-down svg {
+    scale: 0.8;
+  }
+  .hit.is-prev {
+    left: 0;
+    cursor: var(--cursor-prev);
+  }
+  .hit.is-next {
+    right: 0;
+  }
+  .hit:focus-visible {
+    outline-offset: -4px;
+  }
+</style>

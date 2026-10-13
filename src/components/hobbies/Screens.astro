@@ -1,0 +1,279 @@
+---
+// Las seis pantallas de la app Hobbies.
+import Phone from './Phone.astro';
+import Icon from './Icon.astro';
+
+const img = (n: string) => `/images/hobbies/${n}.svg`;
+
+const interests = [
+  { name: 'Mindfulness', art: '20', on: true },
+  { name: 'Reading', art: '18', on: true },
+  { name: 'Photography', art: '14', on: false },
+  { name: 'Gardening', art: '19', on: true },
+  { name: 'Karaoke', art: '16', on: false },
+  { name: 'Speaking', art: '13', on: false },
+];
+const picks = [
+  { name: 'Reading', art: '18', meta: '4 people nearby' },
+  { name: 'Photography', art: '14', meta: '9 people nearby' },
+];
+const popular = [
+  { name: 'Karaoke', art: '16', meta: '12 people · 0.8 km' },
+  { name: 'Gardening', art: '19', meta: '5 people · 1.2 km' },
+];
+const together = [
+  { name: 'Forum', icon: 'chat', meta: '128 posts this week', art: '05' },
+  { name: 'Gallery', icon: 'image', meta: 'Share your progress', art: '01' },
+  { name: 'Events', icon: 'calendar', meta: '3 meetups near you', art: '10' },
+] as const;
+const mine = [
+  { name: 'Reading', art: '18', done: 3, total: 20 },
+  { name: 'Gardening', art: '19', done: 0, total: 20 },
+];
+---
+
+<!-- 1 · Welcome -->
+<figure class="hb-shot">
+  <Phone label="Welcome screen" tone="soft">
+    <div class="hb-welcome">
+      <p class="hb-logo">hobbies<b>.</b></p>
+      <div class="hb-hero-art">
+        <span class="hb-blob"></span>
+        <img src={img('20')} alt="" />
+      </div>
+      <h3 class="hb-display">Find a hobby.<br />Find your people.</h3>
+      <p class="hb-body hb-center">Discover activities you’ll love and meet people nearby who share them.</p>
+      <span class="hb-btn">Get started</span>
+      <span class="hb-link">I already have an account</span>
+    </div>
+  </Phone>
+  <figcaption><b>01</b> Welcome</figcaption>
+</figure>
+
+<!-- 2 · Interests -->
+<figure class="hb-shot">
+  <Phone label="Pick your interests screen">
+    <div class="hb-pad">
+      <div class="hb-topbar">
+        <span class="hb-iconbtn"><Icon name="back" /></span>
+        <span class="hb-steps"><i class="is-on"></i><i></i></span>
+        <span class="hb-skip">Skip</span>
+      </div>
+      <h3 class="hb-title-lg">What are you curious about?</h3>
+      <p class="hb-body">Pick at least 3. We’ll tailor your suggestions.</p>
+      <div class="hb-grid">
+        {
+          interests.map((i) => (
+            <span class:list={['hb-choice', { 'is-on': i.on }]}>
+              {i.on && (
+                <span class="hb-tick">
+                  <Icon name="check" size={12} />
+                </span>
+              )}
+              <img src={img(i.art)} alt="" />
+              {i.name}
+            </span>
+          ))
+        }
+      </div>
+    </div>
+    <div class="hb-dock">
+      <span class="hb-btn">Continue · 3 selected</span>
+    </div>
+  </Phone>
+  <figcaption><b>02</b> Interests</figcaption>
+</figure>
+
+<!-- 3 · Home -->
+<figure class="hb-shot">
+  <Phone label="Home screen" tab="home">
+    <div class="hb-pad">
+      <div class="hb-hello">
+        <div>
+          <p class="hb-caption">Good morning</p>
+          <h3 class="hb-title-lg">Hi, Pedro</h3>
+        </div>
+        <span class="hb-avatar"><img src={img('03')} alt="" /></span>
+      </div>
+
+      <div class="hb-resume">
+        <span class="hb-resume-art"><img src={img('20')} alt="" /></span>
+        <div>
+          <p class="hb-overline">Continue</p>
+          <p class="hb-title">Mindfulness</p>
+          <p class="hb-caption">Session 4 of 20</p>
+          <span class="hb-progress"><i style="width:15%"></i></span>
+        </div>
+        <span class="hb-fab"><Icon name="play" size={18} /></span>
+      </div>
+
+      <div class="hb-section">
+        <p class="hb-title">Picked for you</p>
+        <span class="hb-more">See all</span>
+      </div>
+      <div class="hb-cards">
+        {
+          picks.map((p) => (
+            <span class="hb-card">
+              <span class="hb-card-art">
+                <img src={img(p.art)} alt="" />
+              </span>
+              <b>{p.name}</b>
+              <small>{p.meta}</small>
+            </span>
+          ))
+        }
+      </div>
+
+      <div class="hb-section">
+        <p class="hb-title">Popular near you</p>
+      </div>
+      <span class="hb-row">
+        <span class="hb-thumb"><img src={img('16')} alt="" /></span>
+        <span class="hb-row-text"><b>Karaoke</b><small>12 people · 0.8 km</small></span>
+        <Icon name="next" size={18} />
+      </span>
+    </div>
+  </Phone>
+  <figcaption><b>03</b> Home</figcaption>
+</figure>
+
+<!-- 4 · Hobby detail -->
+<figure class="hb-shot">
+  <Phone label="Hobby detail screen" tone="soft">
+    <div class="hb-detail-top">
+      <span class="hb-iconbtn is-solid"><Icon name="back" /></span>
+      <span class="hb-iconbtn is-solid"><Icon name="bookmark" /></span>
+      <span class="hb-blob"></span>
+      <img src={img('20')} alt="" />
+    </div>
+    <div class="hb-sheet">
+      <span class="hb-chip is-soft">Wellbeing</span>
+      <h3 class="hb-title-lg">Mindfulness</h3>
+      <p class="hb-meta">
+        <span><Icon name="calendar" size={14} /> 20 sessions</span>
+        <span><Icon name="clock" size={14} /> 10 min</span>
+        <span><Icon name="pin" size={14} /> 45 nearby</span>
+      </p>
+      <div class="hb-progress-row">
+        <span class="hb-progress"><i style="width:15%"></i></span>
+        <small>3 / 20</small>
+      </div>
+      <p class="hb-title hb-gap">Practice with others</p>
+      {
+        together.map((t) => (
+          <span class="hb-row is-compact">
+            <span class="hb-thumb is-icon">
+              <Icon name={t.icon} size={18} />
+            </span>
+            <span class="hb-row-text">
+              <b>{t.name}</b>
+              <small>{t.meta}</small>
+            </span>
+            <Icon name="next" size={18} />
+          </span>
+        ))
+      }
+    </div>
+    <div class="hb-dock">
+      <span class="hb-btn"><Icon name="play" size={16} /> Start session 4</span>
+    </div>
+  </Phone>
+  <figcaption><b>04</b> Hobby detail</figcaption>
+</figure>
+
+<!-- 5 · Explore -->
+<figure class="hb-shot">
+  <Phone label="Explore near you screen" tab="explore">
+    <div class="hb-pad">
+      <h3 class="hb-title-lg">Near you</h3>
+      <span class="hb-search"><Icon name="search" size={18} /> Search hobbies or places</span>
+      <div class="hb-chips">
+        <span class="hb-chip is-on">All</span>
+        <span class="hb-chip">Outdoors</span>
+        <span class="hb-chip">Creative</span>
+        <span class="hb-chip">Mindful</span>
+      </div>
+      <div class="hb-map">
+        <svg viewBox="0 0 290 170" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <rect width="290" height="170" fill="#efe7f5"></rect>
+          <g stroke="#fff" stroke-linecap="round">
+            <path d="M-10 52h310M-10 118h310" stroke-width="10"></path>
+            <path d="M62-10v190M150-10v190M236-10v190" stroke-width="8"></path>
+            <path d="M-10 150 120-10M170 180 300 60" stroke-width="6"></path>
+          </g>
+          <rect x="74" y="62" width="64" height="46" rx="8" fill="#dccbe8"></rect>
+          <rect x="162" y="128" width="62" height="34" rx="8" fill="#dccbe8"></rect>
+        </svg>
+        <span class="hb-pinmark" style="left:22%;top:30%"><img src={img('16')} alt="" /><b>12</b></span>
+        <span class="hb-pinmark" style="left:62%;top:48%"><img src={img('19')} alt="" /><b>5</b></span>
+        <span class="hb-pinmark is-me" style="left:44%;top:72%"></span>
+      </div>
+      <div class="hb-section">
+        <p class="hb-title">Popular this week</p>
+      </div>
+      {
+        popular.map((p) => (
+          <span class="hb-row is-compact">
+            <span class="hb-thumb">
+              <img src={img(p.art)} alt="" />
+            </span>
+            <span class="hb-row-text">
+              <b>{p.name}</b>
+              <small>{p.meta}</small>
+            </span>
+            <Icon name="bookmark" size={18} />
+          </span>
+        ))
+      }
+    </div>
+  </Phone>
+  <figcaption><b>05</b> Explore</figcaption>
+</figure>
+
+<!-- 6 · Profile -->
+<figure class="hb-shot">
+  <Phone label="Profile screen" tab="profile">
+    <div class="hb-pad">
+      <div class="hb-topbar">
+        <p class="hb-title">Profile</p>
+        <span class="hb-iconbtn"><Icon name="settings" /></span>
+      </div>
+      <div class="hb-me">
+        <span class="hb-avatar is-lg">
+          <img src={img('03')} alt="" />
+          <span class="hb-edit"><Icon name="edit" size={13} /></span>
+        </span>
+        <p class="hb-title-lg">Pedro Pérez</p>
+        <p class="hb-body hb-center">Working part time, so I’m here to find new hobbies and fun.</p>
+      </div>
+      <div class="hb-stats">
+        <span><b>2</b><small>Hobbies</small></span>
+        <span><b>14</b><small>Sessions</small></span>
+        <span class="is-accent"><b><Icon name="flame" size={16} /> 5</b><small>Day streak</small></span>
+      </div>
+      <div class="hb-section">
+        <p class="hb-title">Your hobbies</p>
+      </div>
+      {
+        mine.map((m) => (
+          <span class="hb-row is-compact">
+            <span class="hb-thumb">
+              <img src={img(m.art)} alt="" />
+            </span>
+            <span class="hb-row-text">
+              <b>{m.name}</b>
+              <span class="hb-progress">
+                <i style={`width:${(m.done / m.total) * 100}%`} />
+              </span>
+            </span>
+            <small class="hb-count">
+              {m.done}/{m.total}
+            </small>
+          </span>
+        ))
+      }
+    </div>
+  </Phone>
+  <figcaption><b>06</b> Profile</figcaption>
+</figure>

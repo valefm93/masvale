@@ -14,7 +14,7 @@ export type Experience = {
 export const experience: Experience[] = [
   {
     company: 'Autograph',
-    period: '2025 / Present',
+    period: '2026 / Present',
     location: 'Remote/USA',
     role: 'Product Designer',
     description:
@@ -23,7 +23,7 @@ export const experience: Experience[] = [
   },
   {
     company: 'Electis',
-    period: '2023 / 2024',
+    period: '2023 / 2026',
     location: 'FR',
     role: 'Product Designer',
     description:
@@ -45,7 +45,7 @@ export const experience: Experience[] = [
     location: 'INDIA/USA',
     role: 'Senior Graphic Designer / QA team member',
     description:
-      'Worked remotely as part of the publishing team, where I animated instructional tutorial videos, designed templates in various formats, and created illustration bundles. Additionally, I contributed as a QA team member by testing, reporting errors, and providing recommendations to improve the user experience, ensuring engaging and high-quality content delivery.',
+      'Worked on the publishing team, in charge of making the platform known and teaching users how it works. I animated tutorial videos, designed templates in various formats and created illustration bundles for the platform. I was also part of the QA team: testing, reporting errors and recommending improvements to the user experience.',
     logo: cdn('67545d5bcfae9843548cb750_Frame%202-2.jpg'),
   },
   {

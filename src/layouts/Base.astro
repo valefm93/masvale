@@ -11,11 +11,14 @@ interface Props {
   description?: string;
   /** En la home el header flota transparente sobre el hero */
   overlayHeader?: boolean;
+  /** Oculta el footer (la home, por ahora, es solo el hero) */
+  hideFooter?: boolean;
 }
 
 const {
   title,
   overlayHeader = false,
+  hideFooter = false,
   description = 'Vale Ferreira — Product Designer. UX/UI, prototyping, user testing and branding.',
 } = Astro.props;
 const fullTitle = title ? `${title} · Vale Ferreira` : 'Vale Ferreira · Product Designer';
@@ -41,7 +44,7 @@ const fullTitle = title ? `${title} · Vale Ferreira` : 'Vale Ferreira · Produc
     <main id="main">
       <slot />
     </main>
-    <Footer />
+    {!hideFooter && <Footer />}
   </body>
 </html>
 

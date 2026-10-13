@@ -1,84 +1,100 @@
 ---
 import Base from '../layouts/Base.astro';
-import Hero from '../components/Hero.astro';
+import HeroCovers from '../components/HeroCovers.astro';
+import Karaoke from '../components/Karaoke.astro';
 import PortfolioTile from '../components/PortfolioTile.astro';
 import RichText from '../components/RichText.astro';
 import { site } from '../data/site';
 import { projects } from '../data/projects';
+
+const { lead, highlight, rest } = site.intro;
+const introParts = [{ text: `${lead} ` }, { text: highlight, mark: true }, { text: rest }];
+// Por ahora la home es SOLO el hero. Cada una de estas secciones vuelve a mostrarse poniendo true.
+const showIntro = false; // la frase "My passion…"
+const showFeatured = false; // Featured projects
+const showAbout = false; // "Designer first, product always"
+const showFooter = false; // el footer de contacto
 ---
 
-<Base overlayHeader>
-  <Hero />
+<Base overlayHeader hideFooter={!showFooter}>
+  <HeroCovers contactHref={showFooter ? '#contact' : '/resume#contact'} />
 
-  <!--
-    Intro: ya está ubicada debajo del hero. Cuando el hero termina y sube,
-    esta sección queda quieta y se va destapando (ver .under más abajo).
-  -->
-  <div class="under">
-    <section class="under-pin">
-      <div class="container intro">
-        <p class="eyebrow">Hello!</p>
-        <p class="statement">
-          {site.intro.lead} <strong>{site.intro.highlight}</strong>{site.intro.rest}
-        </p>
-      </div>
-    </section>
-    <div class="under-space" aria-hidden="true"></div>
-  </div>
-
-  <!-- Featured projects -->
-  <section id="work" class="section work">
-    <div class="container">
-      <div class="section-head" data-reveal>
-        <h2>Featured projects</h2>
-        <a class="all" href="/portfolio">View all work <span aria-hidden="true">→</span></a>
-      </div>
-      <div class="grid">
-        {projects.filter((p) => p.featured).map((p, i) => <PortfolioTile project={p} index={i} />)}
-      </div>
-    </div>
-  </section>
-
-  <!-- About -->
-  <section id="about" class="section about">
-    <div class="container about-grid">
-      <img class="portrait" src={site.photos.portrait} alt="Portrait of Vale Ferreira" loading="lazy" data-reveal />
-      <div data-reveal style="--reveal-i:1">
-        <h2>More about me</h2>
-        <div class="about-text">
-          {site.about.map((t) => <RichText text={t} />)}
+  <!-- Frase de presentación (oculta con showIntro) -->
+  {
+    showIntro && (
+      <>
+        <div class="under" data-karaoke-track data-start="0.55" data-end-pad="1.25">
+          <section class="under-pin">
+            <div class="container intro">
+              <Karaoke class="statement" parts={introParts} />
+            </div>
+          </section>
+          <div class="under-space" aria-hidden="true"></div>
         </div>
-        <a class="btn" href="/resume">My resume</a>
-      </div>
-    </div>
-  </section>
+      </>
+    )
+  }
+
+  <!-- Featured projects (oculta con showFeatured) -->
+  {
+    showFeatured && (
+      <>
+        <section id="work" class="section work">
+          <div class="container">
+            <div class="section-head" data-reveal>
+              <h2>Featured projects</h2>
+              <a class="all" href="/portfolio">View all work <span aria-hidden="true">→</span></a>
+            </div>
+            <div class="grid">
+              {projects.filter((p) => p.featured).map((p, i) => <PortfolioTile project={p} index={i} />)}
+            </div>
+          </div>
+        </section>
+      </>
+    )
+  }
+
+  <!-- About ("Designer first, product always"): OCULTA por ahora. Para volver a mostrarla, cambiar showAbout a true (arriba). -->
+  {
+    showAbout && (
+      <section id="about" class="section about">
+        <div class="container about-grid">
+          <img class="portrait" src={site.photos.portrait} alt="Design process boards: notes, areas for improvement and user flows" loading="lazy" data-reveal />
+          <div data-reveal style="--reveal-i:1">
+            <h2>{site.aboutTitle}</h2>
+            <div class="about-text">
+              {site.about.map((t) => <RichText text={t} />)}
+            </div>
+            <a class="btn" href="/resume">About me</a>
+          </div>
+        </div>
+      </section>
+    )
+  }
 </Base>
 
 <style>
-  /* Buttons */
+  /* Botón: mismo estilo que los del menú y el hero (mayúsculas, borde redondeado) */
   .btn {
     display: inline-flex;
     align-items: center;
-    padding: 0.85em 1.5em;
+    padding: 0.75em 1.5em;
+    border: 1px solid currentColor;
     border-radius: var(--radius-pill);
-    background: var(--color-text);
-    color: var(--color-bg);
-    font-size: var(--text-sm);
-    font-weight: 500;
+    font-size: var(--text-xs);
+    line-height: 1;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
     text-decoration: none;
-    transition: background var(--duration) var(--ease);
+    transition:
+      background var(--duration) var(--ease),
+      border-color var(--duration) var(--ease),
+      color var(--duration) var(--ease);
   }
   .btn:hover {
     background: var(--color-accent);
+    border-color: var(--color-accent);
     color: var(--color-on-accent);
-  }
-  .btn.ghost {
-    background: transparent;
-    color: var(--color-text);
-    box-shadow: inset 0 0 0 1px var(--color-line);
-  }
-  .btn.ghost:hover {
-    box-shadow: inset 0 0 0 1px var(--color-text);
   }
 
   /*
@@ -98,32 +114,22 @@ import { projects } from '../data/projects';
     padding-block: var(--space-16);
     background: var(--color-bg);
   }
+  /* una pantalla para el telón + el tramo en que el texto se va iluminando */
   .under-space {
-    height: 100svh;
+    height: 230svh;
   }
 
   /* Intro */
-  .intro {
-    display: grid;
-    grid-template-columns: var(--col-4) 1fr;
-    gap: var(--grid-gap);
-    align-items: start;
-  }
-  .intro .eyebrow {
-    padding-top: 0.9em;
-  }
+  /* Presentación: centrada en la grilla, como la frase de About me */
   .statement {
-    max-width: 30ch;
-    font-family: var(--font-display);
+    max-width: 36ch;
+    margin-inline: auto;
+    font-family: var(--font-body);
     font-size: var(--text-xl);
     line-height: 1.2;
-    letter-spacing: -0.01em;
-    text-wrap: pretty;
-  }
-  .statement strong {
-    font-weight: 400;
-    font-style: italic;
-    background: linear-gradient(transparent 58%, var(--color-accent) 58% 92%, transparent 92%);
+    letter-spacing: -0.02em;
+    text-align: center;
+    text-wrap: balance;
   }
 
   /* Projects */
@@ -171,7 +177,7 @@ import { projects } from '../data/projects';
   }
   .portrait {
     width: 100%;
-    aspect-ratio: 4 / 5;
+    aspect-ratio: 4 / 3;
     object-fit: cover;
   }
   .about-text {
@@ -183,7 +189,6 @@ import { projects } from '../data/projects';
   }
 
   @media (max-width: 860px) {
-    .intro,
     .about-grid {
       grid-template-columns: 1fr;
     }

@@ -1,0 +1,106 @@
+---
+// Texto "karaoke": arranca apagado y se ilumina renglón por renglón con el scroll.
+// Tiene que estar dentro de un contenedor con data-karaoke-track, que es el tramo de
+// scroll que dura la lectura:
+//   data-start    → cuántas pantallas de ese tramo pasan antes de empezar (ej. "0.55")
+//   data-end-pad  → cuántas pantallas antes del final del tramo ya está todo encendido
+interface Props {
+  parts: { text: string; mark?: boolean }[];
+  class?: string;
+}
+const { parts, class: className, ...rest } = Astro.props;
+
+// Cada palabra lleva su espacio pegado, así el resaltado lima no se corta entre palabras
+const words = parts.flatMap((part) =>
+  part.text
+    .split(/(?<=\s)/)
+    .filter(Boolean)
+    .map((text) => ({ text, mark: part.mark })),
+);
+const full = parts.map((p) => p.text).join('');
+---
+
+<p class:list={['karaoke', className]} data-karaoke aria-label={full} {...rest}>
+  {
+    words.map((w) => (
+      <span class:list={['word', { mark: w.mark }]} data-word aria-hidden="true">
+        {w.text}
+      </span>
+    ))
+  }
+</p>
+
+<script>
+  const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const DIM = 0.14;
+
+  if (!still) {
+    document.querySelectorAll<HTMLElement>('[data-karaoke]').forEach((text) => {
+      const track = text.closest<HTMLElement>('[data-karaoke-track]');
+      if (!track) return;
+      const words = [...text.querySelectorAll<HTMLElement>('[data-word]')];
+      const startAt = Number(track.dataset.start ?? 0);
+      const endPad = Number(track.dataset.endPad ?? 1);
+      let lines: HTMLElement[][] = [];
+      let queued = false;
+
+      const update = () => {
+        queued = false;
+        const vh = window.innerHeight;
+        const scrolled = -track.getBoundingClientRect().top;
+        const start = vh * startAt;
+        const end = track.offsetHeight - vh * endPad;
+        const progress = Math.min(1, Math.max(0, (scrolled - start) / (end - start)));
+        const at = progress * lines.length;
+
+        lines.forEach((line, i) => {
+          const lineProgress = Math.min(1, Math.max(0, at - i));
+          line.forEach((word, j) => {
+            // dentro del renglón, las palabras se encienden de izquierda a derecha
+            const lit = Math.min(1, Math.max(0, lineProgress * (line.length + 1) - j));
+            word.style.opacity = String(DIM + (1 - DIM) * lit);
+          });
+        });
+      };
+
+      // Agrupa las palabras por renglón (cambia según el ancho de pantalla)
+      const measure = () => {
+        lines = [];
+        let top = -1;
+        for (const word of words) {
+          if (Math.abs(word.offsetTop - top) > 4) {
+            top = word.offsetTop;
+            lines.push([]);
+          }
+          lines[lines.length - 1].push(word);
+        }
+        update();
+      };
+
+      measure();
+      document.fonts?.ready.then(measure);
+      window.addEventListener('resize', measure);
+      window.addEventListener(
+        'scroll',
+        () => {
+          if (!queued) {
+            queued = true;
+            requestAnimationFrame(update);
+          }
+        },
+        { passive: true },
+      );
+    });
+  }
+</script>
+
+<style>
+  .word {
+    white-space: pre-wrap; /* conserva el espacio que cada palabra lleva pegado */
+    transition: opacity 200ms linear;
+  }
+  .mark {
+    font-style: italic;
+    background: linear-gradient(transparent 58%, var(--color-accent) 58% 92%, transparent 92%);
+  }
+</style>

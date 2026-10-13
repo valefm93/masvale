@@ -1,0 +1,211 @@
+/*
+  AAR PAPERS: componentes del rediseño, recreados en HTML/CSS.
+  Es Bootstrap 5 con el color primario cambiado a teal; los valores
+  están tomados de las pantallas del proyecto. Todo vive dentro de .ar.
+*/
+.ar,
+.ar-vars {
+  --ar-teal: #178489;
+  --ar-dark: #343a40;
+  --ar-gray: #6c757d;
+  --ar-light: #e9ecef;
+  --ar-bg: #f8f9fa;
+  --ar-white: #ffffff;
+  --ar-line: #dee2e6;
+  --ar-text: #212529;
+  --ar-orange: #fd7e14;
+  --ar-green: #198754;
+  --ar-pink-soft: #f7d6e6;
+  --ar-blue-soft: #e6f0fc;
+  --ar-yellow-soft: #fff3cd;
+  --ar-stage: #cfe3e3;
+}
+.ar {
+  font-family: 'Lato', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.45;
+  letter-spacing: 0;
+  color: var(--ar-text);
+}
+.ar *,
+.ar *::before,
+.ar *::after {
+  box-sizing: border-box;
+}
+.ar p {
+  margin: 0;
+}
+.ar svg {
+  flex: none;
+}
+
+/* Botones */
+.ar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 6px;
+  background: var(--ar-teal);
+  color: var(--ar-white);
+  font-weight: 700;
+}
+.ar-btn.is-outline {
+  background: var(--ar-white);
+  color: var(--ar-teal);
+  box-shadow: inset 0 0 0 1px var(--ar-teal);
+}
+.ar-btn.is-sm {
+  height: 32px;
+  padding: 0 10px;
+  font-size: 13px;
+}
+.ar-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Navbar */
+.ar-nav {
+  display: flex;
+  background: var(--ar-dark);
+  color: var(--ar-white);
+  font-weight: 700;
+}
+.ar-nav span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+}
+.ar-nav .is-active {
+  background: var(--ar-gray);
+}
+
+/* Pestañas */
+.ar-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--ar-line);
+  color: var(--ar-teal);
+}
+.ar-tabs span {
+  padding: 9px 16px;
+  margin-bottom: -1px;
+  border: 1px solid transparent;
+  border-radius: 6px 6px 0 0;
+}
+.ar-tabs .is-active {
+  border-color: var(--ar-line) var(--ar-line) var(--ar-white);
+  background: var(--ar-white);
+  color: var(--ar-text);
+}
+
+/* Tarjeta de tipo de propuesta */
+.ar-card {
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+  padding: 16px;
+  border: 1px solid var(--ar-line);
+  border-radius: 8px;
+  background: var(--ar-white);
+}
+.ar-card b {
+  font-size: 16px;
+  font-weight: 700;
+}
+.ar-card .ar-ico {
+  color: var(--ar-dark);
+}
+
+/* Etiquetas y estados */
+.ar-badge {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 9px;
+  border-radius: 999px;
+  background: var(--ar-pink-soft);
+  font-size: 11.500px;
+  font-weight: 700;
+}
+.ar-badge.is-blue {
+  background: var(--ar-blue-soft);
+}
+.ar-badge.is-yellow {
+  border-radius: 4px;
+  background: var(--ar-yellow-soft);
+}
+.ar-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.ar-status::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: var(--ar-orange);
+}
+.ar-status.is-done::before {
+  border-radius: 50%;
+  background: var(--ar-green);
+}
+
+/* Fila de propuesta guardada */
+.ar-item {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 12px;
+  border: 1px solid var(--ar-line);
+  border-radius: 8px;
+  background: var(--ar-white);
+}
+.ar-item .ar-actions {
+  display: inline-flex;
+  gap: 12px;
+  color: var(--ar-gray);
+}
+
+/* Formulario */
+.ar-field {
+  display: grid;
+  gap: 6px;
+}
+.ar-field label {
+  font-weight: 700;
+}
+.ar-field label i {
+  font-style: normal;
+  color: #dc3545;
+}
+.ar-input {
+  display: flex;
+  align-items: center;
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--ar-line);
+  border-radius: 6px;
+  background: var(--ar-white);
+  color: var(--ar-gray);
+}
+.ar-help {
+  font-size: 12px;
+  color: var(--ar-gray);
+}
+
+/* Aviso */
+.ar-alert {
+  padding: 10px 14px;
+  border-radius: 6px;
+  background: var(--ar-green);
+  color: var(--ar-white);
+  font-size: 13px;
+}

@@ -1,5 +1,21 @@
 @import './tokens.css';
 
+/* Switzer (Fontshare), la sans serif del sitio. Archivos en public/fonts */
+@font-face {
+  font-family: 'Switzer';
+  src: url('/fonts/Switzer-Variable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Switzer';
+  src: url('/fonts/Switzer-VariableItalic.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+
 *,
 *::before,
 *::after {
@@ -26,7 +42,7 @@ h2,
 h3,
 h4 {
   margin: 0;
-  /* Los títulos van en la fuente de texto (Inter); la serif (--font-display) se usa solo en el hero y en los textos de presentación */
+  /* Los títulos van en la fuente de texto (Switzer); la serif (--font-display) se usa solo en el hero y en los textos de presentación */
   font-family: var(--font-body);
   font-weight: var(--weight-heading);
   line-height: var(--leading-tight);
@@ -90,12 +106,13 @@ strong {
 }
 
 /*
-  Mensaje tipo máquina de escribir: burbuja lima que aparece y se escribe sola
+  Mensaje tipo máquina de escribir: burbuja de chat lima que aparece y se escribe sola
   al pasar el mouse por un elemento con data-typewriter (el script está en Base.astro).
-  Cada componente solo decide dónde se ubica la burbuja.
+  Cada componente decide dónde se ubica y cuál de sus esquinas es la "colita".
 */
 .type-msg {
-  padding: var(--space-3) var(--space-4);
+  padding: 0.7rem 1.1rem;
+  border-radius: var(--radius-bubble);
   background: var(--color-accent);
   color: var(--color-on-accent);
   font-size: var(--text-sm);

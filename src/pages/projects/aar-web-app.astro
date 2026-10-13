@@ -1,0 +1,697 @@
+---
+// Página propia de AAR Papers: descripción, antes/después, pantallas y design system.
+// Los componentes están recreados en HTML/CSS con src/styles/aar.css.
+import '@fontsource/lato/400.css';
+import '@fontsource/lato/700.css';
+import '../../styles/aar.css';
+import Base from '../../layouts/Base.astro';
+import ProjectSplit from '../../components/ProjectSplit.astro';
+import BeforeAfter from '../../components/BeforeAfter.astro';
+import { projects } from '../../data/projects';
+import { cdn } from '../../data/assets';
+
+const project = projects.find((p) => p.slug === 'aar-web-app')!;
+const next = projects[(projects.indexOf(project) + 1) % projects.length];
+
+const facts = [
+  { label: 'Role', value: 'UX/UI Designer' },
+  { label: 'Platform', value: 'Web, desktop & mobile' },
+  { label: 'Users', value: 'Submitters · Chairs and steering committees' },
+  { label: 'Flows', value: 'Create paper · Paper session · Roundtable session · Submit proposal · Search units' },
+  { label: 'Tools', value: 'Figma · Bootstrap 5' },
+];
+
+// Decisiones de diseño: todas se pueden ver en las pantallas
+const decisions = [
+  {
+    title: 'Choose first',
+    text: 'The three proposal types became side-by-side cards, each with an icon, a short description and one action, instead of three buttons separated by paragraphs.',
+  },
+  {
+    title: 'Status at a glance',
+    text: 'Proposals are grouped as saved and submitted, with badges for type and status and icon actions, in place of a plain table of text links.',
+  },
+  {
+    title: 'Two views of your work',
+    text: 'Tabs separate the proposals you own from the ones you take part in.',
+  },
+  {
+    title: 'Inside Bootstrap 5',
+    text: 'Every component is a Bootstrap 5 one with new color, spacing and type, so the redesign could be applied without rebuilding the front end.',
+  },
+  {
+    title: 'Review in one place',
+    text: 'Chairs and steering members see their units and every proposal sent to them, with type, status and rating, and accept or reject from the proposal page.',
+  },
+  {
+    title: 'Mobile, screen by screen',
+    text: 'Forms, modals and lists were adapted one by one, so submitting a proposal from a phone is a full flow, not a squeezed desktop page.',
+  },
+];
+
+// Pantallas exportadas del Figma del proyecto. Las que tienen `mobile` muestran también el teléfono.
+const pairs = [
+  {
+    label: 'Proposals home',
+    desktop: '/images/aar/d-home.jpg',
+    mobile: '/images/aar/m-home.jpg',
+    alt: 'Proposals home with the three proposal types and the saved and submitted proposals',
+  },
+  {
+    label: 'Create paper',
+    desktop: '/images/aar/d-paper.jpg',
+    mobile: '/images/aar/m-paper.jpg',
+    alt: 'Create paper form with authors, requirements and comments',
+  },
+  {
+    label: 'Submit proposal',
+    desktop: '/images/aar/d-submit.jpg',
+    alt: 'Submit paper session proposal: choosing the meeting and the program units',
+  },
+  {
+    label: 'Search units',
+    desktop: '/images/aar/d-units.jpg',
+    alt: 'Search units: a filterable table of program units',
+  },
+  {
+    label: 'Chair review',
+    desktop: '/images/aar/d-unitproposals.jpg',
+    mobile: '/images/aar/m-chair.jpg',
+    alt: 'A chair reviewing a proposal: rating it and accepting or rejecting it',
+  },
+];
+const mobile: { src: string; alt: string; fit?: boolean }[] = [
+  { src: '/images/aar/m-home.jpg', alt: 'Mobile: proposals home' },
+  { src: '/images/aar/m-paper.jpg', alt: 'Mobile: create paper form' },
+  { src: '/images/aar/mob-4.jpg', alt: 'Mobile: my participations', fit: true },
+  { src: '/images/aar/m-chair.jpg', alt: 'Mobile: chair and steering home' },
+];
+
+const colors = [
+  { name: 'Teal', hex: '#178489', use: 'Primary · links', token: '--ar-teal', light: true },
+  { name: 'Dark', hex: '#343A40', use: 'Navbar · icons', token: '--ar-dark', light: true },
+  { name: 'Gray', hex: '#6C757D', use: 'Active tab · help text', token: '--ar-gray', light: true },
+  { name: 'Light', hex: '#E9ECEF', use: 'Header · footer', token: '--ar-light' },
+  { name: 'Background', hex: '#F8F9FA', use: 'Page', token: '--ar-bg' },
+  { name: 'Orange', hex: '#FD7E14', use: 'In revision', token: '--ar-orange' },
+  { name: 'Pink soft', hex: '#F7D6E6', use: 'Paper badge', token: '--ar-pink-soft' },
+  { name: 'Blue soft', hex: '#E6F0FC', use: 'Session badge', token: '--ar-blue-soft' },
+  { name: 'Yellow soft', hex: '#FFF3CD', use: 'Unit tag', token: '--ar-yellow-soft' },
+];
+
+const icon = {
+  home: '<path d="M4 11 12 4l8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/>',
+  units: '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 10h16M10 10v10"/>',
+  book: '<path d="M5 5a2 2 0 0 1 2-2h12v16H7a2 2 0 0 0-2 2zM5 21V5"/>',
+  paper: '<path d="M7 3h8l4 4v14H7zM15 3v4h4M10 12h6M10 16h6"/>',
+  edit: '<path d="M4 20h4L19 9l-4-4L4 16zM13.500 6.500l4 4"/>',
+  trash: '<path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/>',
+} as const;
+const svg = (name: keyof typeof icon, size = 18) =>
+  `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.750" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icon[name]}</svg>`;
+---
+
+<Base title="AAR Papers" description={project.summary}>
+  <ProjectSplit project={project}>
+    <Fragment slot="text">
+      <p>
+        PAPERS is the system scholars use to submit paper and session proposals to the meetings of the American Academy
+        of Religion. It worked, but it read like unstyled defaults: stacked buttons, long paragraphs and plain tables.
+      </p>
+      <p>
+        The brief at 10 Grounds was to improve the experience without touching the underlying architecture, on a short
+        timeline and with little room for design complexity. So the redesign stays inside Bootstrap 5: I reorganized
+        and restyled what was already there, focusing on the submission flow, and then adapted every screen to mobile.
+      </p>
+      <p>
+        The work covers both sides of the system: the people who submit proposals, and the chairs and steering
+        committees who receive them. It runs through the flows to create a paper, a papers session or a roundtable,
+        submit a proposal and search program units.
+      </p>
+    </Fragment>
+    <Fragment slot="extra">
+      <dl class="facts">
+        {
+          facts.map((f) => (
+            <div>
+              <dt>{f.label}</dt>
+              <dd>{f.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+
+      <h2 class="side-title">Design decisions</h2>
+      <ol class="decisions">
+        {
+          decisions.map((d) => (
+            <li>
+              <h3>{d.title}</h3>
+              <p>{d.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </Fragment>
+
+    <!-- Antes / después -->
+    <section class="panel" data-reveal style="--reveal-i:1">
+      <BeforeAfter
+        before={cdn('675ee463321ce7c467acbe25_aar%20before.jpg')}
+        after={cdn('675ee463c62a73bcfe6ccd82_aar%20after.jpg')}
+        beforeAlt="The proposals page before the redesign: stacked blue buttons and plain tables"
+        afterAlt="The proposals page after the redesign: three proposal cards and a list of saved proposals"
+      />
+      <p class="hint">Drag the handle to compare the page before and after the redesign.</p>
+    </section>
+
+    <!-- Escritorio + su versión mobile: se elige la pantalla con los botones -->
+    <section class="showcase ar-vars" data-showcase data-reveal>
+      <div class="scene">
+        <div class="laptop">
+          <div class="lid">
+            <div class="screen">
+              {pairs.map((p, i) => <img class:list={{ 'is-active': i === 0 }} src={p.desktop} alt={p.alt} data-i={i} />)}
+            </div>
+          </div>
+          <div class="base" aria-hidden="true"></div>
+        </div>
+        <div class="phone">
+          <div class="screen">
+            {pairs.map((p, i) => p.mobile && <img class:list={{ 'is-active': i === 0 }} src={p.mobile} alt="" data-i={i} />)}
+          </div>
+        </div>
+      </div>
+      <div class="picker" role="group" aria-label="Choose a screen">
+        {
+          pairs.map((p, i) => (
+            <button type="button" data-i={i} data-phone={p.mobile ? 'yes' : 'no'} aria-pressed={i === 0 ? 'true' : 'false'}>
+              {p.label}
+            </button>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- Mobile: tira para recorrer de lado -->
+    <section class="strip-wrap ar-vars" data-reveal>
+      <div class="strip-head">
+        <h2 class="stage-title">Mobile</h2>
+        <p>Scroll sideways →</p>
+      </div>
+      <div class="strip" tabindex="0" role="region" aria-label="Mobile screens">
+        {
+          mobile.map((m) => (
+            <figure class="handset">
+              <img class:list={{ 'is-fit': m.fit }} src={m.src} alt={m.alt} loading="lazy" />
+            </figure>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- Design system -->
+    <section class="kit ar-vars">
+      <header class="kit-head" data-reveal>
+        <h2>Design system</h2>
+        <p>
+          Bootstrap 5 with a new primary color and a short set of restyled components, rebuilt here in code. Staying on
+          the framework kept the redesign cheap to implement.
+        </p>
+      </header>
+      <figure class="guide" data-reveal>
+        <a href="/images/aar/styleguide.jpg" target="_blank" rel="noopener">
+          <img src="/images/aar/styleguide.jpg" alt="The style guide in Figma: buttons, breadcrumbs, tabs, navigation, tables, inputs, links and tooltips" loading="lazy" />
+        </a>
+        <figcaption>
+          The style guide in Figma: buttons, breadcrumbs, tabs, navigation, tables, inputs, links and tooltips, each with
+          its states. Open it full size.
+        </figcaption>
+      </figure>
+      <div class="kit-grid">
+        <article class="card span-12" data-reveal>
+          <p class="label">Color</p>
+          <ul class="swatches">
+            {
+              colors.map((c) => (
+                <li>
+                  <span class:list={['chip', { light: c.light }]} style={`background: var(${c.token})`}>
+                    {c.hex}
+                  </span>
+                  <b>{c.name}</b>
+                  <small>{c.use}</small>
+                </li>
+              ))
+            }
+          </ul>
+        </article>
+
+        <article class="card span-6 ar" data-reveal>
+          <p class="label">Navigation</p>
+          <div class="stack">
+            <div class="ar-nav">
+              <span class="is-active"><Fragment set:html={svg('home', 16)} /> Homepage</span>
+              <span><Fragment set:html={svg('units', 16)} /> Units</span>
+              <span><Fragment set:html={svg('book', 16)} /> Program Book</span>
+            </div>
+            <div class="ar-tabs">
+              <span class="is-active">My Proposals</span>
+              <span>My Participations</span>
+            </div>
+          </div>
+          <p class="label gap">Buttons</p>
+          <div class="ar-row">
+            <span class="ar-btn">Create New Paper</span>
+            <span class="ar-btn is-outline">Valeria</span>
+            <span class="ar-btn is-sm">Submit Proposal</span>
+          </div>
+          <p class="label gap">Feedback</p>
+          <div class="stack">
+            <span class="ar-alert">Your paper was created successfully.</span>
+            <div class="ar-row">
+              <span class="ar-status">In Revision</span>
+              <span class="ar-status is-done">Complete</span>
+              <span class="ar-badge">Paper</span>
+              <span class="ar-badge is-blue">Roundtable Session</span>
+              <span class="ar-badge is-yellow">Anthropology of Religion Unit</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="card span-6 ar" data-reveal>
+          <p class="label">Proposal card</p>
+          <div class="ar-card">
+            <span class="ar-ico" set:html={svg('paper', 34)} />
+            <b>New Paper</b>
+            <p>A paper proposal is a paper written by you, and perhaps co-authored by others.</p>
+            <span class="ar-btn">Create New Paper</span>
+          </div>
+          <p class="label gap">Saved proposal</p>
+          <div class="ar-item">
+            <span>Ethnographic Study of Indig… <span class="ar-badge">Paper</span></span>
+            <span class="ar-actions"><Fragment set:html={svg('edit', 16)} /><Fragment set:html={svg('trash', 16)} /></span>
+            <span class="ar-btn is-sm">Submit Proposal</span>
+          </div>
+          <p class="label gap">Form field</p>
+          <div class="ar-field">
+            <label>Email <i>*</i></label>
+            <span class="ar-input">sample@gmail.com</span>
+            <span class="ar-help">The email address is not made public.</span>
+          </div>
+        </article>
+      </div>
+    </section>
+  </ProjectSplit>
+
+  <nav class="container next" aria-label="Next project">
+    <p class="eyebrow">Next project</p>
+    <a href={`/projects/${next.slug}`}>{next.title} <span aria-hidden="true">→</span></a>
+  </nav>
+</Base>
+
+<style>
+  h2 {
+    font-size: var(--text-xl);
+  }
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Columna de texto */
+  .facts {
+    display: grid;
+    gap: var(--space-3);
+    margin: var(--space-8) 0 0;
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-line);
+  }
+  .facts div {
+    display: grid;
+    grid-template-columns: 6rem 1fr;
+    gap: var(--space-3);
+    font-size: var(--text-sm);
+  }
+  .facts dt {
+    font-size: var(--text-2xs);
+    letter-spacing: 0.08em;
+    line-height: 1.9;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+  .facts dd {
+    margin: 0;
+  }
+  .side-title {
+    margin-top: var(--space-8);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-line);
+    font-size: var(--text-base);
+    letter-spacing: -0.01em;
+  }
+  .decisions {
+    display: grid;
+    gap: var(--space-4);
+    margin: var(--space-4) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .decisions h3 {
+    font-size: var(--text-sm);
+    font-weight: var(--weight-strong);
+    letter-spacing: 0;
+  }
+  .decisions p {
+    margin-top: 2px;
+    font-size: var(--text-xs);
+    line-height: 1.5;
+    color: var(--color-muted);
+  }
+
+  /* Antes / después */
+  .hint {
+    margin-top: var(--space-3);
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+  }
+
+  /* Escritorio + mobile */
+  .showcase {
+    padding: var(--space-12) var(--space-8) var(--space-8);
+    background: linear-gradient(160deg, #dcecec, var(--ar-stage));
+  }
+  .scene {
+    position: relative;
+    padding: 0 6% 4% 0;
+  }
+  .lid {
+    padding: 1.6% 1.6% 0;
+    border-radius: 16px 16px 0 0;
+    background: var(--ar-dark);
+    box-shadow: 0 40px 70px -40px rgb(23 132 137 / 0.9);
+  }
+  .laptop .screen {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    border-radius: 6px 6px 0 0;
+    background: var(--ar-white);
+  }
+  .base {
+    height: 14px;
+    margin-inline: -4%;
+    border-radius: 0 0 14px 14px;
+    background: linear-gradient(#c8cdd2, #9aa1a8);
+  }
+  .screen img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    opacity: 0;
+    transition: opacity 500ms var(--ease);
+  }
+  .screen img.is-active {
+    opacity: 1;
+  }
+  /* la captura es más alta que la pantalla: se desplaza sola, como si alguien hiciera scroll */
+  .laptop .screen img.is-active {
+    animation: page-scroll 14s ease-in-out 1.5s infinite alternate;
+  }
+  @keyframes page-scroll {
+    0%,
+    15% {
+      object-position: center top;
+    }
+    85%,
+    100% {
+      object-position: center bottom;
+    }
+  }
+  /* Proporción de teléfono real (375 × 812), con marco fino */
+  .phone {
+    position: absolute;
+    right: 1%;
+    bottom: 0;
+    transition:
+      opacity 400ms var(--ease),
+      translate 400ms var(--ease);
+    width: 19%;
+    padding: 0.6%;
+    border-radius: clamp(14px, 2.2vw, 30px);
+    background: var(--ar-dark);
+    box-shadow: -18px 30px 50px -24px rgb(6 44 65 / 0.7);
+  }
+  .no-phone .phone {
+    opacity: 0;
+    translate: 0 1rem;
+  }
+  .phone .screen img.is-active {
+    animation: page-scroll 18s ease-in-out 1.5s infinite alternate;
+  }
+  .phone .screen {
+    position: relative;
+    aspect-ratio: 375 / 812;
+    overflow: hidden;
+    border-radius: clamp(10px, 1.7vw, 24px);
+    background: var(--ar-white);
+  }
+  .picker {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-2);
+    margin-top: var(--space-8);
+  }
+  .picker button {
+    padding: 0.7em 1.3em;
+    border: 1px solid var(--color-text);
+    border-radius: var(--radius-pill);
+    background: transparent;
+    color: var(--color-text);
+    font: inherit;
+    font-size: var(--text-2xs);
+    line-height: 1;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition:
+      background var(--duration) var(--ease),
+      color var(--duration) var(--ease);
+  }
+  .picker button:hover {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+  .picker button[aria-pressed='true'] {
+    background: var(--color-text);
+    border-color: var(--color-text);
+    color: var(--color-bg);
+  }
+
+  /* Tira de pantallas mobile */
+  .strip-wrap {
+    padding-block: var(--space-8);
+    background: var(--ar-stage);
+  }
+  .strip-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding-inline: var(--space-8);
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+  }
+  .stage-title {
+    margin-bottom: var(--space-6);
+    font-size: var(--text-base);
+    letter-spacing: -0.01em;
+    color: var(--color-text);
+  }
+  .strip {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 16.5rem;
+    gap: var(--space-8);
+    padding: var(--space-2) var(--space-8) var(--space-8);
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scroll-padding-inline: var(--space-8);
+    scrollbar-width: thin;
+    scrollbar-color: var(--ar-teal) transparent;
+  }
+  .handset {
+    margin: 0;
+    padding: 6px;
+    border-radius: 38px;
+    background: var(--ar-dark);
+    box-shadow: 0 30px 50px -30px rgb(6 44 65 / 0.8);
+    scroll-snap-align: start;
+  }
+  .handset img {
+    width: 100%;
+    aspect-ratio: 375 / 812;
+    border-radius: 32px;
+    background: var(--ar-bg);
+    object-fit: cover;
+    object-position: center top;
+  }
+  /* captura más ancha que la pantalla: se ajusta al ancho en vez de recortarse a los lados */
+  .handset img.is-fit {
+    object-fit: contain;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .laptop .screen img.is-active,
+    .phone .screen img.is-active {
+      animation: none;
+    }
+  }
+
+  /* Design system */
+  .kit {
+    padding: var(--space-8);
+    background: var(--ar-bg);
+    box-shadow: inset 0 0 0 1px var(--color-line);
+  }
+  .kit-head {
+    margin-bottom: var(--space-8);
+  }
+  .kit-head p {
+    max-width: 58ch;
+    margin-top: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+  .guide {
+    margin: 0 0 var(--space-4);
+  }
+  .guide a {
+    display: block;
+    cursor: var(--cursor-arrow);
+  }
+  .guide img {
+    width: 100%;
+  }
+  .guide figcaption {
+    margin-top: var(--space-3);
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+  }
+  .kit-grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: var(--space-4);
+  }
+  .card {
+    grid-column: span 12;
+    padding: var(--space-6);
+    background: var(--ar-white);
+    box-shadow: inset 0 0 0 1px var(--color-line);
+  }
+  .span-6 {
+    grid-column: span 6;
+  }
+  .label {
+    margin-bottom: var(--space-4) !important;
+    font-family: var(--font-body);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+  .label.gap {
+    margin-top: var(--space-8) !important;
+  }
+  .stack {
+    display: grid;
+    gap: 12px;
+  }
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(9, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+  .swatches li {
+    display: grid;
+    gap: 2px;
+    font-size: var(--text-sm);
+  }
+  .swatches b {
+    font-weight: var(--weight-strong);
+  }
+  .swatches small {
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+  }
+  .chip {
+    display: flex;
+    align-items: end;
+    height: 5rem;
+    margin-bottom: var(--space-2);
+    padding: var(--space-2);
+    font-size: 10px;
+    color: var(--ar-text);
+    box-shadow: inset 0 0 0 1px rgb(33 37 41 / 0.08);
+  }
+  .chip.light {
+    color: var(--ar-white);
+  }
+
+  .next {
+    padding-block: var(--space-16);
+    border-top: 1px solid var(--color-line);
+  }
+  .next a {
+    display: inline-block;
+    margin-top: var(--space-3);
+    font-size: var(--text-2xl);
+    font-weight: var(--weight-heading);
+    line-height: var(--leading-tight);
+    letter-spacing: -0.03em;
+    text-decoration: none;
+  }
+  .next a:hover {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+
+  @media (max-width: 1080px) {
+    .span-6 {
+      grid-column: span 12;
+    }
+    .swatches {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 860px) {
+    .kit,
+    .showcase {
+      padding-inline: var(--space-4);
+    }
+    .strip-head,
+    .strip {
+      padding-inline: var(--space-4);
+    }
+  }
+</style>
+
+<script>
+  // Selector de pantalla: cambia a la vez la del laptop y la del teléfono
+  document.querySelectorAll<HTMLElement>('[data-showcase]').forEach((box) => {
+    const buttons = [...box.querySelectorAll<HTMLButtonElement>('.picker button')];
+    const images = [...box.querySelectorAll<HTMLImageElement>('.screen img')];
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const i = button.dataset.i;
+        buttons.forEach((b) => b.setAttribute('aria-pressed', String(b === button)));
+        images.forEach((img) => img.classList.toggle('is-active', img.dataset.i === i));
+        // algunas pantallas no tienen versión mobile exportada: ahí el teléfono se esconde
+        box.classList.toggle('no-phone', button.dataset.phone === 'no');
+      });
+    });
+  });
+</script>

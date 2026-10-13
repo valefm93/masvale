@@ -32,191 +32,143 @@ export type Project = {
   tags: string[];
   /** true = aparece también en "Featured projects" de la home. Todos salen en /portfolio */
   featured?: boolean;
+  /** true = tiene su propia página hecha a mano en src/pages/projects/<slug>.astro (no usa la plantilla) */
+  custom?: boolean;
   /** true = es un case study completo: la card de la home muestra "View case study" */
   caseStudy?: boolean;
   blocks: Block[];
 };
 
 export const projects: Project[] = [
+  // Case study de producto. La página está en src/pages/projects/electis.astro
+  // (el branding de Electis irá como un proyecto aparte)
   {
     slug: 'electis',
-    categories: ['UX/UI', 'Branding', 'Web', 'Design system'],
-    title: 'Electronic voting Software',
+    categories: ['UX/UI', 'Web', 'Design system'],
+    title: 'Electis, online CSE voting platform',
     client: 'Electis',
     summary:
-      'A turnkey online voting solution that is secure and fully verifiable, based on open-source code.',
-    cover: cdn('675738bad8895951a61a973e_hero%20image%20electis.jpg'),
-    tags: ['Prototyping', 'User Testing', 'Design Sprints', 'Branding', 'Design QA'],
-    featured: true,
+      'Redesigning how an election is set up on an online voting platform: from one long technical page to guided steps, with a design system behind it.',
+    cover: '/images/electis/cover.jpg',
+    tags: ['Product design', 'Information architecture', 'Prototyping', 'User testing', 'Design system', 'Design QA'],
     caseStudy: true,
-    blocks: [
-      {
-        type: 'text',
-        title: 'About the project',
-        body: [
-          'An electronic voting platform designed to ensure transparent and secure elections across various contexts, including companies, educational institutions, and beyond. The long-term vision for Electis is to become a trusted solution for national elections, offering secure and efficient electronic voting. Currently, three core products are under development: CSE voting, school voting, and governance voting.',
-        ],
-      },
-      {
-        type: 'pills',
-        title: 'Team composition',
-        items: ['1 Project manager', '1 Developer', '1 UX/UI Designer (moi)'],
-      },
-      {
-        type: 'list',
-        title: 'Responsibilities',
-        items: [
-          'Developing the branding, as the project has been operating without a visual identity so far.',
-          'Redesigning and restructuring the existing platform from its architecture, simplifying the complex process of setting up an election and its parameters.',
-          'Prototyping and testing with the team and users.',
-          'Iterating, iterating, iterating.',
-          'Proposing new features that can simplify the experience of this complex product.',
-          'Conducting QA after each released version.',
-        ],
-      },
-      {
-        type: 'gallery',
-        title: 'Before / after',
-        images: [
-          { src: cdn('67575176371fcf15e1af7010_BEF.jpg'), alt: 'Electis platform before the redesign' },
-          { src: cdn('67574dce593a2313d43eaec2_AF.jpg'), alt: 'Electis platform after the redesign' },
-        ],
-      },
-      {
-        type: 'image',
-        src: cdn('67574e6d49799be422ce4dc1_electis%20screenshots.jpg'),
-        alt: 'Electis screens',
-      },
-      {
-        type: 'text',
-        title: 'Design system based on material design',
-        body: [
-          'Prepared a solid design system, a full library of components in order to have a scalable product and make a seamless hand-off process to the internal team.',
-        ],
-      },
-      {
-        type: 'image',
-        src: cdn('67574e6df3074d72cabcc7c9_electis%20design%20system.jpg'),
-        alt: 'Electis design system',
-      },
-      {
-        type: 'gallery',
-        images: [
-          { src: cdn('675f24c4abe9eb049fa757f9_gallery.jpg'), alt: 'Electis screen' },
-          { src: cdn('675f2510bee91b289f94419c_gallery%203.jpg'), alt: 'Electis screen' },
-          { src: cdn('675f2495072fd7f54b5377c8_gallery%206.jpg'), alt: 'Electis screen' },
-          { src: cdn('675f25101b6bcbf650c183da_gallery%204.jpg'), alt: 'Electis screen' },
-          { src: cdn('675f251061501c7746a68830_gallery%201.jpg'), alt: 'Electis screen' },
-          { src: cdn('675f251025ddb6b5ace024b6_gallery%202.jpg'), alt: 'Electis screen' },
-        ],
-      },
-      {
-        type: 'text',
-        title: 'Userflow',
-        body: [
-          'While creating the user flow for CSE elections, we faced **key challenges** that significantly influenced our design approach: Ensuring **compliance with legal and procedural requirements** while Balancing security, **simplicity, and transparency**.',
-        ],
-      },
-      {
-        type: 'gallery',
-        images: [
-          { src: cdn('677d872425deacebef554413_userflow%201.jpg'), alt: 'CSE election user flow, part 1' },
-          { src: cdn('677d8745754208aefd640c1e_userflow%202.jpg'), alt: 'CSE election user flow, part 2' },
-        ],
-      },
-    ],
+    custom: true,
+    blocks: [],
+  },
+  // Dashboard de clientes de Electis (primer proyecto hecho con IA).
+  // La página está en src/pages/projects/electis-client-dashboard.astro
+  {
+    slug: 'electis-client-dashboard',
+    categories: ['UX/UI', 'Web'],
+    title: 'Electis, client dashboard',
+    client: 'Electis',
+    summary:
+      'A client dashboard that guides HR teams through their CSE elections, from MVP to delivery.',
+    cover: '/images/electis-dashboard/cover.jpg',
+    tags: ['Product design', 'AI-assisted design', 'Automation', 'MVP to delivery'],
+    featured: true,
+    custom: true,
+    blocks: [],
+  },
+  // Branding de Electis, separado del case study de producto.
+  // La página está en src/pages/projects/electis-branding.astro
+  {
+    slug: 'electis-branding',
+    categories: ['Branding'],
+    title: 'Electis, branding',
+    client: 'Electis',
+    summary:
+      'The brand identity for an electronic voting platform: logo, colors, typography and brand applications, trustworthy and friendly.',
+    cover: '/images/electis-brand/cover.jpg',
+    tags: ['Branding', 'Logo', 'Color', 'Typography'],
+    custom: true,
+    blocks: [],
   },
   // --- Proyectos hechos en 10 Grounds: cada uno tiene su propia página ---
-  {
-    slug: '10-grounds-website',
-    categories: ['Web', 'UX/UI'],
-    title: '10 Grounds website',
-    client: '10 Grounds',
-    summary:
-      'A software development and creative firm who develops user- friendly web, mobile and SaaS solutions.',
-    cover: cdn('675732997557804b440a694c_featured%20image%2010g.jpg'),
-    tags: ['Website redesign', 'UI design'],
-    featured: true,
-    blocks: [
-      {
-        type: 'text',
-        body: ['Updating the brand’s online presence with a modern, user-friendly design.'],
-      },
-      {
-        type: 'image',
-        src: cdn('675edd18072fd7f54b1e4b3c_10grounds%20cover.jpg'),
-        alt: '10 Grounds website redesign',
-      },
-    ],
-  },
+  // OCULTO por ahora: 10 Grounds website. Para volver a mostrarlo, quitar las // de este bloque.
+  // {
+  //   slug: '10-grounds-website',
+  //   categories: ['Web', 'UX/UI'],
+  //   title: '10 Grounds website',
+  //   client: '10 Grounds',
+  //   summary:
+  //     'A software development and creative firm who develops user- friendly web, mobile and SaaS solutions.',
+  //   cover: '/images/10grounds/cover.jpg',
+  //   tags: ['Website redesign', 'UI design'],
+  //   blocks: [
+  //     {
+  //       type: 'text',
+  //       body: ['Updating the brand’s online presence with a modern, user-friendly design.'],
+  //     },
+  //     {
+  //       type: 'image',
+  //       src: cdn('675edd18072fd7f54b1e4b3c_10grounds%20cover.jpg'),
+  //       alt: '10 Grounds website redesign',
+  //     },
+  //   ],
+  // },
+  // La página está en src/pages/projects/aar-web-app.astro
   {
     slug: 'aar-web-app',
     categories: ['Web', 'UX/UI', 'Design system'],
-    title: 'AAR web app',
-    client: '10 Grounds',
-    summary: 'A redesign that simplifies the submission process and improves overall usability.',
-    cover: cdn('675edfa1d9a570a89e2bea88_aar%20cover.jpg'),
-    tags: ['UX redesign', 'Mobile adaptation', 'Design system', 'Bootstrap 5'],
-    blocks: [
-      {
-        type: 'text',
-        body: [
-          'The goal of this project was to **enhance the user experience of their existing site, while maintaining the underlying architecture.** Given time constraints and limitations on design complexity, the focus was on simplifying the submission process and improving overall usability. After working on the redesign, I also handled the **mobile adaptation**, ensuring a seamless experience across devices.',
-        ],
-      },
-      {
-        type: 'image',
-        src: cdn('675ee0b125ff5aab4c4f809d_arr%20galery.jpg'),
-        alt: 'AAR web app screens on desktop and mobile',
-      },
-      {
-        type: 'text',
-        title: 'Design system based on Boostrap 5',
-        body: [
-          'Below you can view the old version of the website and the subsequent improvements made. The focus was exclusively on enhancing the interface design, aiming to achieve significant visual and usability improvements within a short timeframe.',
-        ],
-      },
-      {
-        type: 'gallery',
-        title: 'Before / after',
-        images: [
-          { src: cdn('675ee463321ce7c467acbe25_aar%20before.jpg'), alt: 'AAR website before the redesign' },
-          { src: cdn('675ee463c62a73bcfe6ccd82_aar%20after.jpg'), alt: 'AAR website after the redesign' },
-        ],
-      },
-    ],
-  },
-  {
-    slug: 'ai-news-app',
-    categories: ['Mobile app', 'Branding'],
-    title: 'AI News app',
+    title: 'AAR Papers',
     client: '10 Grounds',
     summary:
-      'An AI-driven news aggregator and curator that delivers concise, one-liner updates on the latest and most significant news.',
-    cover: cdn('675ee68bb49657a34bf2839d_ai%20news%20app%20cover.jpg'),
-    tags: ['Wireframing', 'Branding', 'Design components'],
-    blocks: [
-      {
-        type: 'text',
-        body: [
-          'An AI-driven news aggregator and curator that delivers concise, one-liner updates on the latest and most significant news across a range of topics. I contributed to the wireframing and branding process, including defining color palettes, typography, and design components, ensuring a clear and engaging user experience.',
-        ],
-      },
-      {
-        type: 'image',
-        src: cdn('675ee68b1b6bcbf650918f9d_ai%20news%20app.jpg'),
-        alt: 'Screens of the AI News app',
-      },
-    ],
+      'A redesign of the system scholars use to submit proposals to the American Academy of Religion: a simpler submission flow, a Bootstrap 5 design system and a mobile version, without touching the architecture.',
+    cover: '/images/aar/cover.jpg',
+    tags: ['UX/UI design', 'Redesign', 'Design system', 'Bootstrap 5', 'Responsive'],
+    custom: true,
+    blocks: [],
+  },
+  // OCULTO por ahora: AI News app. Para volver a mostrarlo, quitar las // de este bloque.
+  // {
+  //   slug: 'ai-news-app',
+  //   categories: ['Mobile app', 'Branding'],
+  //   title: 'AI News app',
+  //   client: '10 Grounds',
+  //   summary:
+  //     'An AI-driven news aggregator and curator that delivers concise, one-liner updates on the latest and most significant news.',
+  //   cover: cdn('675ee68bb49657a34bf2839d_ai%20news%20app%20cover.jpg'),
+  //   tags: ['Wireframing', 'Branding', 'Design components'],
+  //   blocks: [
+  //     {
+  //       type: 'text',
+  //       body: [
+  //         'An AI-driven news aggregator and curator that delivers concise, one-liner updates on the latest and most significant news across a range of topics. I contributed to the wireframing and branding process, including defining color palettes, typography, and design components, ensuring a clear and engaging user experience.',
+  //       ],
+  //     },
+  //     {
+  //       type: 'image',
+  //       src: cdn('675ee68b1b6bcbf650918f9d_ai%20news%20app.jpg'),
+  //       alt: 'Screens of the AI News app',
+  //     },
+  //   ],
+  // },
+  // Proyecto personal: la página está en src/pages/projects/hobbies-app.astro
+  {
+    slug: 'hobbies-app',
+    categories: ['Mobile app', 'UX/UI', 'Design system'],
+    title: 'Hobbies App',
+    client: 'Personal project',
+    summary:
+      'A concept app to find activities for your free time and meet people nearby who share them. An experimental personal project with its own illustration set and a design system.',
+    cover: '/images/hobbies/cover.jpg',
+    tags: ['UI design', 'UX design', 'Design system', 'Illustration', 'Concept'],
+    custom: true,
+    blocks: [],
   },
   {
     slug: 'ai-cooking-app',
-    categories: ['Mobile app', 'Branding'],
-    title: 'AI cooking App',
+    categories: ['Mobile app', 'Branding', 'Design system'],
+    title: 'Chefy, AI cooking app',
     client: '10 Grounds',
-    summary: 'A mobile application that recommends recipes based on the ingredients you already have at home.',
-    cover: cdn('675eeaacc62a73bcfe717208_ai%20news%20app%20cover.jpg'),
-    tags: ['Design Sprints', 'Wireframing', 'Naming', 'Branding', 'MVP definition'],
+    summary:
+      'An AI cooking assistant that suggests meals from what is already in your kitchen. UX/UI design, naming, branding and design system for the MVP.',
+    cover: '/images/chefy/cover.jpg',
+    tags: ['UX/UI design', 'Design Sprint', 'Naming', 'Branding', 'Design system'],
+    featured: true,
+    // La página está en src/pages/projects/ai-cooking-app.astro
+    custom: true,
     blocks: [
       {
         type: 'text',
@@ -232,4 +184,11 @@ export const projects: Project[] = [
       },
     ],
   },
+];
+
+// Proyectos que todavía no tienen página: en /portfolio salen como "Coming soon", sin enlace.
+// Cuando estén listos, se pasan a la lista `projects` de arriba con su portada y su página.
+export const upcoming: { client: string; title: string; cover: string }[] = [
+  { client: 'Autograph', title: 'Autograph, collective memories', cover: '/images/autograph/cover.jpg' },
+  { client: 'Onit', title: 'Onit, client dashboard', cover: '/images/onit/cover.jpg' },
 ];

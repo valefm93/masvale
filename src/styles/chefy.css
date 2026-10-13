@@ -1,0 +1,638 @@
+/*
+  Chefy: marca y design system.
+  Los colores están tomados de las pantallas del proyecto.
+  Todo vive dentro de .cf para no mezclarse con los estilos del portfolio.
+*/
+.cf,
+.cf-vars {
+  --cf-lime: #b1dd54;
+  --cf-lime-dark: #7fae22;
+  --cf-lime-soft: #f6faec;
+  --cf-navy: #062c41;
+  --cf-ink: #14141b;
+  --cf-muted: #5d6470;
+  --cf-lilac: #f3f3fb;
+  --cf-line: #e3e3ee;
+  --cf-orange: #fec671;
+  --cf-orange-soft: #fff7ec;
+  --cf-amber: #f8b038;
+  --cf-red: #ba1a1a;
+  --cf-sage: #e3eccf;
+  --cf-white: #ffffff;
+}
+.cf {
+  font-family: 'Inter Variable', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.35;
+  letter-spacing: 0;
+  color: var(--cf-ink);
+}
+.cf *,
+.cf *::before,
+.cf *::after {
+  box-sizing: border-box;
+}
+.cf p {
+  margin: 0;
+}
+.cf svg {
+  flex: none;
+}
+
+/* Botones */
+.cf-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 52px;
+  padding: 0 20px;
+  border-radius: 12px;
+  background: var(--cf-lime);
+  color: var(--cf-ink);
+  font-weight: 500;
+}
+.cf-btn.is-navy {
+  background: var(--cf-navy);
+  color: var(--cf-white);
+}
+.cf-btn.is-black {
+  background: var(--cf-ink);
+  color: var(--cf-white);
+}
+.cf-btn.is-outline {
+  background: var(--cf-white);
+  box-shadow: inset 0 0 0 1px var(--cf-line);
+}
+.cf-btn.is-soft {
+  background: var(--cf-lilac);
+  box-shadow: inset 0 0 0 1px var(--cf-line);
+}
+.cf-btn.is-small {
+  display: inline-flex;
+  height: 44px;
+}
+
+/* Campos */
+.cf-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 52px;
+  padding: 0 16px;
+  border-radius: 12px;
+  background: var(--cf-lilac);
+  color: var(--cf-muted);
+}
+.cf-field.is-search {
+  border-radius: 999px;
+}
+.cf-field b {
+  display: grid;
+  font-weight: 400;
+  color: var(--cf-ink);
+}
+.cf-field small {
+  font-size: 11px;
+  color: var(--cf-muted);
+}
+
+/* Selección */
+.cf-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.cf-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 8px;
+  background: var(--cf-navy);
+  color: var(--cf-white);
+  font-size: 13px;
+  font-weight: 600;
+}
+.cf-chip.is-off {
+  background: var(--cf-white);
+  color: var(--cf-navy);
+  box-shadow: inset 0 0 0 1px var(--cf-line);
+}
+.cf-stepper {
+  display: inline-grid;
+  grid-template-columns: 44px 76px 44px;
+  height: 40px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: var(--cf-lilac);
+  font-weight: 600;
+}
+.cf-stepper span {
+  display: grid;
+  place-items: center;
+}
+.cf-stepper span + span {
+  box-shadow: inset 1px 0 0 var(--cf-white);
+}
+.cf-setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+}
+
+/* Listas */
+.cf-item {
+  display: flex;
+  gap: 16px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: var(--cf-lime-soft);
+}
+.cf-item i {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--cf-lime-dark);
+}
+.cf-item.is-orange {
+  background: var(--cf-orange-soft);
+  box-shadow: inset 0 0 0 1px #fde8c8;
+}
+.cf-item.is-orange i {
+  color: var(--cf-amber);
+}
+.cf-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: var(--cf-lilac);
+}
+.cf-row span {
+  color: var(--cf-muted);
+}
+
+/* Tarjetas */
+.cf-banner {
+  position: relative;
+  display: grid;
+  gap: 2px;
+  padding: 22px 120px 22px 22px;
+  overflow: hidden;
+  border-radius: 16px;
+  background: var(--cf-navy);
+  color: var(--cf-white);
+}
+.cf-banner b {
+  font-size: 17px;
+  font-weight: 600;
+}
+.cf-banner small {
+  font-size: 12px;
+  opacity: 0.85;
+}
+.cf-banner::after {
+  content: '';
+  position: absolute;
+  top: -30%;
+  right: -40px;
+  width: 140px;
+  height: 160%;
+  border-radius: 50%;
+  background: var(--cf-lime);
+}
+.cf-promo {
+  display: grid;
+  gap: 14px;
+  justify-items: start;
+  padding: 18px;
+  border-radius: 16px;
+  background: var(--cf-lime-soft);
+}
+.cf-promo b {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/* Navegación (cf-coin es el saldo de puntos) */
+.cf-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  align-items: end;
+  padding: 10px 8px;
+  border-radius: 16px;
+  background: var(--cf-white);
+  box-shadow: inset 0 0 0 1px var(--cf-line);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--cf-muted);
+}
+.cf-tab {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+}
+.cf-tab span {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 30px;
+  border-radius: 999px;
+}
+.cf-tab.is-active {
+  color: var(--cf-lime-dark);
+  font-weight: 600;
+}
+.cf-tab.is-active span {
+  background: var(--cf-lime-soft);
+  color: var(--cf-lime);
+}
+.cf-tab.is-fab span {
+  width: 48px;
+  height: 48px;
+  margin-top: -18px;
+  background: var(--cf-navy);
+  color: var(--cf-white);
+}
+.cf-coin {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 10px;
+  background: var(--cf-lilac);
+  font-weight: 700;
+}
+.cf-coin i {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--cf-amber);
+  font-size: 10px;
+  font-style: normal;
+  color: #8a4a0c;
+}
+.cf-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--cf-navy);
+}
+
+/* ---------- Pantallas (marco de teléfono) ---------- */
+.cf img {
+  display: block;
+  max-width: none;
+}
+.cf-phone {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 320px;
+  height: 680px;
+  overflow: hidden;
+  border: 6px solid var(--cf-navy);
+  border-radius: 44px;
+  background: var(--cf-white);
+  box-shadow: 0 30px 60px -30px rgb(6 44 65 / 0.45);
+  font-size: 13.500px;
+}
+.cf-status {
+  flex: none;
+  height: 38px;
+  padding: 10px 24px 0;
+  font-size: 12px;
+  font-weight: 600;
+}
+.cf-screen {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+.cf-pad {
+  gap: 12px;
+  padding: 6px 16px 0;
+}
+.cf-dock {
+  flex: none;
+  padding: 10px 16px 20px;
+}
+.cf-phone .cf-btn {
+  height: 46px;
+  font-size: 13.500px;
+}
+.cf-phone .cf-btn.is-small {
+  height: 36px;
+  padding: 0 14px;
+}
+.cf-phone .cf-field {
+  height: 44px;
+}
+.cf-phone .cf-item {
+  gap: 12px;
+  padding: 11px 14px;
+  border-radius: 12px;
+}
+.cf-phone .cf-row {
+  padding: 11px 14px;
+}
+.cf-phone .cf-chip {
+  height: 32px;
+  padding: 0 10px;
+  gap: 6px;
+  font-size: 12px;
+}
+.cf-phone .cf-stepper {
+  grid-template-columns: 36px 62px 36px;
+  height: 34px;
+}
+.cf-phone .cf-coin {
+  height: 32px;
+  padding: 0 12px;
+}
+
+/* Pantalla exportada de Figma: la imagen ocupa todo el teléfono */
+.cf-phone.is-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+/* Texto */
+.cf-h1 {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+.cf-h2 {
+  font-size: 15px;
+  font-weight: 700;
+}
+.cf-h3 {
+  font-size: 13px;
+  font-weight: 700;
+}
+.cf-sub {
+  color: var(--cf-muted);
+}
+.cf-center {
+  text-align: center;
+}
+.cf-legal {
+  font-size: 10.500px;
+  text-align: center;
+  color: var(--cf-muted);
+}
+.cf-legal b {
+  font-weight: 600;
+  color: var(--cf-ink);
+}
+.cf-label {
+  font-size: 11px;
+  font-weight: 700;
+}
+.cf-caption {
+  font-size: 10px;
+  font-weight: 500;
+}
+
+/* Hoja blanca que sube sobre el encabezado */
+.cf-head-img {
+  width: 100%;
+  height: 178px;
+  object-fit: cover;
+  object-position: center top;
+}
+.cf-hero {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+  height: 200px;
+}
+.cf-hero.is-lime {
+  background: linear-gradient(var(--cf-lime-soft), var(--cf-lime));
+}
+.cf-hero.is-orange {
+  background: linear-gradient(#ffe9c9, var(--cf-orange));
+}
+.cf-sheet {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: -22px;
+  padding: 26px 16px 18px;
+  border-radius: 22px 22px 0 0;
+  background: var(--cf-white);
+}
+.cf-stack {
+  display: grid;
+  gap: 8px;
+}
+.cf-stack.is-tight {
+  gap: 6px;
+}
+.cf-push {
+  margin-top: auto;
+}
+.cf-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+.cf-dots i {
+  width: 20px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--cf-line);
+}
+.cf-dots i.is-on {
+  width: 32px;
+  background: var(--cf-lime);
+}
+.cf-peek {
+  display: grid;
+  gap: 6px;
+  width: 200px;
+  padding: 12px 12px 14px;
+  border-radius: 18px;
+  background: var(--cf-white);
+  box-shadow: 0 14px 30px -18px rgb(6 44 65 / 0.6);
+}
+.cf-peek img {
+  width: 100%;
+  height: 76px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+.cf-tools {
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+  margin: 0 120px 20px 0;
+}
+.cf-tools span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.7);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--cf-muted);
+}
+.cf-mic {
+  position: absolute;
+  right: 74px;
+  bottom: 48px;
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--cf-lime-soft);
+  box-shadow: 0 0 0 8px rgb(255 255 255 / 0.35);
+  color: var(--cf-navy);
+}
+
+/* Home y pasos */
+.cf-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.cf-hello {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.cf-hello span:last-child {
+  display: grid;
+  line-height: 1.2;
+}
+.cf-hello small {
+  font-size: 11px;
+  color: var(--cf-muted);
+}
+.cf-hello b {
+  font-size: 14px;
+  font-weight: 700;
+}
+.cf-avatar {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--cf-lime-soft);
+  color: var(--cf-navy);
+}
+.cf-promo.has-art {
+  position: relative;
+  gap: 10px;
+  padding: 14px 92px 14px 14px;
+  overflow: hidden;
+}
+.cf-promo.has-art b {
+  font-size: 14.500px;
+}
+.cf-promo.has-art img {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+}
+.cf-dishes {
+  display: grid;
+  grid-template-columns: 2.4fr 1fr;
+  gap: 10px 8px;
+  font-size: 11px;
+  font-weight: 500;
+}
+.cf-dishes span {
+  display: grid;
+  gap: 5px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.cf-dishes img {
+  width: 100%;
+  height: 78px;
+  border-radius: 12px;
+  object-fit: cover;
+  object-position: left center;
+}
+.cf-banner.has-art {
+  padding: 16px 104px 16px 16px;
+}
+.cf-banner.has-art::after {
+  display: none;
+}
+.cf-banner.has-art b {
+  font-size: 14.500px;
+}
+.cf-banner.has-art img {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+}
+.cf-rule {
+  padding-top: 12px;
+  border-top: 1px solid var(--cf-line);
+}
+.cf-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+  color: var(--cf-navy);
+}
+.cf-tabs.is-bar {
+  flex: none;
+  padding: 10px 6px 14px;
+  border-radius: 0;
+  box-shadow: inset 0 1px 0 var(--cf-line);
+  font-size: 10px;
+}
+.cf-tabs.is-bar .cf-tab span {
+  width: 48px;
+  height: 26px;
+}
+.cf-tabs.is-bar .cf-tab.is-fab span {
+  width: 42px;
+  height: 42px;
+  margin-top: -16px;
+}
+
+/* Presentación de cada pantalla en la página */
+.cf-shot {
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  margin: 0;
+}
+.cf-shot figcaption {
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.cf-shot figcaption b {
+  margin-right: 0.5em;
+  font-weight: 400;
+  opacity: 0.5;
+}

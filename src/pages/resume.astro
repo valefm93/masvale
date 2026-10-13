@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import Karaoke from '../components/Karaoke.astro';
 import ExperienceItem from '../components/ExperienceItem.astro';
 import Pill from '../components/Pill.astro';
 import { site, skills, software } from '../data/site';
@@ -16,13 +17,16 @@ const sections = [
 ---
 
 <Base title="Resume" description="Experience, skills and education of Vale Ferreira, Product Designer.">
-  <header class="container head">
-    <h1 class="visually-hidden">Resume</h1>
-    <p class="lead" data-reveal>{site.resumeIntro}</p>
-    <nav class="jump" aria-label="Resume sections" data-reveal style="--reveal-i:1">
-      {sections.map((sec) => <a href={`#${sec.id}`}>{sec.label}</a>)}
-    </nav>
-  </header>
+  <!-- La frase queda fija y se ilumina tipo karaoke mientras se hace scroll por este tramo -->
+  <div class="intro-track" data-karaoke-track data-start="0" data-end-pad="1.15">
+    <header class="container head">
+      <h1 class="visually-hidden">Resume</h1>
+      <Karaoke class="lead" parts={[{ text: site.resumeIntro }]} />
+      <nav class="jump" aria-label="Resume sections" data-reveal style="--reveal-i:1">
+        {sections.map((sec) => <a href={`#${sec.id}`}>{sec.label}</a>)}
+      </nav>
+    </header>
+  </div>
 
   <!-- Línea de tiempo: el año de la izquierda cambia según la experiencia que se está leyendo -->
   <section id="experience" class="container timeline" data-timeline>
@@ -60,11 +64,11 @@ const sections = [
       {
         software.map((s) => (
           <li>
-            {s.icon ? (
-              <img src={s.icon} alt="" width="40" height="40" loading="lazy" />
+            {s.icon && !s.glyph ? (
+              <img class="app" src={s.icon} alt="" width="40" height="38" loading="lazy" />
             ) : (
-              <span class="initial" aria-hidden="true">
-                {s.name[0]}
+              <span class="app tile" aria-hidden="true">
+                {s.icon ? <img src={s.icon} alt="" width="22" height="22" loading="lazy" /> : s.name[0]}
               </span>
             )}
             <span>{s.name}</span>
@@ -90,22 +94,38 @@ const sections = [
       }
     </ul>
   </section>
+  <div class="container top" data-reveal>
+    <a href="#top">
+      <span>Back to top</span>
+      <svg class="up" viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M8 13V3M3.5 7.5 8 3l4.500 4.500" fill="none" stroke="currentColor" stroke-width="1.25" />
+      </svg>
+    </a>
+  </div>
 </Base>
 
 <style>
   /* Encabezado: solo la frase y los accesos a cada sección */
-  .head {
-    padding-block: var(--space-24) var(--space-16);
-    text-align: center;
+  .intro-track {
+    height: calc(220svh - 64px);
     border-bottom: 1px solid var(--color-line);
+  }
+  .head {
+    position: sticky;
+    top: 64px;
+    display: grid;
+    align-content: center;
+    min-height: calc(100svh - 64px);
+    padding-block: var(--space-16);
+    text-align: center;
   }
   .lead {
     max-width: 30ch;
     margin-inline: auto;
-    font-family: var(--font-display);
-    font-style: italic;
+    font-family: var(--font-body);
     font-size: var(--text-2xl);
     line-height: 1.1;
+    letter-spacing: -0.03em;
     text-wrap: balance;
   }
   .jump {
@@ -205,32 +225,38 @@ const sections = [
     flex-wrap: wrap;
     gap: var(--space-2);
   }
+  /* Cada programa ocupa una celda del mismo ancho: así las distancias quedan iguales */
   .software {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-6);
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 5.5rem);
+    gap: var(--space-6) var(--space-2);
     margin: 0;
     padding: 0;
     list-style: none;
-  }
-  .software img,
-  .initial {
-    width: 40px;
-    height: 40px;
-  }
-  .initial {
-    display: grid;
-    place-items: center;
-    background: var(--color-text);
-    color: var(--color-bg);
-    font-weight: var(--weight-heading);
   }
   .software li {
     display: grid;
     justify-items: center;
     gap: var(--space-2);
     font-size: var(--text-xs);
+    text-align: center;
     color: var(--color-muted);
+  }
+  /* Mismo tamaño y proporción que los iconos de app (72 × 69) */
+  .app {
+    width: 40px;
+    height: auto;
+    aspect-ratio: 72 / 69;
+  }
+  /* Cuadrado oscuro redondeado para los iconos de un solo color y para la inicial */
+  .tile {
+    display: grid;
+    place-items: center;
+    border-radius: 7px;
+    background: var(--color-text);
+    color: var(--color-bg);
+    font-size: var(--text-base);
+    line-height: 1;
   }
   .edu {
     padding-block: var(--space-6);
@@ -255,6 +281,41 @@ const sections = [
   }
   .muted {
     font-size: var(--text-sm);
+  }
+
+  /* Flecha para volver arriba, al final de la página */
+  .top {
+    display: flex;
+    justify-content: flex-end;
+    padding-block: var(--space-12) var(--space-16);
+    border-top: 1px solid var(--color-line);
+  }
+  .top a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--text-xs);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+  .up {
+    box-sizing: content-box;
+    width: 1rem;
+    height: 1rem;
+    padding: 0.75rem;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+    transition:
+      background var(--duration) var(--ease),
+      border-color var(--duration) var(--ease),
+      translate var(--duration) var(--ease);
+  }
+  .top a:hover .up {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-on-accent);
+    translate: 0 -4px;
   }
 
   @media (max-width: 860px) {

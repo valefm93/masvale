@@ -1,0 +1,405 @@
+---
+// Case study de Electis, enfocado en el rol de Product Designer.
+// (El branding de Electis se presenta como un proyecto aparte.)
+import Base from '../../layouts/Base.astro';
+import ProjectSplit from '../../components/ProjectSplit.astro';
+import BeforeAfter from '../../components/BeforeAfter.astro';
+import { projects } from '../../data/projects';
+import { cdn } from '../../data/assets';
+
+const project = projects.find((p) => p.slug === 'electis')!;
+const next = projects[(projects.indexOf(project) + 1) % projects.length];
+
+const facts = [
+  { label: 'Role', value: 'Product Designer' },
+  { label: 'Team', value: '1 Operations specialist · 1 Engineer · 1 Product Designer' },
+  { label: 'Period', value: '2023 – 2024' },
+  { label: 'Platform', value: 'Web' },
+  { label: 'Products', value: 'CSE elections' },
+];
+
+const responsibilities = [
+  'Redesigning and restructuring the platform from its architecture.',
+  'Mapping the flows of each type of election.',
+  'Prototyping and testing with the team and with users.',
+  'Proposing features that simplify a complex product.',
+  'Building the design system and handing it off.',
+  'QA after every released version.',
+];
+
+// Decisiones de producto: todas se pueden ver en las pantallas
+const decisions = [
+  {
+    title: 'The same information, reorganized',
+    text: 'Nothing was added to the setup; it was reorganized. One long technical page became clear groups (calendar, polling office, voters, candidates), each one a step in a sidebar that can be completed in any order.',
+  },
+  {
+    title: 'Always know what is missing',
+    text: 'Every step shows its status, and a checklist next to the form spells out what is left before the election can be created.',
+  },
+  {
+    title: 'Legal first, then simple',
+    text: 'The flow for CSE elections had to follow legal and procedural rules. The design work was making that compliance feel simple and transparent.',
+  },
+];
+
+// Pantallas actualizadas, agrupadas en el orden del flujo
+const shot = (name: string) => `/images/electis/${name}.webp`;
+const groups = [
+  {
+    title: 'Company information',
+    text: 'Establishment, company and colleges: three short tabs instead of one long form, each with its own status.',
+    shots: [
+      { src: shot('company-establishment'), alt: 'Company information: establishment name and logo' },
+      { src: shot('company-details'), alt: 'Company information: address and SIRET numbers' },
+      { src: shot('college-modal'), alt: 'Modal to create a college' },
+      { src: shot('colleges'), alt: 'Colleges created, with seats and composition' },
+    ],
+  },
+  {
+    title: 'Election information',
+    text: 'Key dates, polling office members and candidates. A checklist on the side tells what is left before the election can be activated.',
+    shots: [
+      { src: shot('key-dates'), alt: 'Key dates of the election with the checklist of what is left to do' },
+      { src: shot('bureau-members'), alt: 'Polling office members: president and assessors per college' },
+      { src: shot('candidates-empty'), alt: 'Candidates step, empty state with help for the case without candidates' },
+      { src: shot('candidates-lists'), alt: 'Candidates step with lists being added' },
+      { src: shot('candidates-ready'), alt: 'Everything completed: the election can be activated', wide: true },
+    ],
+  },
+  {
+    title: 'The election, live',
+    text: 'Once activated, the setup turns into a timeline: what is happening now, what comes next and what is already done.',
+    shots: [
+      { src: shot('election-upcoming'), alt: 'Election in progress with upcoming events' },
+      { src: shot('election-past'), alt: 'Election in progress with past events' },
+    ],
+  },
+  {
+    title: 'Access',
+    text: 'The login, restyled with the rest of the product.',
+    minor: true,
+    shots: [{ src: shot('login'), alt: 'Login screen for CSE elections' }],
+  },
+];
+
+---
+
+<Base title="Electis" description={project.summary}>
+  <ProjectSplit project={project}>
+    <Fragment slot="text">
+      <p>
+        Setting up a CSE election is a legal process with many parameters, and on the platform it was one long
+        technical page. As the only UX/UI designer in a team of three, I redesigned and restructured it from its
+        architecture, so that users could set up a CSE election on their own.
+      </p>
+      <p>
+        Electis is an online voting platform built on open-source code, designed for transparent and secure elections
+        in companies.
+      </p>
+    </Fragment>
+    <Fragment slot="extra">
+      <dl class="facts">
+        {
+          facts.map((f) => (
+            <div>
+              <dt>{f.label}</dt>
+              <dd>{f.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+
+      <h2 class="side-title">What I did</h2>
+      <ul class="plain">
+        {responsibilities.map((r) => <li>{r}</li>)}
+      </ul>
+
+      <h2 class="side-title">Product decisions</h2>
+      <ol class="decisions">
+        {
+          decisions.map((d) => (
+            <li>
+              <h3>{d.title}</h3>
+              <p>{d.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </Fragment>
+
+    <img class="shot" src={project.cover} alt="The Electis election setup: steps in a sidebar and a voters import" data-reveal style="--reveal-i:1" />
+
+    <!-- 1 · Antes / después -->
+    <section class="chapter" data-reveal>
+      <header>
+        <p class="n">01</p>
+        <h2>The starting point</h2>
+        <p>One page held every parameter of an election. The redesign splits it into steps you can follow and check.</p>
+      </header>
+      <BeforeAfter
+        before={cdn('67575176371fcf15e1af7010_BEF.jpg')}
+        after="/images/electis/after.jpg"
+        beforeAlt="The election page before the redesign: a single page with every parameter"
+        afterAlt="The election setup after the redesign: steps in a sidebar with their status, here the polling office members"
+        ratio="1028 / 536"
+        position="center bottom"
+      />
+    </section>
+
+    <!-- 2 · Flujo -->
+    <section class="chapter" data-reveal>
+      <header>
+        <p class="n">02</p>
+        <h2>Mapping the flow</h2>
+        <p>
+          For CSE elections the flow had to comply with legal and procedural requirements while staying simple and
+          transparent. Mapping it first showed where the product could guide instead of ask.
+        </p>
+      </header>
+      <div class="flow" tabindex="0" aria-label="CSE election user flow (scroll sideways to read it)">
+        <img
+          src="/images/electis/userflow.webp"
+          alt="CSE election user flow: account, election setup, first round, second round and the cases without candidates"
+          width="2000"
+          height="559"
+          loading="lazy"
+        />
+      </div>
+      <p class="flow-hint">Scroll sideways to follow the flow →</p>
+    </section>
+
+    <!-- 3 · Pantallas -->
+    <section class="chapter" data-reveal>
+      <header>
+        <p class="n">03</p>
+        <h2>The new setup</h2>
+        <p>Prototyped and tested with the team and with users, then iterated release after release.</p>
+      </header>
+      {
+        groups.map((g) => (
+          <div class:list={['group', { 'is-minor': g.minor }]}>
+            <div class="group-head">
+              <h3>{g.title}</h3>
+              <p>{g.text}</p>
+            </div>
+            <div class="screens">
+              {g.shots.map((s) => <img class:list={{ wide: s.wide }} src={s.src} alt={s.alt} loading="lazy" />)}
+            </div>
+          </div>
+        ))
+      }
+    </section>
+
+    <!-- 4 · Design system -->
+    <section class="chapter" data-reveal>
+      <header>
+        <p class="n">04</p>
+        <h2>Design system</h2>
+        <p>
+          A full library of components based on Material Design, built so the product can scale and the hand-off to the
+          internal team is seamless.
+        </p>
+      </header>
+      <img class="shot" src={cdn('67574e6df3074d72cabcc7c9_electis%20design%20system.jpg')} alt="Components of the Electis design system" loading="lazy" />
+    </section>
+  </ProjectSplit>
+
+  <nav class="container next" aria-label="Next project">
+    <p class="eyebrow">Next project</p>
+    <a href={`/projects/${next.slug}`}>{next.title} <span aria-hidden="true">→</span></a>
+  </nav>
+</Base>
+
+<style>
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .shot {
+    width: 100%;
+  }
+
+  /* Columna de texto */
+  .facts {
+    display: grid;
+    gap: var(--space-3);
+    margin: var(--space-8) 0 0;
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-line);
+  }
+  .facts div {
+    display: grid;
+    grid-template-columns: 6rem 1fr;
+    gap: var(--space-3);
+    font-size: var(--text-sm);
+  }
+  .facts dt {
+    font-size: var(--text-2xs);
+    letter-spacing: 0.08em;
+    line-height: 1.9;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+  .facts dd {
+    margin: 0;
+  }
+  .side-title {
+    margin-top: var(--space-8);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-line);
+    font-size: var(--text-base);
+    letter-spacing: -0.01em;
+  }
+  .plain {
+    display: grid;
+    gap: var(--space-2);
+    margin-top: var(--space-4);
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+  .decisions {
+    display: grid;
+    gap: var(--space-4);
+    margin: var(--space-4) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .decisions h3 {
+    font-size: var(--text-sm);
+    font-weight: var(--weight-strong);
+    letter-spacing: 0;
+  }
+  .decisions p {
+    margin-top: 2px;
+    font-size: var(--text-xs);
+    line-height: 1.5;
+    color: var(--color-muted);
+  }
+
+  /* Capítulos del case study */
+  .chapter {
+    display: grid;
+    gap: var(--grid-gap);
+    padding-top: var(--space-12);
+  }
+  .chapter header {
+    display: grid;
+    grid-template-columns: 3rem minmax(0, 1fr);
+    column-gap: var(--space-4);
+    align-items: baseline;
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-line);
+  }
+  .n {
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+  .chapter h2 {
+    font-size: var(--text-xl);
+  }
+  .chapter header p:last-child {
+    grid-column: 2;
+    max-width: 58ch;
+    margin-top: var(--space-3);
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+  /* El flujo es muy ancho: se muestra grande y se recorre en horizontal */
+  .flow {
+    overflow-x: auto;
+    border: 1px solid var(--color-line);
+    background: #f7f2ff;
+  }
+  .flow img {
+    display: block;
+    width: 2000px;
+    max-width: none;
+    height: auto;
+  }
+  .flow-hint {
+    font-size: var(--text-2xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+  .screens img {
+    width: 100%;
+    border: 1px solid var(--color-line);
+  }
+  .screens img.wide {
+    grid-column: 1 / -1;
+  }
+  .group {
+    display: grid;
+    gap: var(--space-4);
+  }
+  /* Grupo secundario: texto a la izquierda, una imagen pequeña a la derecha */
+  .group.is-minor {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--grid-gap);
+    align-items: start;
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-line);
+  }
+  .group.is-minor .group-head {
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+    padding-top: 0;
+    border-top: 0;
+  }
+  .group.is-minor .screens {
+    grid-template-columns: 1fr;
+  }
+  .group + .group {
+    margin-top: var(--space-8);
+  }
+  .group-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    gap: var(--grid-gap);
+    align-items: baseline;
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-line);
+  }
+  .group-head h3 {
+    font-size: var(--text-base);
+    font-weight: var(--weight-strong);
+  }
+  .group-head p {
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+  .screens {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--grid-gap);
+    align-items: start;
+  }
+
+  .next {
+    padding-block: var(--space-16);
+    border-top: 1px solid var(--color-line);
+  }
+  .next a {
+    display: inline-block;
+    margin-top: var(--space-3);
+    font-size: var(--text-2xl);
+    font-weight: var(--weight-heading);
+    line-height: var(--leading-tight);
+    letter-spacing: -0.03em;
+    text-decoration: none;
+  }
+  .next a:hover {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+
+  @media (max-width: 720px) {
+    .screens,
+    .group.is-minor {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

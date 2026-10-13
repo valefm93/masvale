@@ -7,7 +7,7 @@
 :root {
   /* Tipografía */
   --font-display: 'Instrument Serif', Georgia, serif;
-  --font-body: 'Inter Variable', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-body: 'Switzer', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 
   /*
     Peso de los títulos y de los resaltados. Ahora van sin bold (prueba).
@@ -65,7 +65,7 @@
     --col-4 es el ancho de 4 columnas (un tercio) y --col-6 el de 6 (la mitad).
   */
   --container: 100vw;
-  --gutter: clamp(1rem, 0.75rem + 0.6vw, 1.25rem);
+  --gutter: clamp(1.25rem, 0.25rem + 3.2vw, 4rem); /* margen lateral de todo el sitio */
   --grid-gap: 1.25rem;
   --col-4: calc((100% - 11 * var(--grid-gap)) / 3 + 3 * var(--grid-gap));
   --col-6: calc((100% - var(--grid-gap)) / 2);
@@ -82,6 +82,8 @@
   --radius-md: 16px;
   --radius-lg: 28px;
   --radius-pill: 999px;
+  --radius-bubble: 1.25rem; /* burbujas de chat */
+  --radius-tail: 0.25rem; /* la esquina "de la colita", que apunta a quien habla */
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --duration: 400ms;
 }

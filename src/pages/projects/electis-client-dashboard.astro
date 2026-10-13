@@ -1,0 +1,681 @@
+---
+// Dashboard de clientes de Electis: primer proyecto de Vale hecho con IA.
+// Las pantallas son capturas del prototipo (datos ficticios: TechCorp Solutions).
+import Base from '../../layouts/Base.astro';
+import ProjectSplit from '../../components/ProjectSplit.astro';
+import { projects } from '../../data/projects';
+
+const project = projects.find((p) => p.slug === 'electis-client-dashboard')!;
+const next = projects[(projects.indexOf(project) + 1) % projects.length];
+const img = (name: string) => `/images/electis-dashboard/${name}.jpg`;
+
+const facts = [
+  { label: 'Role', value: 'Product Designer, from MVP to delivery' },
+  { label: 'Platform', value: 'Web' },
+  { label: 'Users', value: 'HR teams organizing CSE elections · Electis operations team' },
+  { label: 'Design system', value: 'The voting platform’s system (Figma, based on Material Design)' },
+  { label: 'Stack', value: 'AI-assisted design and build · HubSpot CRM · Figma' },
+];
+
+const decisions = [
+  {
+    title: 'Two platforms, two jobs',
+    text: 'Engineering decided to separate electronic voting from the organization of CSE elections. The dashboard is where the organization happens.',
+  },
+  {
+    title: 'A simpler architecture',
+    text: 'With a small team and limited resources, I proposed solutions that simplified the product and even its architecture.',
+  },
+  {
+    title: 'The client in one place',
+    text: 'The dashboard is connected to HubSpot, the CRM, so every contact with a client lives in a single place. The operations team has one place with all the client information.',
+  },
+  {
+    title: 'Automate the repetitive',
+    text: 'Emails, reminders, templates and frequent questions stopped being manual work for the operations team.',
+  },
+];
+
+const pmPains = [
+  'Customer support',
+  'Legal questions',
+  'Requesting documents',
+  'Reviewing documents',
+];
+const userPains = [
+  'Users were almost always confused',
+  'They had many questions',
+  'Documents were not filled in correctly',
+];
+
+// User flow, tal como está en los prototipos (acceso + dashboard)
+const flow = [
+  { phase: 'Access', steps: ['Welcome email', 'Activate account', 'Login'] },
+  { phase: 'Setup', steps: ['Company size', 'Type of election', 'Announcement date', 'Calendar preview', 'Calendar generated'] },
+  { phase: 'Preparation', steps: ['Tasks for each step', 'Seat calculator', 'PAP / DUE generator', 'Configuration file', 'Sent to Electis'] },
+  { phase: 'Election', steps: ['Candidates', '1st round', '2nd round', 'Minutes signed', 'Closing'] },
+];
+const support = ['Knowledge base', 'Messages with the team', 'Templates', 'Welcome meeting'];
+
+// Productos vinculados que aparecen en el prototipo
+const products = [
+  { name: 'HubSpot', use: 'CRM, hosted templates and guides, secure forms to send documents, and booking the welcome meeting.' },
+  { name: 'Electis voting platform', use: 'Receives the configuration and conduct files generated in the dashboard.' },
+  { name: 'Electis library', use: 'Source of the knowledge base: every article links to its full version.' },
+  { name: 'Yousign', use: 'Electronic signature of the minutes at the end of the election.' },
+  { name: 'Google', use: 'Sign in with Google, and Meet for calls with the team.' },
+  { name: 'Word, Excel and PDF', use: 'Formats of the generated documents: agreement, configuration files and calendar.' },
+  { name: 'YouTube', use: 'Video tutorials linked from the articles.' },
+  { name: 'French public services', use: 'Reference links: company directory, TéléAccords, Légifrance and the labour code.' },
+];
+
+const automations = [
+  'Emails',
+  'Reminders',
+  'Document templates',
+  'Frequently asked questions',
+  'Personalized calendars',
+  'HubSpot CRM sync',
+];
+---
+
+<Base title="Electis client dashboard" description={project.summary}>
+  <ProjectSplit project={project}>
+    <Fragment slot="text">
+      <p>
+        CSE elections used to be organized by exchanging emails, with an overloaded project manager on one side and
+        confused clients on the other. The dashboard orders and simplifies the process for both: a personalized
+        calendar, document templates turned into auto-completed tools inside the dashboard, legal steps turned into
+        tasks, and a place for every document and answer.
+      </p>
+      <p>
+        The interface reuses the design system we already had for the voting platform, designed in Figma on top of
+        Material Design.
+      </p>
+      <p>
+        My first project made with AI. I worked with AI almost 100% of the time and was in charge of executing the
+        project from the MVP to the final delivery and its operation.
+      </p>
+    </Fragment>
+    <Fragment slot="extra">
+      <dl class="facts">
+        {
+          facts.map((f) => (
+            <div>
+              <dt>{f.label}</dt>
+              <dd>{f.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+
+      <h2 class="side-title">Product decisions</h2>
+      <ol class="decisions">
+        {
+          decisions.map((d) => (
+            <li>
+              <h3>{d.title}</h3>
+              <p>{d.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </Fragment>
+
+    <section class="hero-shot" data-reveal style="--reveal-i:1">
+      <img src={img('dashboard')} alt="The client dashboard with an election in progress" />
+    </section>
+
+    <section class="chapter" data-reveal>
+      <header>
+        <p class="n">01</p>
+        <h2>The problem</h2>
+        <p>
+          Before the dashboard, a CSE election was managed by exchanging emails between the client and the project
+          manager. It was slow and fragile on both sides.
+        </p>
+      </header>
+      <div class="sides">
+        <article>
+          <p class="side-label">Inside the team</p>
+          <h3>A project manager overloaded with manual work</h3>
+          <ul>
+            {pmPains.map((p) => <li>{p}</li>)}
+          </ul>
+          <p class="risk">
+            One mistake while reviewing a document could cost the organization of a process as complex as a CSE
+            election.
+          </p>
+        </article>
+        <article>
+          <p class="side-label">On the client side</p>
+          <h3>A complex process, unknown to the people who hire us</h3>
+          <ul>
+            {userPains.map((p) => <li>{p}</li>)}
+          </ul>
+          <p class="risk">Every incomplete document stalled the process, and the experience with it.</p>
+        </article>
+      </div>
+      <div class="shift">
+        <div>
+          <p class="side-label">Before</p>
+          <p>Emails back and forth between the client and the project manager.</p>
+        </div>
+        <span aria-hidden="true">→</span>
+        <div>
+          <p class="side-label">After</p>
+          <p>One dashboard that orders and simplifies the process, for the client and for the team.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="chapter" data-reveal>
+      <header>
+        <p class="n">02</p>
+        <h2>User flow</h2>
+        <p>From the first email to the closing of the election, the client always knows which step comes next.</p>
+      </header>
+      <div class="flow">
+        {
+          flow.map((row, r) => (
+            <div class="flow-row">
+              <p class="flow-phase">
+                <span>{String(r + 1).padStart(2, '0')}</span>
+                {row.phase}
+              </p>
+              <ol>
+                {row.steps.map((s) => <li>{s}</li>)}
+              </ol>
+            </div>
+          ))
+        }
+        <div class="flow-row is-support">
+          <p class="flow-phase">
+            <span>+</span>
+            Always available
+          </p>
+          <ul>
+            {support.map((s) => <li>{s}</li>)}
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="chapter" data-reveal>
+      <header>
+        <p class="n">03</p>
+        <h2>A calendar that builds itself</h2>
+        <p>
+          The client answers a few questions and gets a calendar based on the type of company, its size and its needs.
+          Every legal deadline is calculated automatically.
+        </p>
+      </header>
+      <div class="shots two">
+        <figure>
+          <img src={img('empty')} alt="Empty dashboard inviting to generate the electoral calendar" loading="lazy" />
+          <figcaption>First visit</figcaption>
+        </figure>
+        <figure>
+          <img src={img('wizard')} alt="Wizard asking for the type of election" loading="lazy" />
+          <figcaption>Type of election</figcaption>
+        </figure>
+      </div>
+      <div class="shots">
+        <figure>
+          <img src={img('calendar')} alt="Electoral calendar with completed and current steps" loading="lazy" />
+          <figcaption>The calendar, step by step</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="chapter" data-reveal>
+      <header>
+        <p class="n">04</p>
+        <h2>Tools instead of templates</h2>
+        <p>
+          Documents that used to travel by email became guided tools: the client fills in a few fields and the
+          document is generated, pre-filled with what the dashboard already knows.
+        </p>
+      </header>
+      <div class="shots">
+        <figure>
+          <img src={img('tools')} alt="Templates and tools page" loading="lazy" />
+          <figcaption>Templates &amp; tools</figcaption>
+        </figure>
+      </div>
+      <div class="shots two">
+        <figure>
+          <img src={img('pap')} alt="Guided generator for the pre-electoral agreement" loading="lazy" />
+          <figcaption>Document generator</figcaption>
+        </figure>
+        <figure>
+          <img src={img('seats')} alt="Seat calculator for the CSE" loading="lazy" />
+          <figcaption>Seat calculator</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="chapter" data-reveal>
+      <header>
+        <p class="n">05</p>
+        <h2>Answers before the question</h2>
+        <p>
+          The questions users ask most are organized in a knowledge base that follows the same order as the election,
+          so the answer is there before anyone has to write to the team.
+        </p>
+      </header>
+      <div class="shots">
+        <figure>
+          <img src={img('knowledge')} alt="Knowledge base organized by election stage" loading="lazy" />
+          <figcaption>Knowledge base</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="chapter" data-reveal>
+      <header>
+        <p class="n">06</p>
+        <h2>Getting in</h2>
+        <p>The access flow was designed with the product: welcome email, first sign-in, login and password reset.</p>
+      </header>
+      <div class="shots">
+        <figure>
+          <img src={img('login')} alt="Login screen" loading="lazy" />
+          <figcaption>Login</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="chapter" data-reveal>
+      <header>
+        <p class="n">07</p>
+        <h2>Connected products</h2>
+        <p>The dashboard sits in the middle of the tools the team and the clients already used.</p>
+      </header>
+      <table class="products">
+        <thead>
+          <tr>
+            <th scope="col">Product</th>
+            <th scope="col">How it is used</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            products.map((p) => (
+              <tr>
+                <th scope="row">{p.name}</th>
+                <td>{p.use}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="chapter" data-reveal>
+      <header>
+        <p class="n">08</p>
+        <h2>The outcome</h2>
+        <p>Lighter work for clients and for the operations team that supports them.</p>
+      </header>
+      <div class="result">
+        <b>~70%</b>
+        <p>of client operations optimized, by automating what the team used to do by hand.</p>
+      </div>
+      <ul class="autos">
+        {automations.map((a) => <li>{a}</li>)}
+      </ul>
+    </section>
+  </ProjectSplit>
+
+  <nav class="container next" aria-label="Next project">
+    <p class="eyebrow">Next project</p>
+    <a href={`/projects/${next.slug}`}>{next.title} <span aria-hidden="true">→</span></a>
+  </nav>
+</Base>
+
+<style>
+  /* Columna de texto */
+  .facts {
+    display: grid;
+    gap: var(--space-3);
+    margin: var(--space-8) 0 0;
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-line);
+  }
+  .facts div {
+    display: grid;
+    grid-template-columns: 6rem 1fr;
+    gap: var(--space-3);
+    font-size: var(--text-sm);
+  }
+  .facts dt {
+    font-size: var(--text-2xs);
+    letter-spacing: 0.08em;
+    line-height: 1.9;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+  .facts dd {
+    margin: 0;
+  }
+  .side-title {
+    margin-top: var(--space-8);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-line);
+    font-size: var(--text-base);
+    letter-spacing: -0.01em;
+  }
+  .decisions {
+    display: grid;
+    gap: var(--space-4);
+    margin: var(--space-4) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .decisions h3 {
+    font-size: var(--text-sm);
+    font-weight: var(--weight-strong);
+    letter-spacing: 0;
+  }
+  .decisions p {
+    margin-top: 2px;
+    font-size: var(--text-xs);
+    line-height: 1.5;
+    color: var(--color-muted);
+  }
+
+  /* Capítulos */
+  .chapter {
+    display: grid;
+    gap: var(--grid-gap);
+    padding-top: var(--space-12);
+  }
+  .chapter header {
+    display: grid;
+    grid-template-columns: 3rem minmax(0, 1fr);
+    column-gap: var(--space-4);
+    align-items: baseline;
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-line);
+  }
+  .n {
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+  .chapter h2 {
+    font-size: var(--text-xl);
+  }
+  .chapter header p:last-child {
+    grid-column: 2;
+    max-width: 58ch;
+    margin-top: var(--space-3);
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+
+  .next {
+    padding-block: var(--space-16);
+    border-top: 1px solid var(--color-line);
+  }
+  .next a {
+    display: inline-block;
+    margin-top: var(--space-3);
+    font-size: var(--text-2xl);
+    font-weight: var(--weight-heading);
+    line-height: var(--leading-tight);
+    letter-spacing: -0.03em;
+    text-decoration: none;
+  }
+  .next a:hover {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+
+  /* Pantallas */
+  .shots {
+    display: grid;
+    gap: var(--grid-gap);
+  }
+  .shots.two {
+    grid-template-columns: 1fr 1fr;
+  }
+  .shots figure {
+    margin: 0;
+  }
+  .shots img {
+    display: block;
+    width: 100%;
+    border: 1px solid var(--color-line);
+  }
+  .shots figcaption {
+    margin-top: var(--space-2);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+  .hero-shot img {
+    display: block;
+    width: 100%;
+    border: 1px solid var(--color-line);
+  }
+
+  /* El problema: dos lados */
+  .sides {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border: 1px solid var(--color-line);
+  }
+  .sides article {
+    padding: var(--space-6);
+  }
+  .sides article + article {
+    border-left: 1px solid var(--color-line);
+  }
+  .side-label {
+    font-size: var(--text-2xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+  .sides h3 {
+    margin-top: var(--space-3);
+    font-size: var(--text-lg);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+  .sides ul {
+    margin: var(--space-4) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .sides li {
+    padding: var(--space-2) 0;
+    border-top: 1px solid var(--color-line);
+    font-size: var(--text-sm);
+  }
+  .risk {
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-line);
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+  .shift {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: var(--space-6);
+    align-items: center;
+    padding: var(--space-6);
+    background: var(--dark);
+    color: var(--white);
+  }
+  .shift .side-label {
+    color: inherit;
+    opacity: 0.6;
+  }
+  .shift p + p {
+    margin-top: var(--space-2);
+    font-size: var(--text-base);
+  }
+  .shift span {
+    font-size: var(--text-xl);
+  }
+
+  /* User flow */
+  .flow {
+    border-top: 1px solid var(--color-line);
+  }
+  .flow-row {
+    display: grid;
+    grid-template-columns: 9rem minmax(0, 1fr);
+    gap: var(--space-4);
+    align-items: center;
+    padding: var(--space-4) 0;
+    border-bottom: 1px solid var(--color-line);
+  }
+  .flow-phase {
+    font-size: var(--text-sm);
+    font-weight: var(--weight-strong);
+  }
+  .flow-phase span {
+    display: block;
+    font-size: var(--text-2xs);
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    color: var(--color-muted);
+  }
+  .flow ol,
+  .flow ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .flow li {
+    display: flex;
+    align-items: center;
+    font-size: var(--text-xs);
+    white-space: nowrap;
+  }
+  .flow ol li {
+    padding: 0.45em 0.9em;
+    border: 1px solid var(--color-text);
+    border-radius: 999px;
+  }
+  .flow ol li:not(:last-child) {
+    margin-right: 1.75rem;
+    position: relative;
+  }
+  .flow ol li:not(:last-child)::after {
+    content: '→';
+    position: absolute;
+    left: 100%;
+    width: 1.75rem;
+    text-align: center;
+    color: var(--color-muted);
+  }
+  .flow ol li:last-child {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+  .flow ul li {
+    margin-right: var(--space-2);
+    padding: 0.45em 0.9em;
+    border: 1px dashed var(--color-muted);
+    border-radius: 999px;
+    color: var(--color-muted);
+  }
+
+  /* Productos vinculados */
+  .products {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-sm);
+    text-align: left;
+  }
+  .products th,
+  .products td {
+    padding: var(--space-3) var(--space-4) var(--space-3) 0;
+    border-bottom: 1px solid var(--color-line);
+    vertical-align: top;
+  }
+  .products thead th {
+    font-size: var(--text-2xs);
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+  .products tbody th {
+    width: 14rem;
+    font-weight: var(--weight-strong);
+  }
+  .products td {
+    color: var(--color-muted);
+  }
+
+  /* Resultado */
+  .result {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--space-8);
+    align-items: center;
+    padding: var(--space-8);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+  .result b {
+    font-family: var(--font-display);
+    font-size: clamp(4rem, 9vw, 8rem);
+    font-weight: 400;
+    line-height: 0.9;
+    letter-spacing: -0.03em;
+  }
+  .result p {
+    max-width: 34ch;
+    font-size: var(--text-lg);
+    line-height: 1.3;
+  }
+  .autos {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--color-line);
+    border-left: 1px solid var(--color-line);
+    list-style: none;
+  }
+  .autos li {
+    padding: var(--space-4);
+    border-right: 1px solid var(--color-line);
+    border-bottom: 1px solid var(--color-line);
+    font-size: var(--text-sm);
+  }
+
+  @media (max-width: 720px) {
+    .shots.two,
+    .result,
+    .sides,
+    .shift {
+      grid-template-columns: 1fr;
+    }
+    .sides article + article {
+      border-top: 1px solid var(--color-line);
+      border-left: 0;
+    }
+    .flow-row {
+      grid-template-columns: 1fr;
+    }
+    .products tbody th {
+      width: 9rem;
+    }
+    .autos {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,40 @@
+---
+// Marco de teléfono para las pantallas de la app Hobbies.
+// `tab` muestra la barra de navegación inferior con esa pestaña activa.
+import Icon from './Icon.astro';
+
+interface Props {
+  label: string;
+  tab?: 'home' | 'explore' | 'community' | 'profile';
+  tone?: 'light' | 'soft';
+}
+const { label, tab, tone = 'light' } = Astro.props;
+const tabs = [
+  { id: 'home', label: 'Home', icon: 'home' },
+  { id: 'explore', label: 'Explore', icon: 'compass' },
+  { id: 'community', label: 'Community', icon: 'users' },
+  { id: 'profile', label: 'Profile', icon: 'user' },
+] as const;
+---
+
+<div class:list={['hb', 'hb-phone', `hb-${tone}`]} role="img" aria-label={label}>
+  <div class="hb-status" aria-hidden="true">
+    <span>9:41</span>
+    <span class="hb-status-icons"><i></i><i></i><i></i></span>
+  </div>
+  <div class="hb-screen" aria-hidden="true">
+    <slot />
+  </div>
+  {
+    tab && (
+      <div class="hb-tabs" aria-hidden="true">
+        {tabs.map((t) => (
+          <span class:list={['hb-tab', { 'is-active': t.id === tab }]}>
+            <Icon name={t.icon} size={22} />
+            {t.label}
+          </span>
+        ))}
+      </div>
+    )
+  }
+</div>

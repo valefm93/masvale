@@ -1,0 +1,851 @@
+---
+// Página propia del proyecto Hobbies App: las pantallas están hechas en HTML/CSS
+// (src/components/hobbies) y el design system sale de src/styles/hobbies.css.
+import '@fontsource/poppins/400.css';
+import '@fontsource/poppins/500.css';
+import '@fontsource/poppins/600.css';
+import '../../styles/hobbies.css';
+import Base from '../../layouts/Base.astro';
+import ProjectSplit from '../../components/ProjectSplit.astro';
+import Screens from '../../components/hobbies/Screens.astro';
+import Icon from '../../components/hobbies/Icon.astro';
+import { iconNames } from '../../components/hobbies/icons';
+import { projects } from '../../data/projects';
+
+const project = projects.find((p) => p.slug === 'hobbies-app')!;
+const next = projects[(projects.indexOf(project) + 1) % projects.length];
+
+const decisions = [
+  {
+    title: 'One clear start',
+    text: 'A single welcome leads straight to an interest picker, so suggestions are personal from the first screen.',
+  },
+  {
+    title: 'Navigation you can see',
+    text: 'A tab bar keeps the four main areas (Home, Explore, Community, Profile) one tap away from anywhere.',
+  },
+  {
+    title: 'A home that remembers you',
+    text: 'Home puts the session in progress first, then suggestions, then what is popular nearby.',
+  },
+  {
+    title: 'Progress you can read',
+    text: 'Progress is always a bar with the count beside it, used the same way on every screen.',
+  },
+  {
+    title: 'People and places together',
+    text: 'Explore brings hobbies, distance and people into one view, and each hobby groups its forum, gallery and events.',
+  },
+];
+
+// --- Design system ---
+// Contraste WCAG entre dos colores, para mostrar qué combinaciones son legibles
+const lum = (hex: string) => {
+  const [r, g, b] = [1, 3, 5].map((i) => {
+    const c = parseInt(hex.slice(i, i + 2), 16) / 255;
+    return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+};
+const contrast = (a: string, b: string) => {
+  const [hi, lo] = [lum(a), lum(b)].sort((x, y) => y - x);
+  return (hi + 0.05) / (lo + 0.05);
+};
+const grade = (ratio: number) => (ratio >= 7 ? 'AAA' : ratio >= 4.5 ? 'AA' : ratio >= 3 ? 'AA large' : 'Decorative');
+
+const WHITE = '#FFFFFF';
+const INK = '#2A0F3A';
+const scale = [
+  { step: '900', hex: '#2A0F3A', use: 'Headings' },
+  { step: '700', hex: '#602483', use: 'Brand · actions' },
+  { step: '600', hex: '#7436A0', use: 'Pressed' },
+  { step: '400', hex: '#A57FC4', use: 'Inactive icons' },
+  { step: '200', hex: '#DCCBE8', use: 'Illustration shapes' },
+  { step: '100', hex: '#EFE7F5', use: 'Surfaces' },
+  { step: '50', hex: '#F8F4FB', use: 'Backgrounds' },
+].map((c) => {
+  // el texto sobre cada tono usa blanco o morado 900, el que contraste más
+  const onWhite = contrast(c.hex, WHITE);
+  const onInk = contrast(c.hex, INK);
+  const text = onWhite >= onInk ? WHITE : INK;
+  return { ...c, text, ratio: Math.max(onWhite, onInk) };
+});
+const support = [
+  { name: 'Ink', hex: '#1D1326', use: 'Body text', text: WHITE },
+  { name: 'Muted', hex: '#6F6478', use: 'Secondary text', text: WHITE },
+  { name: 'White', hex: '#FFFFFF', use: 'Cards · sheets', text: INK },
+  { name: 'Amber', hex: '#FFC65C', use: 'Streaks · highlights', text: INK },
+  { name: 'Amber soft', hex: '#FFF1D1', use: 'Accent surface', text: INK },
+];
+const pairings = [
+  { label: 'Primary button', fg: '#FFFFFF', bg: '#602483' },
+  { label: 'Heading on surface', fg: '#2A0F3A', bg: '#EFE7F5' },
+  { label: 'Link on background', fg: '#602483', bg: '#F8F4FB' },
+  { label: 'Secondary text', fg: '#6F6478', bg: '#FFFFFF' },
+  { label: 'Streak', fg: '#2A0F3A', bg: '#FFF1D1' },
+].map((p) => ({ ...p, ratio: contrast(p.fg, p.bg) }));
+
+const type = [
+  { cls: 'hb-display', name: 'Display', size: '25', line: '1.15', weight: 'SemiBold', use: 'Welcome', sample: 'Find your people.' },
+  { cls: 'hb-title-lg', name: 'Title L', size: '21', line: '1.2', weight: 'SemiBold', use: 'Screen titles', sample: 'What are you curious about?' },
+  { cls: 'hb-title', name: 'Title', size: '15', line: '1.3', weight: 'SemiBold', use: 'Sections · cards', sample: 'Picked for you' },
+  { cls: 'hb-body', name: 'Body', size: '13', line: '1.5', weight: 'Regular', use: 'Descriptions', sample: 'Discover activities you’ll love.' },
+  { cls: 'hb-caption', name: 'Caption', size: '11.5', line: '1.4', weight: 'Regular', use: 'Meta · counts', sample: 'Session 4 of 20 · 10 min' },
+  { cls: 'hb-overline', name: 'Overline', size: '10', line: '1.4', weight: 'SemiBold', use: 'Labels', sample: 'Continue' },
+];
+const facts = [
+  { n: scale.length + support.length, label: 'Colors' },
+  { n: type.length, label: 'Text styles' },
+  { n: iconNames.length, label: 'Icons' },
+  { n: 20, label: 'Illustrations' },
+];
+
+const illustrations = Array.from({ length: 20 }, (_, i) => String(i + 1).padStart(2, '0'));
+---
+
+<Base title={project.title} description={project.summary}>
+  <ProjectSplit project={project}>
+    <Fragment slot="text">
+      <p>Hobbies is a concept app to find activities for your free time and to meet people nearby who share them.</p>
+      <p>
+        An experimental personal project, built around an illustration set I drew for it: a purple palette, twenty
+        characters and a design system behind the screens.
+      </p>
+    </Fragment>
+    <Fragment slot="extra">
+      <h2 class="side-title">Design decisions</h2>
+      <ol class="changes">
+        {
+          decisions.map((c) => (
+            <li>
+              <h3>{c.title}</h3>
+              <p>{c.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </Fragment>
+
+      <!-- Pantallas -->
+      <section class="stage hb-vars" data-reveal style="--reveal-i:1">
+        <div class="screens">
+          <Screens />
+        </div>
+      </section>
+
+      <!-- Design system -->
+      <section class="ds hb-vars">
+        <header class="ds-head" data-reveal>
+          <h2>Design system</h2>
+          <p class="ds-lead">
+            The screens are assembled from a small kit: one purple scale, one typeface and a handful of components.
+          </p>
+          <ul class="facts">
+            {
+              facts.map((f) => (
+                <li>
+                  <b>{f.n}</b>
+                  {f.label}
+                </li>
+              ))
+            }
+          </ul>
+        </header>
+
+        <div class="ds-grid">
+          <!-- Color -->
+          <article class="card span-12" data-reveal>
+            <header class="card-head">
+              <h3>Color</h3>
+              <p>A scale built around one purple. The number on each step is its contrast against the text it carries.</p>
+            </header>
+            <ul class="scale">
+              {
+                scale.map((c) => (
+                  <li style={`background:${c.hex}; color:${c.text}`}>
+                    <b>{c.step}</b>
+                    <span class="ratio">
+                      {c.ratio.toFixed(1)} · {grade(c.ratio)}
+                    </span>
+                    <span class="hex">{c.hex}</span>
+                    <span class="use">{c.use}</span>
+                  </li>
+                ))
+              }
+            </ul>
+            <div class="color-row">
+              <ul class="support">
+                {
+                  support.map((c) => (
+                    <li>
+                      <span class="dot" style={`background:${c.hex}`} />
+                      <span>
+                        <b>{c.name}</b>
+                        <small>
+                          {c.hex} · {c.use}
+                        </small>
+                      </span>
+                    </li>
+                  ))
+                }
+              </ul>
+              <ul class="pairings hb">
+                {
+                  pairings.map((p) => (
+                    <li style={`background:${p.bg}; color:${p.fg}`}>
+                      <span class="aa">Aa</span>
+                      <span class="pair-label">{p.label}</span>
+                      <span class="pair-ratio">
+                        {p.ratio.toFixed(1)} · {grade(p.ratio)}
+                      </span>
+                    </li>
+                  ))
+                }
+              </ul>
+            </div>
+          </article>
+
+          <!-- Tipografía -->
+          <article class="card span-12 specimen hb" data-reveal>
+            <p class="specimen-aa">Aa</p>
+            <div>
+              <p class="specimen-name">Poppins</p>
+              <p class="specimen-weights"><span>Regular 400</span><b>SemiBold 600</b></p>
+              <p class="specimen-glyphs">ABCDEFGHIJKLM<br />abcdefghijklm<br />0123456789</p>
+            </div>
+          </article>
+          <article class="card span-12" data-reveal>
+            <header class="card-head">
+              <h3>Typography</h3>
+              <p>Six styles and two weights. Sizes in px, as used on a 320 px wide screen.</p>
+            </header>
+            <table class="type">
+              <thead>
+                <tr>
+                  <th>Style</th>
+                  <th>Size / line</th>
+                  <th>Weight</th>
+                  <th>Used for</th>
+                  <th>Sample</th>
+                </tr>
+              </thead>
+              <tbody>
+                {
+                  type.map((t) => (
+                    <tr>
+                      <th scope="row">{t.name}</th>
+                      <td>
+                        {t.size} / {t.line}
+                      </td>
+                      <td>{t.weight}</td>
+                      <td>{t.use}</td>
+                      <td class="hb">
+                        <p class={t.cls}>{t.sample}</p>
+                      </td>
+                    </tr>
+                  ))
+                }
+              </tbody>
+            </table>
+          </article>
+
+          <!-- Elevación -->
+          <article class="card span-12 elevation-card" data-reveal>
+            <header class="card-head">
+              <h3>Elevation</h3>
+              <p>Flat by default. One soft shadow, only for things that float over a map or image.</p>
+            </header>
+            <div class="elevation">
+              <span class="flat">Flat</span>
+              <span class="raised">Floating</span>
+            </div>
+          </article>
+
+          <!-- Componentes -->
+          <article class="card span-12" data-reveal>
+            <header class="card-head">
+              <h3>Components</h3>
+              <p>The pieces every screen is built from, with their states.</p>
+            </header>
+            <div class="components hb">
+              <div class="group">
+                <p class="group-name">Buttons</p>
+                <span class="hb-btn">Get started</span>
+                <span class="hb-btn is-ghost">Find a new hobby</span>
+                <span class="hb-btn is-soft">Maybe later</span>
+                <span class="hb-btn is-disabled">Continue</span>
+                <p class="states"><span>Primary</span><span>Outline</span><span>Soft</span><span>Disabled</span></p>
+              </div>
+
+              <div class="group">
+                <p class="group-name">Selection</p>
+                <div class="hb-chips">
+                  <span class="hb-chip is-on">All</span>
+                  <span class="hb-chip">Outdoors</span>
+                  <span class="hb-chip">Creative</span>
+                </div>
+                <div class="hb-grid">
+                  <span class="hb-choice is-on">
+                    <span class="hb-tick"><Icon name="check" size={12} /></span>
+                    <img src="/images/hobbies/20.svg" alt="" />
+                    Mindfulness
+                  </span>
+                  <span class="hb-choice">
+                    <img src="/images/hobbies/14.svg" alt="" />
+                    Photography
+                  </span>
+                </div>
+                <p class="states"><span>Selected</span><span>Default</span></p>
+              </div>
+
+              <div class="group">
+                <p class="group-name">Input and feedback</p>
+                <span class="hb-search"><Icon name="search" size={18} /> Search hobbies or places</span>
+                <div class="hb-progress-row">
+                  <span class="hb-progress"><i style="width:45%"></i></span>
+                  <small>9 / 20</small>
+                </div>
+                <div class="hb-stats">
+                  <span><b>2</b><small>Hobbies</small></span>
+                  <span><b>14</b><small>Sessions</small></span>
+                  <span class="is-accent"><b><Icon name="flame" size={16} /> 5</b><small>Day streak</small></span>
+                </div>
+              </div>
+
+              <div class="group">
+                <p class="group-name">Lists and cards</p>
+                <span class="hb-row">
+                  <span class="hb-thumb"><img src="/images/hobbies/16.svg" alt="" /></span>
+                  <span class="hb-row-text"><b>Karaoke</b><small>12 people · 0.8 km</small></span>
+                  <Icon name="next" size={18} />
+                </span>
+                <div class="hb-resume">
+                  <span class="hb-resume-art"><img src="/images/hobbies/20.svg" alt="" /></span>
+                  <div>
+                    <p class="hb-overline">Continue</p>
+                    <p class="hb-title">Mindfulness</p>
+                    <span class="hb-progress"><i style="width:15%"></i></span>
+                  </div>
+                  <span class="hb-fab"><Icon name="play" size={18} /></span>
+                </div>
+              </div>
+
+              <div class="group is-wide">
+                <p class="group-name">Navigation</p>
+                <div class="hb-tabs">
+                  <span class="hb-tab is-active"><Icon name="home" size={22} />Home</span>
+                  <span class="hb-tab"><Icon name="compass" size={22} />Explore</span>
+                  <span class="hb-tab"><Icon name="users" size={22} />Community</span>
+                  <span class="hb-tab"><Icon name="user" size={22} />Profile</span>
+                </div>
+                <div class="nav-extras">
+                  <span class="hb-iconbtn"><Icon name="back" /></span>
+                  <span class="hb-iconbtn"><Icon name="bookmark" /></span>
+                  <span class="hb-steps"><i class="is-on"></i><i></i></span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Iconos -->
+          <article class="card span-6" data-reveal>
+            <header class="card-head">
+              <h3>Icons</h3>
+              <p>One line weight (1.75), rounded ends, on a 24 px grid, so they sit next to the illustrations.</p>
+            </header>
+            <ul class="icons hb">
+              {
+                iconNames.map((name) => (
+                  <li>
+                    <Icon name={name} size={24} />
+                    <small>{name}</small>
+                  </li>
+                ))
+              }
+            </ul>
+          </article>
+
+          <!-- Ilustraciones -->
+          <article class="card span-6" data-reveal>
+            <header class="card-head">
+              <h3>Illustrations</h3>
+              <p>Twenty hand-drawn characters carry the personality. They always sit on a purple 100 or 200 shape.</p>
+            </header>
+            <ul class="art">
+              {
+                illustrations.map((n) => (
+                  <li>
+                    <img src={`/images/hobbies/${n}.svg`} alt="" loading="lazy" />
+                  </li>
+                ))
+              }
+            </ul>
+          </article>
+        </div>
+      </section>
+  </ProjectSplit>
+
+  <nav class="container next" aria-label="Next project">
+    <p class="eyebrow">Next project</p>
+    <a href={`/projects/${next.slug}`}>{next.title} <span aria-hidden="true">→</span></a>
+  </nav>
+</Base>
+
+<style>
+  h2 {
+    font-size: var(--text-xl);
+  }
+  h3 {
+    font-size: var(--text-lg);
+    letter-spacing: -0.02em;
+  }
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Pantallas sobre el lila de la app */
+  .stage {
+    padding: var(--space-16) var(--space-8);
+    background: var(--hb-100);
+  }
+  .screens {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: var(--space-16) var(--grid-gap);
+  }
+
+  /* Decisiones de diseño, en la columna de texto */
+  .side-title {
+    margin-top: var(--space-12);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-line);
+    font-size: var(--text-base);
+    letter-spacing: -0.01em;
+  }
+  .changes {
+    display: grid;
+    gap: var(--space-4);
+    margin: var(--space-4) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .changes h3 {
+    font-size: var(--text-sm);
+    font-weight: var(--weight-strong);
+    letter-spacing: 0;
+  }
+  .changes p {
+    max-width: 62ch;
+    margin-top: 2px;
+    font-size: var(--text-xs);
+    line-height: 1.5;
+    color: var(--color-muted);
+  }
+
+  /* ---------- Design system ---------- */
+  .ds {
+    padding: var(--space-8);
+    background: var(--hb-50);
+  }
+  .ds-head {
+    margin-bottom: var(--space-8);
+  }
+  .ds-lead {
+    max-width: 58ch;
+    margin-top: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+  .facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-8);
+    margin-top: var(--space-6);
+    font-size: var(--text-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+  .facts li {
+    display: grid;
+    gap: var(--space-1);
+  }
+  .facts b {
+    font-size: var(--text-xl);
+    font-weight: var(--weight-heading);
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: var(--hb-700);
+  }
+
+  .ds-grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: var(--space-4);
+  }
+  .card {
+    grid-column: span 12;
+    padding: var(--space-6);
+    background: var(--hb-white);
+  }
+  .span-6 {
+    grid-column: span 6;
+  }
+  .span-4 {
+    grid-column: span 4;
+  }
+  .card-head {
+    margin-bottom: var(--space-6);
+  }
+  .card-head p {
+    max-width: 52ch;
+    margin-top: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+
+  /* Color */
+  .scale {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+  .scale li {
+    display: grid;
+    align-content: end;
+    gap: 2px;
+    min-height: 9rem;
+    padding: var(--space-4);
+    font-size: var(--text-xs);
+  }
+  .scale li:last-child,
+  .scale li:nth-last-child(2) {
+    box-shadow: inset 0 0 0 1px var(--hb-200);
+  }
+  .scale b {
+    margin-bottom: auto;
+    font-size: var(--text-lg);
+    font-weight: var(--weight-heading);
+    letter-spacing: -0.02em;
+  }
+  .scale li {
+    grid-template-rows: 1fr auto auto auto;
+  }
+  .scale .ratio,
+  .scale .use {
+    opacity: 0.75;
+  }
+  .scale .hex {
+    font-size: var(--text-sm);
+  }
+  .color-row {
+    display: grid;
+    grid-template-columns: var(--col-4) minmax(0, 1fr);
+    gap: var(--grid-gap);
+    margin-top: var(--space-8);
+  }
+  .support {
+    display: grid;
+    gap: var(--space-3);
+    align-content: start;
+  }
+  .support li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--text-sm);
+  }
+  .support span:last-child {
+    display: grid;
+  }
+  .support b {
+    font-weight: var(--weight-strong);
+  }
+  .support small {
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+  }
+  .dot {
+    flex: none;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 1px rgb(42 15 58 / 0.1);
+  }
+  .pairings {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--space-2);
+  }
+  .pairings li {
+    display: grid;
+    gap: 2px;
+    padding: var(--space-4);
+    border-radius: var(--hb-r-md);
+    box-shadow: inset 0 0 0 1px rgb(42 15 58 / 0.08);
+    font-size: 11.500px;
+  }
+  .aa {
+    margin-bottom: var(--space-4);
+    font-size: 28px;
+    font-weight: 600;
+    line-height: 1;
+  }
+  .pair-label {
+    font-weight: 600;
+  }
+  .pair-ratio {
+    opacity: 0.8;
+  }
+
+  /* Tipografía */
+  .specimen {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--space-8);
+    background: var(--hb-700);
+    color: var(--hb-white);
+  }
+  .specimen-aa {
+    font-size: clamp(5rem, 8vw, 7rem);
+    font-weight: 600;
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+  }
+  .specimen-name {
+    font-size: 21px;
+    font-weight: 600;
+  }
+  .specimen-weights {
+    display: flex;
+    gap: var(--space-4);
+    margin-top: var(--space-1) !important;
+    font-size: 13px;
+    color: var(--hb-200);
+  }
+  .specimen-glyphs {
+    margin-top: var(--space-4) !important;
+    font-size: 13px;
+    line-height: 1.6;
+    letter-spacing: 0.08em;
+    color: var(--hb-200);
+  }
+  .type {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-sm);
+  }
+  .type th,
+  .type td {
+    padding: var(--space-3) var(--space-4) var(--space-3) 0;
+    border-top: 1px solid var(--color-line);
+    font-weight: 400;
+    text-align: left;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+  .type thead th {
+    border-top: 0;
+    font-size: var(--text-2xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+  .type tbody th {
+    font-weight: var(--weight-strong);
+  }
+  .type td:not(.hb) {
+    color: var(--color-muted);
+  }
+  .type td.hb {
+    width: 45%;
+    padding-right: 0;
+    white-space: normal;
+  }
+  .type .hb-display {
+    text-align: left;
+  }
+
+  /* Elevación */
+  .elevation-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-8);
+    align-items: center;
+  }
+  .elevation-card .card-head {
+    margin-bottom: 0;
+  }
+  .elevation {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+    padding: var(--space-6);
+    background: var(--hb-100);
+    font-size: var(--text-xs);
+  }
+  .elevation span {
+    display: grid;
+    place-items: center;
+    height: 5rem;
+    border-radius: var(--hb-r-md);
+    background: var(--hb-white);
+  }
+  .raised {
+    box-shadow: var(--hb-shadow);
+  }
+
+  /* Componentes */
+  .components {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-8) var(--space-8);
+  }
+  .group {
+    display: grid;
+    align-content: start;
+    gap: 12px;
+  }
+  .group.is-wide {
+    grid-column: span 2;
+    grid-template-columns: minmax(0, 320px) auto;
+    align-items: center;
+    justify-content: start;
+    column-gap: var(--space-8);
+  }
+  .group.is-wide .group-name {
+    grid-column: 1 / -1;
+  }
+  .group-name {
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--color-line);
+    font-family: var(--font-body);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+  .states {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-3);
+    font-family: var(--font-body);
+    font-size: var(--text-2xs);
+    color: var(--color-muted);
+  }
+  .group .hb-tabs {
+    border: 1px solid var(--hb-100);
+    border-radius: var(--hb-r-md);
+  }
+  .nav-extras {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  /* Iconos e ilustraciones */
+  .icons {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(4.5rem, 1fr));
+    gap: var(--space-2);
+  }
+  .icons li {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-2);
+    padding: var(--space-4) var(--space-1) var(--space-3);
+    background: var(--hb-50);
+    color: var(--hb-700);
+  }
+  .icons small {
+    font-size: 10px;
+  }
+  .art {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--space-2);
+  }
+  .art li {
+    position: relative;
+    aspect-ratio: 1;
+    background: var(--hb-100);
+  }
+  .art li:nth-child(3n) {
+    background: var(--hb-200);
+  }
+  .art img {
+    position: absolute;
+    inset: 14%;
+    width: 72%;
+    height: 72%;
+    object-fit: contain;
+  }
+
+  .next {
+    padding-block: var(--space-16);
+  }
+  .next a {
+    display: inline-block;
+    margin-top: var(--space-3);
+    font-size: var(--text-2xl);
+    font-weight: var(--weight-heading);
+    line-height: var(--leading-tight);
+    letter-spacing: -0.03em;
+    text-decoration: none;
+  }
+  .next a:hover {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+
+  @media (max-width: 1080px) {
+    .span-6,
+    .span-4 {
+      grid-column: span 12;
+    }
+    .pairings {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 720px) {
+    .scale {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .scale li {
+      min-height: 6.5rem;
+    }
+    .components,
+    .color-row,
+    .pairings {
+      grid-template-columns: 1fr;
+    }
+    .group.is-wide {
+      grid-column: auto;
+      grid-template-columns: 1fr;
+    }
+    .type th:nth-child(3),
+    .type td:nth-child(3),
+    .type th:nth-child(4),
+    .type td:nth-child(4) {
+      display: none;
+    }
+    .card {
+      padding: var(--space-6) var(--space-4);
+    }
+  }
+  @media (max-width: 860px) {
+    .elevation-card {
+      grid-template-columns: 1fr;
+    }
+    .stage,
+    .ds {
+      padding-inline: var(--space-4);
+    }
+    .specimen {
+      flex-direction: column;
+      align-items: start;
+    }
+  }
+</style>

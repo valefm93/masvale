@@ -7,24 +7,25 @@ export const site = {
   name: 'Vale Ferreira',
   role: 'Product Designer',
   intro: {
-    lead: 'My passion for UX/UI design stems from the perfect combination of',
+    lead: 'My passion for UX/UI design stems from the combination of',
     highlight: 'critical thinking and creativity',
-    rest: '. I love how these two skills allow me to approach problems from different angles, resulting in solutions that are both functional and innovative. It’s this balance that keeps me passionate about what I do.',
+    rest: '. I love how these two skills allow me to approach problems from different angles, resulting in solutions that are both functional and innovative.',
   },
+  aboutTitle: 'Designer first, product always',
   about: [
-    'Drawing from my graphic design background, I quickly embraced UX/UI methodologies like **Design Thinking** and **User-Centered Design**, focusing on creating intuitive solutions that enhance user experiences.',
-    'Through iterative prototyping and testing, I refine my designs to **meet real-world requirements**, while constantly optimizing for seamless interactions and accessibility.',
+    'I started in graphic design and moved into UX/UI through **Design Thinking** and **User-Centered Design**. I prototype, test and refine until a design meets real-world needs.',
   ],
   resumeIntro:
     'The balance between creativity and strategic decision-making is what excites me most and keeps me passionate about creating meaningful user experiences.',
   // Hero de la home. Las posiciones de los stickers son [horizontal, vertical] en % de la pantalla:
   // `from` es dónde arrancan (junto a la foto) y `to` dónde quedan al terminar el scroll.
   hero: {
-    name: 'I am Valeria Ferreira',
-    tagline: 'Hello! I am looking for new challenges',
+    intro: '',
+    name: 'Valeria Ferreira',
+    tagline: 'Currently open to new challenges',
     updateLabel: 'Last update',
     scrollHint: 'Scroll down',
-    image: '/images/hero/landscape.svg',
+    image: '/images/hero/landscape.jpg',
     stickers: [
       { src: '/images/hero/sticker-hello.svg', width: '8.5vw', from: ['40.5%', '34%'], to: ['27%', '2%'] },
       { src: '/images/hero/sticker-flame.svg', width: '4.6vw', from: ['64%', '59%'], to: ['99.5%', '25%'] },
@@ -47,10 +48,10 @@ export const footerNote =
 // Navegación principal: la usan el header y los botones del hero
 // Mensaje que se escribe solo al pasar el mouse por el título de la página Portfolio
 export const portfolioNote =
-  'These are visual summaries of my work. Want the full story? Let’s set up an interview!';
+  'These are visual summaries of my work. Want the full story? Let’s chat!';
 
 export const nav = [
-  { label: 'Portfolio', href: '/portfolio' },
+  { label: 'Projects', href: '/portfolio' },
   { label: 'About me', href: '/resume' },
   // #contact es el footer, que está en todas las páginas
   { label: 'Hire me', href: '#contact' },
@@ -84,21 +85,23 @@ export const skills = [
   'Visual Design',
   'Branding',
   'Design QA',
-  'Basic HTML&CSS',
+  'AI-integrated workflows',
   'Team work',
   'Motion graphics',
   'Illustration',
 ];
 
-export const software: { name: string; icon?: string }[] = [
+// `glyph: true` = el icono es solo el dibujo (un color): se muestra dentro de un cuadrado
+// oscuro redondeado, para que quede igual que los iconos de app de Adobe y Figma.
+export const software: { name: string; icon?: string; glyph?: boolean }[] = [
   { name: 'Figma', icon: cdn('675475df83063c4b66d9f323_Figma.svg') },
   { name: 'Photoshop', icon: cdn('675475dffaf430c1f7cc7b46_Photoshop.svg') },
   { name: 'Illustrator', icon: cdn('675475df8a22b714fb133371_Illustrator.svg') },
   { name: 'Procreate', icon: cdn('675475dfa912f28b7e66f82f_logo-procreate-icon.svg') },
   { name: 'After Effects', icon: cdn('675475df5620869d2236b256_After%20Effects.svg') },
   { name: 'InDesign', icon: cdn('675475e308e6811fbc3d81d4_InDesign.svg') },
-  // Sin `icon` se muestra la inicial del nombre
+  // Sin `icon` se muestra la inicial del nombre dentro del mismo cuadrado
   { name: 'Codex' },
-  { name: 'Claude', icon: 'https://cdn.simpleicons.org/claude' },
-  { name: 'GitHub', icon: 'https://cdn.simpleicons.org/github/131414' },
+  { name: 'Claude', icon: 'https://cdn.simpleicons.org/claude/fcfcfc', glyph: true },
+  { name: 'GitHub', icon: 'https://cdn.simpleicons.org/github/fcfcfc', glyph: true },
 ];

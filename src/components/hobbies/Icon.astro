@@ -1,0 +1,24 @@
+---
+// Dibuja un icono de la app Hobbies (la lista está en icons.ts)
+import { icons, type IconName } from './icons';
+
+interface Props {
+  name: IconName;
+  size?: number;
+}
+const { name, size = 20 } = Astro.props;
+---
+
+<svg
+  class="hb-icon"
+  width={size}
+  height={size}
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.750"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  set:html={icons[name]}
+/>

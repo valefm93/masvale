@@ -1,0 +1,148 @@
+---
+// Seis pantallas de Chefy. Login, Kitchen profile y Home son exportaciones del Figma del proyecto;
+// las otras tres están armadas con los componentes de src/styles/chefy.css.
+import { svg } from './icons';
+
+const img = (name: string) => `/images/chefy/${name}.png`;
+const welcome = ['Ditch the recipe hunt!', 'Cook with ingredients you have!', 'Avoid food wastage!', 'Make your cooking joyful!'];
+const ingredients = [
+  ['Sugar', '1 tablespoon'],
+  ['Olive oil', '1/4'],
+  ['Milk', '1 cup'],
+  ['Onion', '1 unit'],
+  ['Balsamic vinaigrette', '1/4'],
+  ['Carrot', '1 unit'],
+];
+const gear = ['Oven', 'Microwave', 'Blender', 'Toaster', 'Coffee maker'];
+const spices = ['Salt', 'Pepper', 'Garlic'];
+---
+
+<!-- 1 · Login (exportada de Figma) -->
+<figure class="cf-shot">
+  <div class="cf cf-phone is-image">
+    <img src="/images/chefy/s-login.jpg" alt="Chefy login screen: sign up with Apple, Google or email" />
+  </div>
+  <figcaption><b>01</b> Login</figcaption>
+</figure>
+
+<!-- 2 · Onboarding -->
+<figure class="cf-shot">
+  <div class="cf cf-phone" role="img" aria-label="Chefy onboarding screen">
+    <div class="cf-screen" aria-hidden="true">
+      <div class="cf-hero is-lime">
+        <div class="cf-peek">
+          <p class="cf-label">Trending</p>
+          <img src={img('dish-1')} alt="" />
+          <p class="cf-caption">Grilled Chicken Salad</p>
+        </div>
+      </div>
+      <div class="cf-sheet">
+        <p class="cf-h1 cf-center">Welcome to Chefy!</p>
+        <div class="cf-stack">
+          {
+            welcome.map((t, i) => (
+              <span class="cf-item">
+                <i>{i + 1}</i> {t}
+              </span>
+            ))
+          }
+        </div>
+        <span class="cf-btn is-navy cf-push">Next <Fragment set:html={svg('arrow')} /></span>
+        <span class="cf-dots"><i class="is-on"></i><i></i><i></i></span>
+      </div>
+    </div>
+  </div>
+  <figcaption><b>02</b> Onboarding</figcaption>
+</figure>
+
+<!-- 3 · Kitchen tools profile (exportada de Figma) -->
+<figure class="cf-shot">
+  <div class="cf cf-phone is-image">
+    <img src="/images/chefy/s-onboarding.jpg" alt="Chefy onboarding: setting up your kitchen tools profile by voice or typing" />
+  </div>
+  <figcaption><b>03</b> Kitchen profile</figcaption>
+</figure>
+
+<!-- 4 · Home (exportada de Figma) -->
+<figure class="cf-shot">
+  <div class="cf cf-phone is-image">
+    <img src="/images/chefy/s-home.jpg" alt="Chefy home: search, a prompt to start cooking and trending recipes" />
+  </div>
+  <figcaption><b>04</b> Home</figcaption>
+</figure>
+
+<!-- 5 · Confirm ingredients -->
+<figure class="cf-shot">
+  <div class="cf cf-phone" role="img" aria-label="Chefy confirm ingredients screen">
+    <div class="cf-status" aria-hidden="true"><span>9:41</span></div>
+    <div class="cf-screen cf-pad" aria-hidden="true">
+      <div class="cf-topline">
+        <span class="cf-back"><Fragment set:html={svg('back')} /> Back</span>
+        <span class="cf-coin"><i>★</i> 1500</span>
+      </div>
+      <span class="cf-banner has-art">
+        <b>Confirm Ingredients</b><small>Update as needed.</small>
+        <img src={img('mascot')} alt="" />
+      </span>
+      <p class="cf-h3">Ingredients review</p>
+      <div class="cf-stack is-tight">
+        {
+          ingredients.map(([name, qty]) => (
+            <span class="cf-row">
+              {name} <span>{qty}</span>
+            </span>
+          ))
+        }
+      </div>
+    </div>
+    <div class="cf-dock" aria-hidden="true"><span class="cf-btn">Next</span></div>
+  </div>
+  <figcaption><b>05</b> Confirm ingredients</figcaption>
+</figure>
+
+<!-- 6 · Preparation specifics -->
+<figure class="cf-shot">
+  <div class="cf cf-phone" role="img" aria-label="Chefy preparation specifics screen">
+    <div class="cf-status" aria-hidden="true"><span>9:41</span></div>
+    <div class="cf-screen cf-pad" aria-hidden="true">
+      <div class="cf-topline">
+        <span class="cf-back"><Fragment set:html={svg('back')} /> Back</span>
+        <span class="cf-coin"><i>★</i> 1500</span>
+      </div>
+      <span class="cf-banner has-art">
+        <b>Confirm preparation specifics</b><small>Update as needed.</small>
+        <img src={img('mascot')} alt="" />
+      </span>
+      <span class="cf-setting">
+        Serving for:
+        <span class="cf-stepper"><span set:html={svg('minus', 16)} /><span>1</span><span set:html={svg('plus', 16)} /></span>
+      </span>
+      <span class="cf-setting">
+        Time to cook:
+        <span class="cf-stepper"><span set:html={svg('minus', 16)} /><span>10 min</span><span set:html={svg('plus', 16)} /></span>
+      </span>
+      <span class="cf-setting cf-rule">Your Gear: <span class="cf-add"><Fragment set:html={svg('plus', 16)} /> Add</span></span>
+      <div class="cf-chips">
+        {
+          gear.map((g) => (
+            <span class="cf-chip">
+              <Fragment set:html={svg('check', 14)} /> {g}
+            </span>
+          ))
+        }
+      </div>
+      <span class="cf-setting">Spice rack: <span class="cf-add"><Fragment set:html={svg('plus', 16)} /> Add</span></span>
+      <div class="cf-chips">
+        {
+          spices.map((g) => (
+            <span class="cf-chip">
+              <Fragment set:html={svg('check', 14)} /> {g}
+            </span>
+          ))
+        }
+      </div>
+    </div>
+    <div class="cf-dock" aria-hidden="true"><span class="cf-btn">Next</span></div>
+  </div>
+  <figcaption><b>06</b> Preparation</figcaption>
+</figure>

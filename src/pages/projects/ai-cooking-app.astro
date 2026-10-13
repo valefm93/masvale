@@ -1,0 +1,485 @@
+---
+// Página propia de Chefy (AI cooking app): descripción, marca y design system.
+// Los componentes están recreados en HTML/CSS con src/styles/chefy.css.
+import '../../styles/chefy.css';
+import Base from '../../layouts/Base.astro';
+import ProjectSplit from '../../components/ProjectSplit.astro';
+import { projects } from '../../data/projects';
+import { cdn } from '../../data/assets';
+import Screens from '../../components/chefy/Screens.astro';
+import { svg } from '../../components/chefy/icons';
+
+const project = projects.find((p) => p.slug === 'ai-cooking-app')!;
+const next = projects[(projects.indexOf(project) + 1) % projects.length];
+const screens = cdn('675eeac31745565ac3524abc_ai%20news%20app.jpg');
+
+// Ficha del proyecto
+const facts = [
+  { label: 'Role', value: 'UX/UI Designer' },
+  { label: 'Category', value: 'Food Technology & Artificial Intelligence' },
+  { label: 'Platform', value: 'iOS & Android' },
+  { label: 'Tools', value: 'Figma' },
+];
+
+// Decisiones de producto: todas se pueden ver en las pantallas del proyecto
+const decisions = [
+  {
+    title: 'Three features, not ten',
+    text: 'The sprint narrowed the MVP to what would prove the idea: a pantry to track what you have, AI recipes from those ingredients, and a daily cooking word game.',
+  },
+  {
+    title: 'Your kitchen comes first',
+    text: 'Onboarding asks for your appliances and gear before any recipe, so every suggestion is something you can actually make.',
+  },
+  {
+    title: 'Say it or type it',
+    text: 'Ingredients can be dictated or typed. Listing what is in the fridge should be as quick as saying it out loud.',
+  },
+  {
+    title: 'Review before you cook',
+    text: 'Ingredients, servings and cooking time are confirmed in two short steps, so the AI works from what you really have.',
+  },
+  {
+    title: 'A character, not a chatbot',
+    text: 'The assistant has a name and a face. Talking to a small robot chef feels lighter than filling in a form.',
+  },
+  {
+    title: 'A reason to come back',
+    text: 'You collect points as you use the app, and a daily word game adds a small habit around cooking at home.',
+  },
+];
+
+const colors = [
+  { name: 'Lime', hex: '#B1DD54', use: 'Brand · primary actions', token: '--cf-lime' },
+  { name: 'Navy', hex: '#062C41', use: 'Secondary actions · mascot', token: '--cf-navy', light: true },
+  { name: 'Ink', hex: '#14141B', use: 'Text', token: '--cf-ink', light: true },
+  { name: 'Lime soft', hex: '#F6FAEC', use: 'Backgrounds · cards', token: '--cf-lime-soft' },
+  { name: 'Lilac', hex: '#F3F3FB', use: 'Fields · rows', token: '--cf-lilac' },
+  { name: 'Orange', hex: '#FEC671', use: 'Onboarding accent', token: '--cf-orange' },
+  { name: 'Amber', hex: '#F8B038', use: 'Points · numbers', token: '--cf-amber' },
+  { name: 'Red', hex: '#BA1A1A', use: 'Delete', token: '--cf-red', light: true },
+];
+
+---
+
+<Base title="Chefy" description={project.summary}>
+  <ProjectSplit project={project}>
+    <Fragment slot="text">
+      <p>
+        College students and busy families let ingredients go to waste that could have been a meal. Chefy is an AI
+        cooking assistant that starts from what is already in your kitchen and suggests real meals to make with it.
+      </p>
+      <p>
+        At 10 Grounds we started with a Design Sprint, working in Figma and Miro, to understand the problem and map the
+        user journey before a single line of code was written. I was the UX/UI designer in a cross-functional team of
+        designers, content specialists and AI developers. I was part of those sessions from the first day, and once
+        the MVP was defined I designed for it: the naming, the branding and the design system the screens are built
+        with.
+      </p>
+    </Fragment>
+    <Fragment slot="extra">
+      <dl class="facts">
+        {
+          facts.map((f) => (
+            <div>
+              <dt>{f.label}</dt>
+              <dd>{f.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+
+      <h2 class="side-title">Product decisions</h2>
+      <ol class="decisions">
+        {
+          decisions.map((d) => (
+            <li>
+              <h3>{d.title}</h3>
+              <p>{d.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </Fragment>
+
+    <!-- Pantallas -->
+    <section class="stage cf-vars" data-reveal style="--reveal-i:1">
+      <div class="screens">
+        <Screens />
+      </div>
+    </section>
+
+    <!-- Branding -->
+    <section class="kit cf-vars">
+      <header class="kit-head" data-reveal>
+        <h2>Branding</h2>
+        <p>
+          A name, a character and a short palette. Chefy turns the AI into someone you can talk to: a small robot chef
+          that winks at you.
+        </p>
+      </header>
+      <div class="kit-grid">
+        <article class="card span-5 logo" data-reveal>
+          <img src="/images/chefy/logo.svg" alt="Chefy logo: a robot chef mascot above the wordmark" loading="lazy" />
+        </article>
+        <article class="card span-7 naming" data-reveal>
+          <p class="label">Naming</p>
+          <p class="name">Chefy</p>
+          <p class="note">
+            Chef, plus a friendly ending. Short enough to be an app icon, warm enough to be the name of the assistant
+            itself.
+          </p>
+          <p class="label">Typography</p>
+          <p class="note">A heavy rounded wordmark for the logo. Inter for everything inside the app.</p>
+          <p class="inter cf">Aa Bb Cc 0123</p>
+        </article>
+        <article class="card span-12" data-reveal>
+          <p class="label">Color</p>
+          <ul class="swatches">
+            {
+              colors.map((c) => (
+                <li>
+                  <span class:list={['chip', { light: c.light }]} style={`background: var(${c.token})`}>
+                    {c.hex}
+                  </span>
+                  <b>{c.name}</b>
+                  <small>{c.use}</small>
+                </li>
+              ))
+            }
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <img class="shot" src={screens} alt="Eight screens of the Chefy app" loading="lazy" data-reveal />
+
+    <!-- Design system -->
+    <section class="kit cf-vars">
+      <header class="kit-head" data-reveal>
+        <h2>Design system</h2>
+        <p>The components the MVP is assembled from, rebuilt here in code.</p>
+      </header>
+      <div class="kit-grid cf">
+        <article class="card span-6" data-reveal>
+          <p class="label">Buttons</p>
+          <div class="stack">
+            <span class="cf-btn">Create Account</span>
+            <span class="cf-btn is-navy">Next <Fragment set:html={svg('arrow')} /></span>
+            <span class="cf-btn is-black">Sign up with Apple</span>
+            <span class="cf-btn is-outline">Sign up with Google</span>
+            <span class="cf-btn is-soft"><Fragment set:html={svg('mail')} /> Sign up with Email</span>
+          </div>
+          <p class="states"><span>Primary</span><span>Secondary</span><span>Provider</span><span>Outline</span><span>Soft</span></p>
+        </article>
+
+        <article class="card span-6" data-reveal>
+          <p class="label">Inputs</p>
+          <div class="stack">
+            <span class="cf-field is-search"><Fragment set:html={svg('search', 20)} /> Search for a recipe</span>
+            <span class="cf-field"><Fragment set:html={svg('mail', 20)} /> Email</span>
+            <span class="cf-field">
+              <Fragment set:html={svg('lock', 20)} />
+              <b><small>Password</small>••••••••••</b>
+            </span>
+            <span class="cf-setting">Serving for: <span class="cf-stepper"><span set:html={svg('minus', 16)} /><span>1</span><span set:html={svg('plus', 16)} /></span></span>
+            <span class="cf-setting">Time to cook: <span class="cf-stepper"><span set:html={svg('minus', 16)} /><span>10 min</span><span set:html={svg('plus', 16)} /></span></span>
+          </div>
+        </article>
+
+        <article class="card span-6" data-reveal>
+          <p class="label">Selection</p>
+          <div class="cf-chips">
+            <span class="cf-chip"><Fragment set:html={svg('check', 16)} /> Oven</span>
+            <span class="cf-chip"><Fragment set:html={svg('check', 16)} /> Blender</span>
+            <span class="cf-chip"><Fragment set:html={svg('check', 16)} /> Toaster</span>
+            <span class="cf-chip is-off">Microwave</span>
+            <span class="cf-chip is-off">Coffee maker</span>
+          </div>
+          <p class="states"><span>Checked</span><span>Unchecked</span></p>
+          <p class="label gap">Cards</p>
+          <div class="stack">
+            <span class="cf-banner"><b>Confirm Ingredients</b><small>Update as needed.</small></span>
+            <span class="cf-promo">
+              <b>Tell what do you’ve got and let’s start cooking!</b>
+              <span class="cf-btn is-small">Start <Fragment set:html={svg('arrow')} /></span>
+            </span>
+          </div>
+        </article>
+
+        <article class="card span-6" data-reveal>
+          <p class="label">Lists</p>
+          <div class="stack">
+            <span class="cf-item"><i>1</i> Ditch the recipe hunt!</span>
+            <span class="cf-item"><i>2</i> Cook with ingredients you have!</span>
+            <span class="cf-item is-orange"><i>1</i> Enter your kitchen appliances and gear.</span>
+            <span class="cf-row">Olive oil <span>1/4</span></span>
+            <span class="cf-row">Milk <span>1 cup</span></span>
+          </div>
+          <p class="states"><span>Onboarding, green</span><span>Onboarding, orange</span><span>Ingredient</span></p>
+        </article>
+
+        <article class="card span-12" data-reveal>
+          <p class="label">Navigation</p>
+          <div class="nav">
+            <div class="cf-tabs">
+              <span class="cf-tab is-active"><span set:html={svg('home', 20)} />Home</span>
+              <span class="cf-tab"><span set:html={svg('game', 20)} />Game</span>
+              <span class="cf-tab"><span set:html={svg('book', 20)} />My Recipes</span>
+              <span class="cf-tab is-fab"><span set:html={svg('pot', 22)} />Let’s Cook</span>
+            </div>
+            <span class="cf-back"><Fragment set:html={svg('back')} /> Back</span>
+            <span class="cf-coin"><i>★</i> 1500</span>
+          </div>
+        </article>
+      </div>
+    </section>
+  </ProjectSplit>
+
+  <nav class="container next" aria-label="Next project">
+    <p class="eyebrow">Next project</p>
+    <a href={`/projects/${next.slug}`}>{next.title} <span aria-hidden="true">→</span></a>
+  </nav>
+</Base>
+
+<style>
+  h2 {
+    font-size: var(--text-xl);
+  }
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .shot {
+    width: 100%;
+  }
+
+  /* Columna de texto */
+  .side-title {
+    margin-top: var(--space-8);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-line);
+    font-size: var(--text-base);
+    letter-spacing: -0.01em;
+  }
+  .decisions {
+    display: grid;
+    gap: var(--space-4);
+    margin: var(--space-4) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .decisions h3 {
+    font-size: var(--text-sm);
+    font-weight: var(--weight-strong);
+    letter-spacing: 0;
+  }
+  .decisions p {
+    margin-top: 2px;
+    font-size: var(--text-xs);
+    line-height: 1.5;
+    color: var(--color-muted);
+  }
+  .facts {
+    display: grid;
+    gap: var(--space-3);
+    margin: var(--space-8) 0 0;
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-line);
+  }
+  .facts div {
+    display: grid;
+    grid-template-columns: 6rem 1fr;
+    gap: var(--space-3);
+    font-size: var(--text-sm);
+  }
+  .facts dt {
+    font-size: var(--text-2xs);
+    letter-spacing: 0.08em;
+    line-height: 1.9;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+  .facts dd {
+    margin: 0;
+  }
+
+  /* Pantallas sobre el verde claro de la app */
+  .stage {
+    padding: var(--space-16) var(--space-8);
+    background: var(--cf-sage);
+  }
+  .screens {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: var(--space-16) var(--grid-gap);
+  }
+
+  /* Bloques de marca y design system */
+  .kit {
+    padding: var(--space-8);
+    background: var(--cf-lime-soft);
+  }
+  .kit-head {
+    margin-bottom: var(--space-8);
+  }
+  .kit-head p {
+    max-width: 58ch;
+    margin-top: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+  .kit-grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: var(--space-4);
+  }
+  .card {
+    grid-column: span 12;
+    padding: var(--space-6);
+    background: var(--cf-white);
+  }
+  .span-7 {
+    grid-column: span 7;
+  }
+  .span-6 {
+    grid-column: span 6;
+  }
+  .span-5 {
+    grid-column: span 5;
+  }
+  .label {
+    margin-bottom: var(--space-4);
+    font-family: var(--font-body);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+  .label.gap {
+    margin-top: var(--space-8);
+  }
+  .note {
+    max-width: 44ch;
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+  .stack {
+    display: grid;
+    gap: 10px;
+  }
+  .states {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-3);
+    margin-top: var(--space-4) !important;
+    font-family: var(--font-body);
+    font-size: var(--text-2xs);
+    color: var(--color-muted);
+  }
+
+  /* Marca */
+  /* el logo va sobre navy, como en la pantalla de inicio de la app */
+  .logo {
+    display: grid;
+    place-items: center;
+    background: var(--cf-navy);
+  }
+  .logo img {
+    width: min(100%, 15rem);
+  }
+  .naming .name {
+    margin-bottom: var(--space-3);
+    font-size: var(--text-2xl);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: var(--cf-navy);
+  }
+  .naming .label:not(:first-child) {
+    margin-top: var(--space-8);
+  }
+  .inter {
+    margin-top: var(--space-3);
+    font-size: var(--text-xl);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+  .swatches li {
+    display: grid;
+    gap: 2px;
+    font-size: var(--text-sm);
+  }
+  .swatches b {
+    font-weight: var(--weight-strong);
+  }
+  .swatches small {
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+  }
+  .chip {
+    display: flex;
+    align-items: end;
+    height: 5.5rem;
+    margin-bottom: var(--space-2);
+    padding: var(--space-2);
+    font-size: var(--text-2xs);
+    color: var(--cf-ink);
+    box-shadow: inset 0 0 0 1px rgb(6 44 65 / 0.08);
+  }
+  .chip.light {
+    color: var(--cf-white);
+  }
+
+  /* Navegación */
+  .nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-8);
+  }
+  .nav .cf-tabs {
+    flex: 0 1 22rem;
+  }
+
+  .next {
+    padding-block: var(--space-16);
+    border-top: 1px solid var(--color-line);
+  }
+  .next a {
+    display: inline-block;
+    margin-top: var(--space-3);
+    font-size: var(--text-2xl);
+    font-weight: var(--weight-heading);
+    line-height: var(--leading-tight);
+    letter-spacing: -0.03em;
+    text-decoration: none;
+  }
+  .next a:hover {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+
+  @media (max-width: 1080px) {
+    .span-7,
+    .span-6,
+    .span-5 {
+      grid-column: span 12;
+    }
+    .swatches {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 860px) {
+    .kit,
+    .stage {
+      padding-inline: var(--space-4);
+    }
+  }
+</style>

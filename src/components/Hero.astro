@@ -1,4 +1,12 @@
 ---
+// Tipografías por las que va pasando el nombre en el hero (ver nameFonts más abajo)
+import '@fontsource/great-vibes/400.css';
+import '@fontsource/caveat/700.css';
+import '@fontsource/pixelify-sans/600.css';
+import '@fontsource/anton/400.css';
+import '@fontsource/archivo-black/400.css';
+import '@fontsource/space-mono/700.css';
+import '@fontsource/bodoni-moda/600-italic.css';
 import { site, nav } from '../data/site';
 
 const { hero } = site;
@@ -33,7 +41,10 @@ const updated = new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long
     <p class="updated">{hero.updateLabel}: {updated}</p>
 
     <h1 class="title">
-      <span class="name">{hero.name}</span>
+      <span class="name">
+        {hero.intro && <>{hero.intro} </>}
+        <span class="cycle" data-font-cycle>{hero.name}</span>
+      </span>
       <span class="role-row">
         <em class="role">{site.role}</em>
         <span class="tagline" data-hero-tagline>{hero.tagline}</span>
@@ -109,6 +120,63 @@ const updated = new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long
 
     measure();
     document.fonts?.ready.then(measure);
+
+    // --- El nombre cambia de tipografía: serif, script, a mano, sans, pixel, alta, pesada, mono, didona ---
+    const name = hero.querySelector<HTMLElement>('[data-font-cycle]');
+    const nameFonts = [
+      { family: "'Instrument Serif'", weight: '400', style: 'normal', spacing: '-0.015em', caps: false },
+      { family: "'Great Vibes'", weight: '400', style: 'normal', spacing: '0', caps: false },
+      { family: "'Caveat'", weight: '700', style: 'normal', spacing: '0', caps: false },
+      { family: "'Switzer'", weight: '500', style: 'normal', spacing: '-0.05em', caps: false },
+      { family: "'Pixelify Sans'", weight: '600', style: 'normal', spacing: '0', caps: false },
+      { family: "'Anton'", weight: '400', style: 'normal', spacing: '0.01em', caps: true },
+      { family: "'Archivo Black'", weight: '400', style: 'normal', spacing: '-0.04em', caps: false },
+      { family: "'Space Mono'", weight: '700', style: 'normal', spacing: '-0.06em', caps: false },
+      { family: "'Bodoni Moda'", weight: '600', style: 'italic', spacing: '-0.02em', caps: false },
+    ];
+
+    if (name && !reduce.matches) {
+      type NameFont = (typeof nameFonts)[number];
+      let scales: number[] = [];
+      let current = 0;
+
+      const apply = (font: NameFont, scale: number) => {
+        name.style.fontFamily = `${font.family}, serif`;
+        name.style.fontWeight = font.weight;
+        name.style.fontStyle = font.style;
+        name.style.letterSpacing = font.spacing;
+        name.style.textTransform = font.caps ? 'uppercase' : 'none';
+        name.style.fontSize = `${scale}em`;
+      };
+
+      // Cada tipografía tiene otro ancho: se ajusta su tamaño para que el nombre ocupe
+      // siempre lo mismo y el título no salte de lugar.
+      const fit = () => {
+        name.style.width = 'auto';
+        apply(nameFonts[0], 1);
+        const target = name.getBoundingClientRect().width;
+        scales = nameFonts.map((font) => {
+          apply(font, 1);
+          const width = name.getBoundingClientRect().width;
+          return Math.min(1.3, Math.max(0.6, target / width));
+        });
+        name.style.width = `${target}px`;
+        apply(nameFonts[current], scales[current]);
+      };
+
+      Promise.all(nameFonts.map((f) => document.fonts.load(`${f.style} ${f.weight} 1em ${f.family}`)))
+        .catch(() => undefined)
+        .then(() => {
+          fit();
+          window.addEventListener('resize', fit);
+          window.setInterval(() => {
+            // solo cambia mientras el hero está a la vista y la pestaña activa
+            if (document.hidden || document.documentElement.dataset.heroState === 'past') return;
+            current = (current + 1) % nameFonts.length;
+            apply(nameFonts[current], scales[current]);
+          }, 280);
+        });
+    }
     window.addEventListener('scroll', queue, { passive: true });
     window.addEventListener('resize', measure);
   }
@@ -189,7 +257,17 @@ const updated = new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long
     white-space: nowrap;
   }
   .name {
+    display: flex;
+    align-items: center;
+    gap: 0.22em;
+    /* alto fijo: las tipografías cambian de tamaño pero el renglón no se mueve */
+    height: 1.05em;
     font-size: 7.6vw;
+  }
+  .cycle {
+    display: inline-block;
+    line-height: 1;
+    text-align: center;
   }
   .role-row {
     position: relative;
@@ -271,13 +349,14 @@ const updated = new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long
     visibility: visible;
   }
   .hero-nav a {
-    padding: 1em 2.2em;
+    /* mismo tamaño que los botones del topbar */
+    padding: 0.75em 1.5em;
     border: 1px solid currentColor;
     border-radius: var(--radius-pill);
     background: rgb(252 252 252 / 0.12);
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
-    font-size: 1rem;
+    font-size: var(--text-xs);
     line-height: 1;
     letter-spacing: 0.02em;
     text-transform: uppercase;
@@ -354,10 +433,6 @@ const updated = new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long
     }
     .sticker {
       width: calc(var(--w) * 2.2);
-    }
-    .hero-nav a {
-      padding: 0.9em 1.3em;
-      font-size: var(--text-xs);
     }
   }
 
