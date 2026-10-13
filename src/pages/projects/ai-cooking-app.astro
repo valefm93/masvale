@@ -49,15 +49,44 @@ const decisions = [
   },
 ];
 
-const colors = [
-  { name: 'Lime', hex: '#B1DD54', use: 'Brand · primary actions', token: '--cf-lime' },
-  { name: 'Navy', hex: '#062C41', use: 'Secondary actions · mascot', token: '--cf-navy', light: true },
-  { name: 'Ink', hex: '#14141B', use: 'Text', token: '--cf-ink', light: true },
-  { name: 'Lime soft', hex: '#F6FAEC', use: 'Backgrounds · cards', token: '--cf-lime-soft' },
-  { name: 'Lilac', hex: '#F3F3FB', use: 'Fields · rows', token: '--cf-lilac' },
-  { name: 'Orange', hex: '#FEC671', use: 'Onboarding accent', token: '--cf-orange' },
-  { name: 'Amber', hex: '#F8B038', use: 'Points · numbers', token: '--cf-amber' },
-  { name: 'Red', hex: '#BA1A1A', use: 'Delete', token: '--cf-red', light: true },
+// Paleta de Chefy: roles de color al estilo Material (color, "on", container, "on container")
+const palette = [
+  {
+    title: 'Primary colors',
+    rows: [
+      { name: 'Primary', token: 'P-40', bg: '#BADC6A', fg: '#313A1B' },
+      { name: 'On Primary', token: 'P-100', bg: '#313A1B', fg: '#BADC6A' },
+      { name: 'Primary Container', token: 'P-90', bg: '#F7FAEE', fg: '#161F04' },
+      { name: 'On Primary Container', token: 'P-10', bg: '#161F04', fg: '#FFFFFF' },
+    ],
+  },
+  {
+    title: 'Secondary colors',
+    rows: [
+      { name: 'Secondary', token: 'S-40', bg: '#122B3F', fg: '#FFFFFF' },
+      { name: 'On Secondary', token: 'S-100', bg: '#FFFFFF', fg: '#122B3F' },
+      { name: 'Secondary Container', token: 'S-90', bg: '#E7EAEC', fg: '#122B3F' },
+      { name: 'On Secondary Container', token: 'S-10', bg: '#122B3F', fg: '#FFFFFF' },
+    ],
+  },
+  {
+    title: 'Tertiary colors',
+    rows: [
+      { name: 'Tertiary', token: 'T-40', bg: '#F4B556', fg: '#281903' },
+      { name: 'On Tertiary', token: 'T-100', bg: '#281903', fg: '#F4B556' },
+      { name: 'Tertiary Container', token: 'T-90', bg: '#FEF8ED', fg: '#281903' },
+      { name: 'On Tertiary Container', token: 'T-10', bg: '#281903', fg: '#FFFFFF' },
+    ],
+  },
+  {
+    title: 'Surface colors',
+    rows: [
+      { name: 'Surface', token: 'N-98', bg: '#F7F7FD', fg: '#14141B' },
+      { name: 'Surface Bright', token: 'N-98', bg: '#F9F9FF', fg: '#14141B' },
+      { name: 'Surf. Container Lowest', token: 'N-100', bg: '#FFFFFF', fg: '#14141B' },
+      { name: 'Surf. Container Low', token: 'N-96', bg: '#F3F3FA', fg: '#14141B' },
+    ],
+  },
 ];
 
 ---
@@ -126,7 +155,8 @@ const colors = [
           <p class="label">Naming</p>
           <p class="name">Chefy</p>
           <p class="note">
-            Chef, plus a friendly ending. Short enough to be an app icon, warm enough to be the name of the assistant
+            A phonetic play on words: “chef” plus the ending <em>-y</em>, read as the diphthong /aɪ/, the same sound
+            as “AI” said as a single word. Short enough to be an app icon, warm enough to be the name of the assistant
             itself.
           </p>
           <p class="label">Typography</p>
@@ -135,19 +165,23 @@ const colors = [
         </article>
         <article class="card span-12" data-reveal>
           <p class="label">Color</p>
-          <ul class="swatches">
+          <div class="roles">
             {
-              colors.map((c) => (
-                <li>
-                  <span class:list={['chip', { light: c.light }]} style={`background: var(${c.token})`}>
-                    {c.hex}
-                  </span>
-                  <b>{c.name}</b>
-                  <small>{c.use}</small>
-                </li>
+              palette.map((g) => (
+                <div class="role-group">
+                  <p class="role-title">{g.title}</p>
+                  <ul class="role-stack">
+                    {g.rows.map((r) => (
+                      <li style={`background:${r.bg}; color:${r.fg}`}>
+                        <span>{r.name}</span>
+                        <span class="tok">{r.token}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               ))
             }
-          </ul>
+          </div>
         </article>
       </div>
     </section>
@@ -338,6 +372,7 @@ const colors = [
   .card {
     grid-column: span 12;
     padding: var(--space-6);
+    border-radius: 16px;
     background: var(--cf-white);
   }
   .span-7 {
@@ -406,35 +441,43 @@ const colors = [
     font-weight: 600;
     letter-spacing: -0.02em;
   }
-  .swatches {
+  /* Paleta de Chefy: cuatro grupos de roles, cada uno una pila redondeada de cuatro colores */
+  .roles {
     display: grid;
-    grid-template-columns: repeat(8, minmax(0, 1fr));
-    gap: var(--space-3);
-  }
-  .swatches li {
-    display: grid;
-    gap: 2px;
-    font-size: var(--text-sm);
-  }
-  .swatches b {
-    font-weight: var(--weight-strong);
-  }
-  .swatches small {
-    font-size: var(--text-xs);
-    color: var(--color-muted);
-  }
-  .chip {
-    display: flex;
-    align-items: end;
-    height: 5.5rem;
-    margin-bottom: var(--space-2);
-    padding: var(--space-2);
-    font-size: var(--text-2xs);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-8) var(--space-6);
+    font-family: 'Inter Variable', system-ui, sans-serif;
     color: var(--cf-ink);
-    box-shadow: inset 0 0 0 1px rgb(6 44 65 / 0.08);
   }
-  .chip.light {
-    color: var(--cf-white);
+  .role-title {
+    margin-bottom: var(--space-3);
+    font-size: var(--text-base);
+    font-weight: 500;
+  }
+  .role-stack {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: inset 0 0 0 1px var(--cf-line);
+    list-style: none;
+  }
+  /* nombre a la izquierda y código a la derecha, en la misma línea */
+  .role-stack li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    min-height: 3.5rem;
+    padding: 12px 16px;
+    font-size: var(--text-sm);
+    font-weight: 500;
+    line-height: 1.2;
+  }
+  .role-stack .tok {
+    flex: none;
+    font-variant-numeric: tabular-nums;
   }
 
   /* Navegación */
@@ -448,9 +491,10 @@ const colors = [
     flex: 0 1 22rem;
   }
 
+  /* Next project: franja gris claro, para separarla del proyecto y del footer */
   .next {
     padding-block: var(--space-16);
-    border-top: 1px solid var(--color-line);
+    background: var(--gray-light);
   }
   .next a {
     display: inline-block;
@@ -472,8 +516,8 @@ const colors = [
     .span-5 {
       grid-column: span 12;
     }
-    .swatches {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+    .roles {
+      grid-template-columns: 1fr;
     }
   }
   @media (max-width: 860px) {

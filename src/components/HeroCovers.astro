@@ -8,7 +8,7 @@ import { site, nav } from '../data/site';
 import { slides } from '../data/heroCovers';
 
 interface Props {
-  /** A dónde lleva "Hire me" (el footer de contacto puede no estar en esta página) */
+  /** A dónde lleva "Let’s talk" (el footer de contacto puede no estar en esta página) */
   contactHref?: string;
 }
 const { contactHref = '#contact' } = Astro.props;
@@ -78,6 +78,27 @@ const maxV = Math.max(...slides.map((s) => s.v.length));
     <button class="hit is-prev" type="button" aria-label="Previous cover" data-prev></button>
     <button class="hit is-next" type="button" aria-label="Next cover" data-next></button>
 
+    <!-- Stickers (exportados de Figma, "hero v1"): caen al cargar, rebotan y quedan apilados abajo a la izquierda;
+         el visitante puede moverlos. Solo se ven en el primer slide.
+         --x / --y / --w / --h son la posición y el tamaño de cada uno en el lienzo de 1440 × 1024. -->
+    <div class="stickers" aria-hidden="true" data-stickers>
+      <div class="sticker" style="--x:26; --y:765; --w:223; --h:219; --k:0" data-sticker>
+        <img src="/images/hero/stickers/star-lime.svg" alt="" width="223" height="219" draggable="false" />
+      </div>
+      <div class="sticker" style="--x:290; --y:815; --w:160; --h:160; --k:1" data-sticker>
+        <img src="/images/hero/stickers/star-blue-small.svg" alt="" width="160" height="160" draggable="false" />
+      </div>
+      <div class="sticker" style="--x:223; --y:671; --w:239; --h:239; --k:2" data-sticker>
+        <img src="/images/hero/stickers/hire-me.svg" alt="" width="239" height="239" draggable="false" />
+      </div>
+      <div class="sticker" style="--x:168; --y:838; --w:202; --h:202; --k:3" data-sticker>
+        <img src="/images/hero/stickers/circle-black.svg" alt="" width="202" height="202" draggable="false" />
+      </div>
+      <div class="sticker" style="--x:116; --y:691; --w:230; --h:230; --k:4" data-sticker>
+        <img src="/images/hero/stickers/star-blue.svg" alt="" width="230" height="230" draggable="false" />
+      </div>
+    </div>
+
     <!-- Cursor del slider: mismo cristal que los botones (el cursor del sistema no admite desenfoque) -->
     <div class="cursor" aria-hidden="true" data-cursor>
       <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16M14 6l6 6-6 6" /></svg>
@@ -106,6 +127,7 @@ const maxV = Math.max(...slides.map((s) => s.v.length));
     const based = root.querySelector<SVGGElement>('[data-based]')!;
     const date = root.querySelector<SVGGElement>('[data-date]')!;
     const ind = root.querySelector<SVGRectElement>('[data-ind]')!;
+    const stickers = root.querySelector<HTMLElement>('[data-stickers]')!;
     let current = -1;
 
     // Fecha de hoy, en inglés: "Last update, Friday 09 October"
@@ -171,6 +193,9 @@ const maxV = Math.max(...slides.map((s) => s.v.length));
         if (w.blur) g.classList.add('is-soft');
       });
 
+      // los stickers solo acompañan al primer slide
+      stickers.classList.toggle('is-off', i !== 0);
+
       // textos chicos e indicador
       if (s.based) place(based, s.based.x, s.based.y, -90);
       based.style.opacity = s.based ? '1' : '0';
@@ -217,6 +242,33 @@ const maxV = Math.max(...slides.map((s) => s.v.length));
       root.addEventListener('pointerdown', () => cursor.classList.add('is-down'));
       window.addEventListener('pointerup', () => cursor.classList.remove('is-down'));
     }
+
+    // Stickers: se pueden arrastrar a cualquier lugar del hero
+    let top = 1;
+    stickers.querySelectorAll<HTMLElement>('[data-sticker]').forEach((el) => {
+      let x = 0;
+      let y = 0;
+      let from: { px: number; py: number; x: number; y: number } | null = null;
+      el.addEventListener('pointerdown', (e) => {
+        from = { px: e.clientX, py: e.clientY, x, y };
+        el.setPointerCapture(e.pointerId);
+        el.classList.add('is-held');
+        el.style.zIndex = String(++top);
+        e.preventDefault();
+      });
+      el.addEventListener('pointermove', (e) => {
+        if (!from) return;
+        x = from.x + e.clientX - from.px;
+        y = from.y + e.clientY - from.py;
+        el.style.translate = `${x}px ${y}px`;
+      });
+      const drop = () => {
+        from = null;
+        el.classList.remove('is-held');
+      };
+      el.addEventListener('pointerup', drop);
+      el.addEventListener('pointercancel', drop);
+    });
 
     // Si el visitante intenta bajar y no hay nada debajo, los botones dan un saltito:
     // suben un poco y vuelven, invitando a hacer clic.
@@ -537,6 +589,84 @@ const maxV = Math.max(...slides.map((s) => s.v.length));
   }
 
   /* Zonas de clic: mitad izquierda = anterior, mitad derecha = siguiente */
+  /* Stickers apilados abajo a la izquierda, en las mismas medidas del lienzo de Figma.
+     --px es un píxel del lienzo de 1440 × 1024 (misma escala que el SVG del hero) */
+  .stickers {
+    --px: max(100vw / 1440, 100svh / 1024);
+    position: absolute;
+    left: max(0px, 50% - 720 * var(--px));
+    bottom: 0;
+    z-index: 2;
+    width: 0;
+    height: 0;
+    transition: opacity 400ms ease;
+  }
+  .stickers.is-off {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .sticker {
+    position: absolute;
+    left: calc(var(--x) * var(--px));
+    bottom: calc((1024 - var(--y) - var(--h)) * var(--px));
+    width: calc(var(--w) * var(--px));
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .sticker.is-held {
+    cursor: grabbing;
+  }
+  .sticker img {
+    display: block;
+    width: 100%;
+    height: auto;
+    transition:
+      scale 180ms ease,
+      filter 180ms ease;
+    /* caída: llega desde arriba de la pantalla, rebota dos veces y se queda */
+    animation: sticker-fall 1500ms calc(1300ms + var(--k) * 150ms) both;
+  }
+  .sticker.is-held img {
+    scale: 1.05;
+    filter: drop-shadow(0 8px 10px rgb(19 20 20 / 0.22));
+  }
+  @keyframes sticker-fall {
+    0% {
+      translate: 0 -115vh;
+      rotate: -25deg;
+      animation-timing-function: cubic-bezier(0.5, 0, 1, 0.6);
+    }
+    48% {
+      translate: 0 0;
+      rotate: 4deg;
+      animation-timing-function: cubic-bezier(0, 0.4, 0.5, 1);
+    }
+    66% {
+      translate: 0 -11vh;
+      rotate: -3deg;
+      animation-timing-function: cubic-bezier(0.5, 0, 1, 0.6);
+    }
+    82% {
+      translate: 0 0;
+      rotate: 1deg;
+      animation-timing-function: cubic-bezier(0, 0.4, 0.5, 1);
+    }
+    91% {
+      translate: 0 -2.5vh;
+      animation-timing-function: cubic-bezier(0.5, 0, 1, 0.6);
+    }
+    100% {
+      translate: 0 0;
+      rotate: 0deg;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sticker img {
+      animation: none;
+    }
+  }
   .hit {
     position: absolute;
     top: 0;

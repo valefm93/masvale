@@ -14,9 +14,9 @@ const { project } = Astro.props;
 ---
 
 <div class="container simple">
-  <div class="side" data-reveal>
+  <div class="side" data-reveal data-side>
     <p class="col-label"><span>Project</span></p>
-    <a class="back" href="/portfolio">← All projects</a>
+    <a class="back" href="/portfolio" data-back>← All projects</a>
     <p class="eyebrow">{project.client}</p>
     <h1>{project.title}</h1>
     <div class="side-text">
@@ -29,8 +29,29 @@ const { project } = Astro.props;
   <div class="media">
     <p class="col-label"><span>Work</span><span>{project.categories.join(' / ')}</span></p>
     <slot />
+    <!-- Volver arriba, al final de la columna de trabajo (igual que en About me) -->
+    <p class="to-top">
+      <a href="#top">
+        <span>Back to top</span>
+        <svg class="up" viewBox="0 0 16 16" aria-hidden="true">
+          <path d="M8 13V3M3.5 7.5 8 3l4.500 4.500" fill="none" stroke="currentColor" stroke-width="1.25" />
+        </svg>
+      </a>
+    </p>
   </div>
 </div>
+
+<script>
+  // Marca "← All projects" cuando ya quedó fijo arriba (para mostrarle la línea de abajo)
+  const side = document.querySelector<HTMLElement>('[data-side]');
+  const back = side?.querySelector<HTMLElement>('[data-back]');
+  if (side && back) {
+    const start = back.offsetTop;
+    const update = () => back.classList.toggle('is-stuck', side.scrollTop >= start - 1);
+    side.addEventListener('scroll', update, { passive: true });
+    update();
+  }
+</script>
 
 <style>
   /*
@@ -71,14 +92,31 @@ const { project } = Astro.props;
   }
   .side .col-label {
     margin-right: calc(var(--grid-gap) * -1);
-    margin-bottom: var(--space-8);
+    margin-bottom: var(--space-4);
   }
+  /*
+    "← All projects" sube con el texto y, cuando la columna empieza a correr,
+    se queda fijo arriba, a la altura de la etiqueta "Work" de la otra columna.
+  */
   .back {
-    display: inline-block;
-    margin-bottom: var(--space-8);
-    font-size: var(--text-sm);
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: block;
+    margin-right: calc(var(--grid-gap) * -1);
+    margin-bottom: var(--space-6);
+    padding-block: var(--space-3);
+    border-bottom: 1px solid transparent;
+    background: var(--color-bg);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
     color: var(--color-muted);
     text-decoration: none;
+    transition: border-color var(--duration) var(--ease);
+  }
+  .back.is-stuck {
+    border-bottom-color: var(--color-line);
   }
   .back:hover {
     color: var(--color-text);
@@ -117,6 +155,40 @@ const { project } = Astro.props;
   .media > :global(*) {
     min-width: 0;
   }
+  .to-top {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: var(--space-8);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-line);
+  }
+  .to-top a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--text-xs);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+  .up {
+    box-sizing: content-box;
+    width: 1rem;
+    height: 1rem;
+    padding: 0.75rem;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+    transition:
+      background var(--duration) var(--ease),
+      border-color var(--duration) var(--ease),
+      translate var(--duration) var(--ease);
+  }
+  .to-top a:hover .up {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-on-accent);
+    translate: 0 -4px;
+  }
   @media (max-width: 860px) {
     .simple {
       grid-template-columns: 1fr;
@@ -129,6 +201,10 @@ const { project } = Astro.props;
       overflow: visible;
     }
     .side .col-label {
+      margin-right: 0;
+    }
+    .back {
+      position: static;
       margin-right: 0;
     }
     .media {

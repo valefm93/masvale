@@ -54,7 +54,7 @@ export const nav = [
   { label: 'Projects', href: '/portfolio' },
   { label: 'About me', href: '/resume' },
   // #contact es el footer, que está en todas las páginas
-  { label: 'Hire me', href: '#contact' },
+  { label: 'Let’s talk', href: '#contact' },
 ];
 
 export const contact = {

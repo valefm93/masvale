@@ -159,13 +159,16 @@ const illustrations = Array.from({ length: 20 }, (_, i) => String(i + 1).padStar
               <h3>Color</h3>
               <p>A scale built around one purple. The number on each step is its contrast against the text it carries.</p>
             </header>
-            <ul class="scale">
+            <p class="sub">Purple scale</p>
+            <ul class="scale hb">
               {
                 scale.map((c) => (
-                  <li style={`background:${c.hex}; color:${c.text}`}>
-                    <b>{c.step}</b>
-                    <span class="ratio">
-                      {c.ratio.toFixed(1)} · {grade(c.ratio)}
+                  <li class:list={{ 'is-brand': c.step === '700' }} style={`background:${c.hex}; color:${c.text}`}>
+                    <span class="top">
+                      <b>{c.step}</b>
+                      <span class="ratio">
+                        {c.ratio.toFixed(1)} · {grade(c.ratio)}
+                      </span>
                     </span>
                     <span class="hex">{c.hex}</span>
                     <span class="use">{c.use}</span>
@@ -173,36 +176,36 @@ const illustrations = Array.from({ length: 20 }, (_, i) => String(i + 1).padStar
                 ))
               }
             </ul>
-            <div class="color-row">
-              <ul class="support">
-                {
-                  support.map((c) => (
-                    <li>
-                      <span class="dot" style={`background:${c.hex}`} />
-                      <span>
-                        <b>{c.name}</b>
-                        <small>
-                          {c.hex} · {c.use}
-                        </small>
-                      </span>
-                    </li>
-                  ))
-                }
-              </ul>
-              <ul class="pairings hb">
-                {
-                  pairings.map((p) => (
-                    <li style={`background:${p.bg}; color:${p.fg}`}>
-                      <span class="aa">Aa</span>
+
+            <p class="sub">Neutrals and accent</p>
+            <ul class="support hb">
+              {
+                support.map((c) => (
+                  <li style={`background:${c.hex}; color:${lum(c.hex) > 0.5 ? INK : WHITE}`}>
+                    <b>{c.name}</b>
+                    <span class="hex">{c.hex}</span>
+                    <span class="use">{c.use}</span>
+                  </li>
+                ))
+              }
+            </ul>
+
+            <p class="sub">Text pairings</p>
+            <ul class="pairings hb">
+              {
+                pairings.map((p) => (
+                  <li style={`background:${p.bg}; color:${p.fg}`}>
+                    <span class="aa">Aa</span>
+                    <span class="pair-text">
                       <span class="pair-label">{p.label}</span>
                       <span class="pair-ratio">
                         {p.ratio.toFixed(1)} · {grade(p.ratio)}
                       </span>
-                    </li>
-                  ))
-                }
-              </ul>
-            </div>
+                    </span>
+                  </li>
+                ))
+              }
+            </ul>
           </article>
 
           <!-- Tipografía -->
@@ -506,91 +509,106 @@ const illustrations = Array.from({ length: 20 }, (_, i) => String(i + 1).padStar
     color: var(--color-muted);
   }
 
-  /* Color */
-  .scale {
-    display: grid;
-    grid-template-columns: repeat(7, minmax(0, 1fr));
-  }
-  .scale li {
-    display: grid;
-    align-content: end;
-    gap: 2px;
-    min-height: 9rem;
-    padding: var(--space-4);
-    font-size: var(--text-xs);
-  }
-  .scale li:last-child,
-  .scale li:nth-last-child(2) {
-    box-shadow: inset 0 0 0 1px var(--hb-200);
-  }
-  .scale b {
-    margin-bottom: auto;
-    font-size: var(--text-lg);
-    font-weight: var(--weight-heading);
-    letter-spacing: -0.02em;
-  }
-  .scale li {
-    grid-template-rows: 1fr auto auto auto;
-  }
-  .scale .ratio,
-  .scale .use {
-    opacity: 0.75;
-  }
-  .scale .hex {
-    font-size: var(--text-sm);
-  }
-  .color-row {
-    display: grid;
-    grid-template-columns: var(--col-4) minmax(0, 1fr);
-    gap: var(--grid-gap);
-    margin-top: var(--space-8);
-  }
-  .support {
-    display: grid;
-    gap: var(--space-3);
-    align-content: start;
-  }
-  .support li {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-    font-size: var(--text-sm);
-  }
-  .support span:last-child {
-    display: grid;
-  }
-  .support b {
-    font-weight: var(--weight-strong);
-  }
-  .support small {
-    font-size: var(--text-xs);
+  /* Color: tres filas con la misma separación y el mismo redondeo del design system.
+     1) la escala de violetas (el 700, color de marca, ocupa el doble), 2) neutros y acento, 3) pares de texto */
+  .sub {
+    margin: var(--space-8) 0 var(--space-3);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
     color: var(--color-muted);
   }
-  .dot {
-    flex: none;
-    width: 2.25rem;
-    height: 2.25rem;
-    border-radius: 50%;
-    box-shadow: inset 0 0 0 1px rgb(42 15 58 / 0.1);
+  .card-head + .sub {
+    margin-top: 0;
   }
+  .scale,
+  .support,
   .pairings {
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: var(--space-2);
   }
+  .scale {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+  .support,
+  .pairings {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  .scale li,
+  .support li,
   .pairings li {
-    display: grid;
-    gap: 2px;
-    padding: var(--space-4);
     border-radius: var(--hb-r-md);
     box-shadow: inset 0 0 0 1px rgb(42 15 58 / 0.08);
-    font-size: 11.500px;
+    font-size: 10px;
+    line-height: 1.35;
+  }
+  .scale li,
+  .support li {
+    display: grid;
+    grid-template-rows: 1fr auto auto;
+    gap: 2px;
+    padding: var(--space-4);
+  }
+  .scale li {
+    min-height: 8.5rem;
+    padding: var(--space-3);
+  }
+  .scale li.is-brand {
+    padding-inline: var(--space-4);
+  }
+  .scale li.is-brand {
+    grid-column: span 2;
+  }
+  .support li {
+    min-height: 5.5rem;
+    padding: var(--space-3);
+  }
+  .scale .top {
+    display: grid;
+    gap: 1px;
+    align-self: start;
+  }
+  .scale b {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .support b {
+    align-self: start;
+    font-size: 12.5px;
+    font-weight: 600;
+  }
+  .scale .hex,
+  .support .hex {
+    font-size: 11px;
+    font-weight: 500;
+  }
+  .scale .ratio,
+  .scale .hex,
+  .support .hex,
+  .pair-ratio {
+    white-space: nowrap;
+  }
+  .scale .ratio,
+  .scale .use,
+  .support .use {
+    opacity: 0.75;
+  }
+  .pairings li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3);
   }
   .aa {
-    margin-bottom: var(--space-4);
-    font-size: 28px;
+    font-size: 20px;
     font-weight: 600;
     line-height: 1;
+  }
+  .pair-text {
+    display: grid;
+    gap: 1px;
+    min-width: 0;
   }
   .pair-label {
     font-weight: 600;
@@ -783,8 +801,10 @@ const illustrations = Array.from({ length: 20 }, (_, i) => String(i + 1).padStar
     object-fit: contain;
   }
 
+  /* Next project: franja gris claro, para separarla del proyecto y del footer */
   .next {
     padding-block: var(--space-16);
+    background: var(--gray-light);
   }
   .next a {
     display: inline-block;
@@ -813,12 +833,17 @@ const illustrations = Array.from({ length: 20 }, (_, i) => String(i + 1).padStar
     .scale {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+    .scale {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
     .scale li {
       min-height: 6.5rem;
     }
-    .components,
-    .color-row,
+    .support,
     .pairings {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .components {
       grid-template-columns: 1fr;
     }
     .group.is-wide {

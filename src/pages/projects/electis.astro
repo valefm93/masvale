@@ -135,7 +135,11 @@ const groups = [
       <header>
         <p class="n">01</p>
         <h2>The starting point</h2>
-        <p>One page held every parameter of an election. The redesign splits it into steps you can follow and check.</p>
+        <p>
+          The old platform had no clear information architecture: steps of the flow were missing their own screens,
+          navigation relied on breadcrumbs that were hard to follow, and nothing told the user where they were or what
+          came next. The redesign restructures it into steps you can follow and check.
+        </p>
       </header>
       <BeforeAfter
         before={cdn('67575176371fcf15e1af7010_BEF.jpg')}
@@ -284,25 +288,24 @@ const groups = [
     gap: var(--grid-gap);
     padding-top: var(--space-12);
   }
+  /* Capítulo: el número va arriba como etiqueta chica; título y texto, alineados al borde izquierdo de las imágenes */
   .chapter header {
     display: grid;
-    grid-template-columns: 3rem minmax(0, 1fr);
-    column-gap: var(--space-4);
-    align-items: baseline;
-    padding-top: var(--space-6);
+    gap: var(--space-2);
+    padding-top: var(--space-4);
     border-top: 1px solid var(--color-line);
   }
   .n {
-    font-size: var(--text-sm);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.08em;
     color: var(--color-muted);
   }
   .chapter h2 {
     font-size: var(--text-xl);
   }
   .chapter header p:last-child {
-    grid-column: 2;
     max-width: 58ch;
-    margin-top: var(--space-3);
+    margin-top: var(--space-1, 0.25rem);
     font-size: var(--text-sm);
     color: var(--color-muted);
   }
@@ -378,9 +381,10 @@ const groups = [
     align-items: start;
   }
 
+  /* Next project: franja gris claro, para separarla del proyecto y del footer */
   .next {
     padding-block: var(--space-16);
-    border-top: 1px solid var(--color-line);
+    background: var(--gray-light);
   }
   .next a {
     display: inline-block;

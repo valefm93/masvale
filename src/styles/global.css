@@ -177,3 +177,21 @@ strong {
     animation-duration: 0.01ms !important;
   }
 }
+
+/*
+  Footer reveal ("efecto telón"): el footer ya está abajo, quieto, y la última
+  sección de la página sube y lo va destapando. El contenido (main) pasa por
+  encima con fondo opaco; el footer se queda pegado al borde inferior.
+  Base.astro pone .is-reveal solo si el footer entra entero en la pantalla.
+*/
+main {
+  position: relative;
+  z-index: 1;
+  background: var(--color-bg);
+}
+.is-reveal {
+  position: sticky;
+  bottom: 0;
+  z-index: 0;
+}
+

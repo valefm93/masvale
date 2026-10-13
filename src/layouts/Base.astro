@@ -49,6 +49,25 @@ const fullTitle = title ? `${title} · Vale Ferreira` : 'Vale Ferreira · Produc
 </html>
 
 <script>
+  // Footer reveal: solo si el footer cabe entero en la pantalla (si no, se comporta normal).
+  // Mientras se destapa, --r avanza de 0 a 1 y el footer pasa de lima a oscuro (ver Footer.astro).
+  const footerEl = document.querySelector<HTMLElement>('footer');
+  const mainEl = document.querySelector<HTMLElement>('main');
+  if (footerEl && mainEl) {
+    const paint = () => {
+      const reveal = footerEl.classList.contains('is-reveal');
+      const shown = (window.innerHeight - mainEl.getBoundingClientRect().bottom) / footerEl.offsetHeight;
+      footerEl.style.setProperty('--r', reveal ? String(Math.min(1, Math.max(0, shown))) : '1');
+    };
+    const fit = () => {
+      footerEl.classList.toggle('is-reveal', footerEl.offsetHeight <= window.innerHeight + 1);
+      paint();
+    };
+    fit();
+    window.addEventListener('resize', fit);
+    window.addEventListener('scroll', paint, { passive: true });
+  }
+
   // Activa las micro-animaciones de entrada (ver data-reveal en global.css)
   const targets = document.querySelectorAll('[data-reveal]');
   const observer = new IntersectionObserver(

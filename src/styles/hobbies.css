@@ -328,6 +328,29 @@
   height: 40px;
   background: var(--hb-100);
 }
+/* Filas con ilustración: mismos colores de siempre, pero el área de la ilustración
+   va de borde a borde (sin margen alrededor) */
+.hb-row:has(> .hb-thumb:not(.is-icon)) {
+  align-items: stretch;
+  padding: 0 12px 0 0;
+  overflow: hidden;
+}
+.hb-row:has(> .hb-thumb:not(.is-icon)) > .hb-thumb {
+  width: 64px;
+  height: auto;
+  min-height: 64px;
+  border-radius: 0;
+}
+.hb-row.is-compact:has(> .hb-thumb:not(.is-icon)) > .hb-thumb {
+  width: 56px;
+  min-height: 56px;
+}
+.hb-row:has(> .hb-thumb:not(.is-icon)) > :not(.hb-thumb) {
+  align-self: center;
+}
+.hb-row:has(> .hb-thumb:not(.is-icon)) > .hb-row-text {
+  padding-block: 10px;
+}
 .hb-count {
   font-weight: 600 !important;
   color: var(--hb-700) !important;
@@ -351,10 +374,12 @@
   grid-template-columns: 1fr 1fr;
   gap: 8px;
 }
+/* Card: la ilustración ocupa todo el ancho sobre el violeta claro (sin margen); el texto va abajo, sobre blanco */
 .hb-card {
   display: grid;
   gap: 2px;
-  padding: 8px 8px 12px;
+  padding: 0 0 12px;
+  overflow: hidden;
   border-radius: var(--hb-r-md);
   box-shadow: inset 0 0 0 1.500px var(--hb-100);
   font-size: 13.500px;
@@ -363,9 +388,8 @@
 .hb-card-art {
   display: grid;
   place-items: center;
-  height: 84px;
-  margin-bottom: 8px;
-  border-radius: var(--hb-r-sm);
+  height: 92px;
+  margin-bottom: 10px;
   background: var(--hb-100);
 }
 .hb-card-art img {
@@ -373,7 +397,7 @@
 }
 .hb-card b,
 .hb-card small {
-  padding-inline: 4px;
+  padding-inline: 12px;
 }
 
 /* ---------- 1 · Welcome ---------- */

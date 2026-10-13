@@ -105,8 +105,12 @@ const items = [
 <style>
   /* Fondo oscuro para separarlo del resto de las secciones */
   .footer {
-    background: var(--dark);
-    color: var(--white);
+    /* --r va de 0 a 1 mientras el footer se destapa (lo pone Base.astro):
+       el fondo pasa de lima a oscuro y el texto de oscuro a blanco */
+    --r: 1;
+    --r-text: clamp(0, (var(--r) - 0.45) / 0.25, 1);
+    background: color-mix(in srgb, var(--dark) calc(var(--r) * 100%), var(--accent));
+    color: color-mix(in srgb, var(--white) calc(var(--r-text) * 100%), var(--dark));
   }
   .inner {
     display: flex;

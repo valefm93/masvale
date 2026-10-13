@@ -11,7 +11,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
 ---
 
 <Base title="Projects" description="Product design work by Vale Ferreira.">
-  <section class="container section">
+  <section class="container page">
     <header class="head" data-reveal>
       <div class="title" data-typewriter="auto" data-text={portfolioNote}>
         <h1 aria-describedby="portfolio-note">Projects</h1>
@@ -20,18 +20,18 @@ const pad = (n: number) => String(n).padStart(2, '0');
           <span data-typed></span><span class="type-caret"></span>
         </p>
       </div>
+      <div class="filters" role="group" aria-label="Filter by type of work" data-filters>
+        <button type="button" data-filter="" aria-pressed="true">All</button>
+        {
+          tags.map((t) => (
+            <button type="button" data-filter={t} aria-pressed="false">
+              {t}
+            </button>
+          ))
+        }
+      </div>
       <p class="count" aria-live="polite"><span data-count>{pad(projects.length)}</span> projects</p>
     </header>
-    <div class="filters" role="group" aria-label="Filter by type of work" data-filters data-reveal style="--reveal-i:1">
-      <button type="button" data-filter="" aria-pressed="true">All</button>
-      {
-        tags.map((t) => (
-          <button type="button" data-filter={t} aria-pressed="false">
-            {t}
-          </button>
-        ))
-      }
-    </div>
     <div class="grid">
       {projects.map((p, i) => <PortfolioTile project={p} index={i} />)}
       {
@@ -51,39 +51,46 @@ const pad = (n: number) => String(n).padStart(2, '0');
 </Base>
 
 <style>
+  /*
+    Cabecera compacta: título, filtros y contador en una sola fila,
+    para que entren al menos dos filas de proyectos en la pantalla.
+  */
+  .page {
+    padding-block: var(--space-6) var(--space-section);
+  }
   .head {
     display: flex;
     flex-wrap: wrap;
-    align-items: end;
-    justify-content: space-between;
-    gap: var(--space-4);
+    align-items: center;
+    gap: var(--space-3) var(--space-8);
     margin-bottom: var(--space-6);
-    padding-bottom: var(--space-8);
+    padding-bottom: var(--space-4);
     border-bottom: 1px solid var(--color-line);
   }
   h1 {
-    font-size: var(--text-3xl);
+    font-size: var(--text-xl);
   }
   .count {
+    margin-left: auto;
     font-size: var(--text-sm);
     color: var(--color-muted);
   }
-  /* Mensaje que se escribe solo al pasar el mouse por el título */
+  /* Mensaje que se escribe solo al pasar el mouse por el título: cae debajo, sobre la grilla */
   .title {
     position: relative;
   }
   .msg {
     position: absolute;
-    left: calc(100% + var(--space-6));
-    bottom: 22%;
-    width: min(19rem, 34vw);
-    border-bottom-left-radius: var(--radius-tail); /* sale del título, a su izquierda */
+    top: calc(100% + var(--space-3));
+    left: 0;
+    z-index: 5;
+    width: min(19rem, 80vw);
+    border-top-left-radius: var(--radius-tail); /* sale del título, que está arriba */
   }
   .filters {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-2);
-    margin-bottom: var(--space-8);
   }
   .filters button {
     padding: 0.7em 1.3em;
@@ -112,10 +119,28 @@ const pad = (n: number) => String(n).padStart(2, '0');
     border-color: var(--color-text);
     color: var(--color-bg);
   }
+  /* Tres por fila en escritorio: caben dos filas completas a la vista */
   .grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: var(--grid-gap);
+  }
+  .grid :global(.name),
+  .grid .soon-name {
+    font-size: var(--text-lg);
+  }
+  .grid :global(.info),
+  .grid .soon-info {
+    padding: var(--space-6);
+  }
+  .grid .soon-tag {
+    top: var(--space-6);
+    left: var(--space-6);
+  }
+  @media (max-width: 1100px) {
+    .grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
   /* Proyectos que vienen: se ven como los demás (portada), pero sin enlace;
      al pasar el mouse aparece "Coming soon" sobre el lima. */

@@ -10,7 +10,7 @@ All the text on the site, page by page, in the order it appears. Edit the text d
 ### Top bar
 
 - **Name:** Vale Ferreira
-- **Menu:** Projects · About me · Hire me
+- **Menu:** Projects · About me · Let’s talk
 
 ### Footer
 
@@ -36,7 +36,7 @@ All the text on the site, page by page, in the order it appears. Edit the text d
 - **Title, line 1:** Valeria Ferreira
 - **Title, line 2:** Product Designer
 - **Tagline:** Currently open to new challenges
-- **Buttons:** Projects · About me · Hire me
+- **Buttons:** Projects · About me · Let’s talk
 - **Scroll hint:** Scroll down
 
 ### Presentation (text that lights up while scrolling)
@@ -429,7 +429,7 @@ Schibsted Grotesk: a minimal sans serif with a geometric foundation, friendly an
 
 Font: Schibsted Grotesk
 
-Vote numérique, transparent, conforme et accompagné.
+Solution de vote en ligne vérifiée
 
 Regular Medium Bold
 
@@ -642,7 +642,7 @@ Naming
 
 Chefy
 
-Chef, plus a friendly ending. Short enough to be an app icon, warm enough to be the name of the assistant itself.
+A phonetic play on words: “chef” plus the ending -y, read as the diphthong /aɪ/, the same sound as “AI” said as a single word. Short enough to be an app icon, warm enough to be the name of the assistant itself.
 
 Typography
 
