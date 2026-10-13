@@ -59,7 +59,6 @@ export const nav = [
 
 export const contact = {
   email: 'valefm93@gmail.com',
-  phone: '+33744410156',
   linkedin: 'https://www.linkedin.com/in/valefm93/',
   location: 'Paris, France',
 };
