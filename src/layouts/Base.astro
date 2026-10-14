@@ -49,6 +49,35 @@ const fullTitle = title ? `${title} · Vale Ferreira` : 'Vale Ferreira · Produc
 </html>
 
 <script>
+  // "Let's talk" (#contact): el footer queda pegado abajo (footer reveal), así que el salto normal del
+  // navegador no llega. Se baja hasta el final de la página; si la página no tiene footer (la home),
+  // se va al de /resume.
+  {
+    const toContact = (smooth: boolean) => {
+      const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      // 'instant' y no 'auto': con scroll-behavior: smooth en el html, 'auto' también se animaría
+      window.scrollTo({ top: document.documentElement.scrollHeight, behavior: smooth && !still ? 'smooth' : 'instant' });
+    };
+    document.addEventListener('click', (e) => {
+      const a = (e.target as Element).closest<HTMLAnchorElement>('a[href$="#contact"]');
+      if (!a || e.metaKey || e.ctrlKey) return;
+      const url = new URL(a.href);
+      if (url.pathname !== location.pathname) return;
+      e.preventDefault();
+      if (!document.getElementById('contact')) {
+        location.href = '/resume#contact';
+        return;
+      }
+      history.replaceState(null, '', '#contact');
+      toContact(true);
+    });
+    if (location.hash === '#contact' && document.getElementById('contact')) {
+      toContact(false);
+      // las imágenes que cargan después cambian el alto de la página: se vuelve a bajar
+      window.addEventListener('load', () => toContact(false), { once: true });
+    }
+  }
+
   // Footer reveal: solo si el footer cabe entero en la pantalla (si no, se comporta normal).
   // Mientras se destapa, --r avanza de 0 a 1 y el footer pasa de lima a oscuro (ver Footer.astro).
   const footerEl = document.querySelector<HTMLElement>('footer');

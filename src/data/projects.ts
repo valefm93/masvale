@@ -40,20 +40,33 @@ export type Project = {
 };
 
 export const projects: Project[] = [
-  // Case study de producto. La página está en src/pages/projects/electis.astro
-  // (el branding de Electis irá como un proyecto aparte)
+  // El orden del array es el orden en la página Projects (y el del "Next project")
   {
-    slug: 'electis',
-    categories: ['UX/UI', 'Web', 'Design system'],
-    title: 'Electis, online CSE voting platform',
-    client: 'Electis',
+    slug: 'ai-cooking-app',
+    categories: ['Mobile app', 'Branding', 'Design system'],
+    title: 'Chefy, AI cooking app',
+    client: '10 Grounds',
     summary:
-      'Redesigning how an election is set up on an online voting platform: from one long technical page to guided steps, with a design system behind it.',
-    cover: '/images/electis/cover.jpg',
-    tags: ['Product design', 'Information architecture', 'Prototyping', 'User testing', 'Design system', 'Design QA'],
-    caseStudy: true,
+      'An AI cooking assistant that suggests meals from what is already in your kitchen. UX/UI design, naming, branding and design system for the MVP.',
+    cover: '/images/chefy/cover.jpg',
+    tags: ['UX/UI design', 'Design Sprint', 'Naming', 'Branding', 'Design system'],
+    featured: true,
+    // La página está en src/pages/projects/ai-cooking-app.astro
     custom: true,
-    blocks: [],
+    blocks: [
+      {
+        type: 'text',
+        body: [
+          'This is a mobile application that recommends recipes based on the ingredients you already have at home.',
+          'I Participated since its inception, in sprints, wireframing, naming, branding, MVP definition.',
+        ],
+      },
+      {
+        type: 'image',
+        src: cdn('675eeac31745565ac3524abc_ai%20news%20app.jpg'),
+        alt: 'Screens of Chefy, the AI cooking app',
+      },
+    ],
   },
   // Dashboard de clientes de Electis (primer proyecto hecho con IA).
   // La página está en src/pages/projects/electis-client-dashboard.astro
@@ -67,6 +80,21 @@ export const projects: Project[] = [
     cover: '/images/electis-dashboard/cover.jpg',
     tags: ['Product design', 'AI-assisted design', 'Automation', 'MVP to delivery'],
     featured: true,
+    custom: true,
+    blocks: [],
+  },
+  // Case study de producto. La página está en src/pages/projects/electis.astro
+  // (el branding de Electis irá como un proyecto aparte)
+  {
+    slug: 'electis',
+    categories: ['UX/UI', 'Web', 'Design system'],
+    title: 'Electis, online CSE voting platform',
+    client: 'Electis',
+    summary:
+      'Redesigning how an election is set up on an online voting platform: from one long technical page to guided steps, with a design system behind it.',
+    cover: '/images/electis/cover.jpg',
+    tags: ['Product design', 'Information architecture', 'Prototyping', 'User testing', 'Design system', 'Design QA'],
+    caseStudy: true,
     custom: true,
     blocks: [],
   },
@@ -156,33 +184,6 @@ export const projects: Project[] = [
     tags: ['UI design', 'UX design', 'Design system', 'Illustration', 'Concept'],
     custom: true,
     blocks: [],
-  },
-  {
-    slug: 'ai-cooking-app',
-    categories: ['Mobile app', 'Branding', 'Design system'],
-    title: 'Chefy, AI cooking app',
-    client: '10 Grounds',
-    summary:
-      'An AI cooking assistant that suggests meals from what is already in your kitchen. UX/UI design, naming, branding and design system for the MVP.',
-    cover: '/images/chefy/cover.jpg',
-    tags: ['UX/UI design', 'Design Sprint', 'Naming', 'Branding', 'Design system'],
-    featured: true,
-    // La página está en src/pages/projects/ai-cooking-app.astro
-    custom: true,
-    blocks: [
-      {
-        type: 'text',
-        body: [
-          'This is a mobile application that recommends recipes based on the ingredients you already have at home.',
-          'I Participated since its inception, in sprints, wireframing, naming, branding, MVP definition.',
-        ],
-      },
-      {
-        type: 'image',
-        src: cdn('675eeac31745565ac3524abc_ai%20news%20app.jpg'),
-        alt: 'Screens of Chefy, the AI cooking app',
-      },
-    ],
   },
 ];
 

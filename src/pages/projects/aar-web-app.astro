@@ -288,7 +288,7 @@ const svg = (name: keyof typeof icon, size = 18) =>
           </div>
           <p class="label gap">Saved proposal</p>
           <div class="ar-item">
-            <span>Ethnographic Study of Indig… <span class="ar-badge">Paper</span></span>
+            <span><span class="ar-title">Ethnographic Study of Indigenous Rituals</span> <span class="ar-badge">Paper</span></span>
             <span class="ar-actions"><Fragment set:html={svg('edit', 16)} /><Fragment set:html={svg('trash', 16)} /></span>
             <span class="ar-btn is-sm">Submit Proposal</span>
           </div>
@@ -581,13 +581,17 @@ const svg = (name: keyof typeof icon, size = 18) =>
     font-size: var(--text-xs);
     color: var(--color-muted);
   }
+  /* Las tarjetas se acomodan según el ancho real de la columna (no de la pantalla),
+     para que los componentes nunca se salgan de su tarjeta */
   .kit-grid {
+    container-type: inline-size;
     display: grid;
     grid-template-columns: repeat(12, minmax(0, 1fr));
     gap: var(--space-4);
   }
   .card {
     grid-column: span 12;
+    min-width: 0;
     padding: var(--space-6);
     background: var(--ar-white);
     box-shadow: inset 0 0 0 1px var(--color-line);
@@ -608,15 +612,19 @@ const svg = (name: keyof typeof icon, size = 18) =>
   }
   .stack {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 12px;
   }
+  /* Paleta: tantas columnas como entren, con un ancho mínimo para que nombre, código y uso no se corten */
   .swatches {
     display: grid;
-    grid-template-columns: repeat(9, minmax(0, 1fr));
-    gap: var(--space-3);
+    grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
+    gap: var(--space-6) var(--space-3);
   }
   .swatches li {
     display: grid;
+    align-content: start;
+    min-width: 0;
     gap: 2px;
     font-size: var(--text-sm);
   }
@@ -630,10 +638,12 @@ const svg = (name: keyof typeof icon, size = 18) =>
   .chip {
     display: flex;
     align-items: end;
-    height: 5rem;
+    height: 4.5rem;
+    border-radius: 6px;
     margin-bottom: var(--space-2);
     padding: var(--space-2);
-    font-size: 10px;
+    font-size: 11px;
+    white-space: nowrap;
     color: var(--ar-text);
     box-shadow: inset 0 0 0 1px rgb(33 37 41 / 0.08);
   }
@@ -660,12 +670,9 @@ const svg = (name: keyof typeof icon, size = 18) =>
     color: var(--color-on-accent);
   }
 
-  @media (max-width: 1080px) {
+  @container (max-width: 56rem) {
     .span-6 {
       grid-column: span 12;
-    }
-    .swatches {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
   @media (max-width: 860px) {

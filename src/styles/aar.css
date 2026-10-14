@@ -47,6 +47,7 @@
   height: 38px;
   padding: 0 14px;
   border-radius: 6px;
+  white-space: nowrap;
   background: var(--ar-teal);
   color: var(--ar-white);
   font-weight: 700;
@@ -71,6 +72,7 @@
 /* Navbar */
 .ar-nav {
   display: flex;
+  flex-wrap: wrap;
   background: var(--ar-dark);
   color: var(--ar-white);
   font-weight: 700;
@@ -80,6 +82,7 @@
   align-items: center;
   gap: 8px;
   padding: 10px 16px;
+  white-space: nowrap;
 }
 .ar-nav .is-active {
   background: var(--ar-gray);
@@ -93,6 +96,7 @@
 }
 .ar-tabs span {
   padding: 9px 16px;
+  white-space: nowrap;
   margin-bottom: -1px;
   border: 1px solid transparent;
   border-radius: 6px 6px 0 0;
@@ -124,6 +128,8 @@
 /* Etiquetas y estados */
 .ar-badge {
   display: inline-flex;
+  flex: none;
+  white-space: nowrap;
   align-items: center;
   height: 22px;
   padding: 0 9px;
@@ -158,15 +164,28 @@
 }
 
 /* Fila de propuesta guardada */
+/* El título ocupa lo que sobra y se corta con "…"; si no hay lugar, acciones y botón bajan a otra línea */
 .ar-item {
-  display: grid;
-  grid-template-columns: 1fr auto auto;
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 14px;
+  gap: 10px 14px;
   padding: 10px 12px;
   border: 1px solid var(--ar-line);
   border-radius: 8px;
   background: var(--ar-white);
+}
+.ar-item > :first-child {
+  display: flex;
+  flex: 1 1 12rem;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.ar-item .ar-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .ar-item .ar-actions {
   display: inline-flex;

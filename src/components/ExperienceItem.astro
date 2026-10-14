@@ -16,7 +16,7 @@ const facts = [
 
 <li class="item" data-year={year}>
   <p class="year" aria-hidden="true">{year}</p>
-  {item.logo && <img class="logo" src={item.logo} alt="" width="128" height="96" loading="lazy" />}
+  {item.logo && <img class="logo" src={item.logo} alt="" width="112" height="112" loading="lazy" />}
   <h3 class="role" data-reveal>{item.role}</h3>
   <p class="desc" data-reveal style="--reveal-i:1">{item.description}</p>
   <dl class="facts" data-reveal style="--reveal-i:2">
@@ -55,9 +55,9 @@ const facts = [
     right: calc(100% + var(--space-4) + var(--space-4));
     bottom: var(--space-16);
     z-index: 1;
-    width: clamp(5rem, 9vw, 8rem);
+    width: clamp(4.5rem, 7.5vw, 7rem);
     height: auto;
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 1;
     object-fit: cover;
     transform-origin: right bottom;
     translate: calc(var(--rest) * 45%) calc(var(--rest) * -130%);

@@ -5,16 +5,32 @@ import type { Project } from '../data/projects';
 interface Props {
   project: Project;
   index?: number;
+  /** posición en la grilla irregular de /portfolio (grid-column / grid-row) */
+  place?: string;
+  /** orden de entrada (si no, alterna 0/1 como antes) */
+  stagger?: number;
+  /** ocupa el alto de su celda en vez de tener proporción propia (proyectos apilados junto a uno grande) */
+  fill?: boolean;
 }
-const { project, index = 0 } = Astro.props;
+const { project, index = 0, stagger, place = '', fill = false } = Astro.props;
 ---
 
-<a class="tile" href={`/projects/${project.slug}`} data-tile
+<a class:list={['tile', { 'is-fill': fill, 'is-big': project.featured }]} href={`/projects/${project.slug}`} data-tile
   data-tags={project.categories.join('|')}
   data-reveal
-  style={`--reveal-i:${index % 2}`}
+  style={`--reveal-i:${stagger ?? index % 2};${place}`}
 >
   <img src={project.cover} alt="" loading="lazy" />
+  {
+    project.featured && (
+      <span class="featured">
+        <svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true">
+          <path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4-4.7-4.4 6.4-.8z" />
+        </svg>
+        Featured
+      </span>
+    )
+  }
   <span class="info">
     <span class="client">{project.client}</span>
     <span class="name">{project.title}</span>
@@ -40,6 +56,45 @@ const { project, index = 0 } = Astro.props;
     height: 100%;
     object-fit: cover;
     transition: scale 900ms var(--ease);
+  }
+  /* En la grilla irregular, los proyectos que van apilados junto a uno grande toman el alto de su celda */
+  .tile.is-fill {
+    aspect-ratio: auto;
+    min-height: 100%;
+  }
+  .tile.is-fill img {
+    position: absolute;
+    inset: 0;
+  }
+  :global(.is-filtered) .tile.is-fill {
+    aspect-ratio: 4 / 3;
+  }
+  /* Los destacados son más grandes: el nombre también */
+  .tile.is-big .name {
+    font-size: var(--text-2xl);
+  }
+  /* Etiqueta de proyecto destacado: arriba a la izquierda, queda visible también con el hover */
+  .featured {
+    position: absolute;
+    top: var(--space-4);
+    left: var(--space-4);
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45em;
+    padding: 0.5em 0.9em;
+    border-radius: var(--radius-pill);
+    background: var(--white);
+    color: var(--dark);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .featured svg {
+    fill: var(--color-accent);
+    stroke: var(--dark);
+    stroke-width: 1.6;
+    stroke-linejoin: round;
   }
   .info {
     position: absolute;

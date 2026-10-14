@@ -80,21 +80,23 @@ const maxV = Math.max(...slides.map((s) => s.v.length));
 
     <!-- Stickers (exportados de Figma, "hero v1"): caen al cargar, rebotan y quedan apilados abajo a la izquierda;
          el visitante puede moverlos. Solo se ven en el primer slide.
-         --x / --y / --w / --h son la posición y el tamaño de cada uno en el lienzo de 1440 × 1024. -->
+         --x / --y / --w / --h: posición de partida y tamaño en el lienzo de 1440 × 1024 (desde ahí caen a la base).
+         --tilt / --sink: cómo quedan en el piso. Se inclinan hacia su lado más pesado hasta apoyarse en dos puntas
+         (calculado con la forma de cada SVG) y bajan lo que haga falta para que la figura, no su caja, toque la base. -->
     <div class="stickers" aria-hidden="true" data-stickers>
-      <div class="sticker" style="--x:26; --y:765; --w:223; --h:219; --k:0" data-sticker>
+      <div class="sticker" style="--x:230; --y:492; --w:223; --h:219; --tilt:8.8deg; --sink:27.1; --k:0" data-sticker>
         <img src="/images/hero/stickers/star-lime.svg" alt="" width="223" height="219" draggable="false" />
       </div>
-      <div class="sticker" style="--x:290; --y:815; --w:160; --h:160; --k:1" data-sticker>
+      <div class="sticker" style="--x:825; --y:332; --w:160; --h:160; --tilt:15.2deg; --sink:28.8; --k:1" data-sticker>
         <img src="/images/hero/stickers/star-blue-small.svg" alt="" width="160" height="160" draggable="false" />
       </div>
-      <div class="sticker" style="--x:223; --y:671; --w:239; --h:239; --k:2" data-sticker>
+      <div class="sticker" style="--x:1310; --y:727; --w:239; --h:239; --tilt:0deg; --sink:31.7; --k:2" data-sticker>
         <img src="/images/hero/stickers/hire-me.svg" alt="" width="239" height="239" draggable="false" />
       </div>
-      <div class="sticker" style="--x:168; --y:838; --w:202; --h:202; --k:3" data-sticker>
+      <div class="sticker" style="--x:-68; --y:110; --w:202; --h:202; --tilt:0deg; --sink:16.2; --k:3" data-sticker>
         <img src="/images/hero/stickers/circle-black.svg" alt="" width="202" height="202" draggable="false" />
       </div>
-      <div class="sticker" style="--x:116; --y:691; --w:230; --h:230; --k:4" data-sticker>
+      <div class="sticker" style="--x:583; --y:-137; --w:230; --h:230; --tilt:-35.2deg; --sink:47.0; --k:4" data-sticker>
         <img src="/images/hero/stickers/star-blue.svg" alt="" width="230" height="230" draggable="false" />
       </div>
     </div>
@@ -535,7 +537,8 @@ const maxV = Math.max(...slides.map((s) => s.v.length));
     left: 0;
     right: 0;
     bottom: 7.5%;
-    z-index: 2;
+    /* por encima de los stickers: si alguno cae sobre los botones, se siguen pudiendo clickear */
+    z-index: 3;
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
@@ -594,21 +597,25 @@ const maxV = Math.max(...slides.map((s) => s.v.length));
   .stickers {
     --px: max(100vw / 1440, 100svh / 1024);
     position: absolute;
-    left: max(0px, 50% - 720 * var(--px));
+    top: 0;
     bottom: 0;
+    left: calc(50% - 720 * var(--px));
     z-index: 2;
     width: 0;
-    height: 0;
     transition: opacity 400ms ease;
   }
   .stickers.is-off {
     opacity: 0;
     pointer-events: none;
   }
+  /* Cada sticker aparece en su posición de partida (alineada con la grilla del hero) y desde ahí cae a la base.
+     --drop es la distancia de esa caída */
   .sticker {
+    --drop: max(0px, 50svh - (var(--y) + var(--h) - 512) * var(--px));
+    --rest: calc(var(--sink) * var(--px));
     position: absolute;
     left: calc(var(--x) * var(--px));
-    bottom: calc((1024 - var(--y) - var(--h)) * var(--px));
+    bottom: 0;
     width: calc(var(--w) * var(--px));
     cursor: grab;
     touch-action: none;
@@ -625,8 +632,8 @@ const maxV = Math.max(...slides.map((s) => s.v.length));
     transition:
       scale 180ms ease,
       filter 180ms ease;
-    /* caída: llega desde arriba de la pantalla, rebota dos veces y se queda */
-    animation: sticker-fall 1500ms calc(1300ms + var(--k) * 150ms) both;
+    /* aparece en su lugar del diseño, se queda un instante y cae a la base, con dos rebotes */
+    animation: sticker-fall 2000ms calc(1300ms + var(--k) * 140ms) both;
   }
   .sticker.is-held img {
     scale: 1.05;
@@ -634,37 +641,52 @@ const maxV = Math.max(...slides.map((s) => s.v.length));
   }
   @keyframes sticker-fall {
     0% {
-      translate: 0 -115vh;
-      rotate: -25deg;
+      opacity: 0;
+      translate: 0 calc(var(--drop) * -1);
+      rotate: 0deg;
+    }
+    8% {
+      opacity: 1;
+      translate: 0 calc(var(--drop) * -1);
+    }
+    /* cae acelerando, como con gravedad */
+    34% {
+      translate: 0 calc(var(--drop) * -1);
+      rotate: 0deg;
       animation-timing-function: cubic-bezier(0.5, 0, 1, 0.6);
     }
-    48% {
-      translate: 0 0;
-      rotate: 4deg;
+    /* toca el piso y empieza a volcarse hacia su lado más pesado */
+    62% {
+      translate: 0 var(--rest);
+      rotate: 0deg;
       animation-timing-function: cubic-bezier(0, 0.4, 0.5, 1);
     }
-    66% {
-      translate: 0 -11vh;
-      rotate: -3deg;
+    76% {
+      translate: 0 calc(var(--rest) - var(--drop) * 0.1);
+      rotate: calc(var(--tilt) * 0.55);
       animation-timing-function: cubic-bezier(0.5, 0, 1, 0.6);
     }
-    82% {
-      translate: 0 0;
-      rotate: 1deg;
+    88% {
+      translate: 0 var(--rest);
+      rotate: calc(var(--tilt) * 1.06);
       animation-timing-function: cubic-bezier(0, 0.4, 0.5, 1);
     }
-    91% {
-      translate: 0 -2.5vh;
+    94% {
+      translate: 0 calc(var(--rest) - var(--drop) * 0.02);
+      rotate: calc(var(--tilt) * 0.98);
       animation-timing-function: cubic-bezier(0.5, 0, 1, 0.6);
     }
     100% {
-      translate: 0 0;
-      rotate: 0deg;
+      opacity: 1;
+      translate: 0 var(--rest);
+      rotate: var(--tilt);
     }
   }
   @media (prefers-reduced-motion: reduce) {
     .sticker img {
       animation: none;
+      translate: 0 var(--rest);
+      rotate: var(--tilt);
     }
   }
   .hit {

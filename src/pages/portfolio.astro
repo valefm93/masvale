@@ -8,6 +8,22 @@ import { portfolioNote } from '../data/site';
 // Filtros: las categorías de projects.ts que tengan al menos un proyecto
 const tags = categories.filter((c) => projects.some((p) => p.categories.includes(c)));
 const pad = (n: number) => String(n).padStart(2, '0');
+
+// Grilla irregular (12 columnas): cada destacado ocupa 8 columnas y dos filas, con dos proyectos
+// apilados al lado; el segundo bloque va en espejo. Los "Coming soon" van al final, más chicos.
+const featured = projects.filter((p) => p.featured);
+const general = projects.filter((p) => !p.featured);
+const layout: { project: (typeof projects)[number]; place: string; fill: boolean }[] = [];
+featured.forEach((p, k) => {
+  const row = 1 + k * 2;
+  const right = k % 2 === 1;
+  layout.push({ project: p, place: `grid-column:${right ? 5 : 1} / span 8;grid-row:${row} / span 2`, fill: false });
+  general.slice(k * 2, k * 2 + 2).forEach((g, j) =>
+    layout.push({ project: g, place: `grid-column:${right ? 1 : 9} / span 4;grid-row:${row + j}`, fill: true }),
+  );
+});
+// los generales que sobren (si hay más de dos por destacado) siguen en tamaño normal
+general.slice(featured.length * 2).forEach((g) => layout.push({ project: g, place: '', fill: false }));
 ---
 
 <Base title="Projects" description="Product design work by Vale Ferreira.">
@@ -33,10 +49,11 @@ const pad = (n: number) => String(n).padStart(2, '0');
       <p class="count" aria-live="polite"><span data-count>{pad(projects.length)}</span> projects</p>
     </header>
     <div class="grid">
-      {projects.map((p, i) => <PortfolioTile project={p} index={i} />)}
+      {layout.map((l, i) => <PortfolioTile project={l.project} index={i} stagger={i} place={l.place} fill={l.fill} />)}
+      <p class="soon-label" data-soon>Coming soon</p>
       {
         upcoming.map((u, i) => (
-          <div class="soon" data-soon tabindex="0" data-reveal style={`--reveal-i:${(projects.length + i) % 2}`}>
+          <div class="soon" data-soon tabindex="0" data-reveal style={`--reveal-i:${i}`}>
             <img src={u.cover} alt="" loading="lazy" />
             <span class="soon-info">
               <span class="soon-tag">Coming soon</span>
@@ -119,11 +136,46 @@ const pad = (n: number) => String(n).padStart(2, '0');
     border-color: var(--color-text);
     color: var(--color-bg);
   }
-  /* Tres por fila en escritorio: caben dos filas completas a la vista */
+  /* Grilla irregular de 12 columnas: destacados grandes, generales normales, "Coming soon" chicos.
+     Las posiciones de cada proyecto se calculan arriba (layout). Con un filtro activo vuelve a ser pareja. */
   .grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(12, minmax(0, 1fr));
     gap: var(--grid-gap);
+  }
+  .grid :global(.tile) {
+    grid-column: span 4;
+  }
+  .grid .soon {
+    grid-column: span 3;
+  }
+  .soon-label {
+    grid-column: 1 / -1;
+    margin-top: var(--space-8);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-line);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+  .soon-label[hidden] {
+    display: none;
+  }
+  .grid .soon .soon-name {
+    font-size: var(--text-base);
+  }
+  .grid .soon .soon-info {
+    padding: var(--space-4);
+  }
+  .grid .soon .soon-tag {
+    top: var(--space-4);
+    left: var(--space-4);
+  }
+  /* Con un filtro activo: todos iguales, tres por fila */
+  .grid.is-filtered :global(.tile) {
+    grid-column: span 4 !important;
+    grid-row: auto !important;
   }
   .grid :global(.name),
   .grid .soon-name {
@@ -137,10 +189,79 @@ const pad = (n: number) => String(n).padStart(2, '0');
     top: var(--space-6);
     left: var(--space-6);
   }
+  /* Tablet: dos columnas parejas; los destacados ocupan el ancho completo */
   @media (max-width: 1100px) {
     .grid {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+    .grid :global(.tile),
+    .grid.is-filtered :global(.tile) {
+      grid-column: auto !important;
+      grid-row: auto !important;
+    }
+    .grid :global(.tile.is-big) {
+      grid-column: 1 / -1 !important;
+    }
+    .grid :global(.tile.is-fill) {
+      aspect-ratio: 4 / 3;
+    }
+    .grid .soon {
+      grid-column: auto;
+    }
+  }
+  /* Tilt 3D con brillo (ver el script): inclinación hacia el cursor + reflejo que lo sigue */
+  .grid :global(.has-tilt) {
+    transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    will-change: transform;
+  }
+
+  /* Entrada de las cards: suben, se aclaran y crecen apenas, una tras otra en el orden de la grilla.
+     (Se declaran juntas con la transición del tilt para que una no pise a la otra.) */
+  :global(.js) .grid :global([data-reveal]) {
+    opacity: 0;
+    translate: 0 2.5rem;
+    scale: 0.96;
+    transition:
+      transform 500ms var(--ease),
+      opacity 800ms var(--ease),
+      translate 900ms var(--ease),
+      scale 900ms var(--ease);
+    transition-delay: 0s, var(--d), var(--d), var(--d);
+    --d: calc(var(--reveal-i, 0) * 110ms);
+  }
+  :global(.js) .grid :global([data-reveal].is-visible) {
+    opacity: 1;
+    translate: none;
+    scale: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :global(.js) .grid :global([data-reveal]) {
+      opacity: 1;
+      translate: none;
+      scale: none;
+    }
+  }
+  :global(.js) .grid :global([data-reveal].is-tilting) {
+    transition-duration: 120ms, 800ms, 900ms, 900ms;
+    transition-timing-function: linear, var(--ease), var(--ease), var(--ease);
+  }
+  .grid :global(.glare) {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: radial-gradient(
+      circle at var(--gx, 50%) var(--gy, 50%),
+      rgb(255 255 255 / 0.32),
+      rgb(255 255 255 / 0.08) 35%,
+      transparent 60%
+    );
+    mix-blend-mode: soft-light;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 400ms var(--ease);
+  }
+  .grid :global(.is-tilting .glare) {
+    opacity: 1;
   }
   /* Proyectos que vienen: se ven como los demás (portada), pero sin enlace;
      al pasar el mouse aparece "Coming soon" sobre el lima. */
@@ -239,6 +360,34 @@ const pad = (n: number) => String(n).padStart(2, '0');
 </style>
 
 <script>
+  // Tilt 3D con brillo: la tarjeta se inclina hacia el cursor y un reflejo suave lo sigue.
+  // Solo con mouse (no en pantallas táctiles) y sin "reducir movimiento".
+  if (window.matchMedia('(hover: hover) and (pointer: fine)').matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const MAX = 7; // grados de inclinación máxima
+    for (const card of document.querySelectorAll<HTMLElement>('[data-tile], .soon')) {
+      const glare = document.createElement('span');
+      glare.className = 'glare';
+      glare.setAttribute('aria-hidden', 'true');
+      card.append(glare);
+      card.classList.add('has-tilt');
+      card.addEventListener('pointermove', (e) => {
+        const r = card.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width;
+        const y = (e.clientY - r.top) / r.height;
+        card.style.setProperty('--rx', `${((0.5 - y) * MAX * 2).toFixed(2)}deg`);
+        card.style.setProperty('--ry', `${((x - 0.5) * MAX * 2).toFixed(2)}deg`);
+        card.style.setProperty('--gx', `${(x * 100).toFixed(1)}%`);
+        card.style.setProperty('--gy', `${(y * 100).toFixed(1)}%`);
+        card.classList.add('is-tilting');
+      });
+      card.addEventListener('pointerleave', () => {
+        card.classList.remove('is-tilting');
+        card.style.setProperty('--rx', '0deg');
+        card.style.setProperty('--ry', '0deg');
+      });
+    }
+  }
+
   const filters = document.querySelector<HTMLElement>('[data-filters]');
   const tiles = [...document.querySelectorAll<HTMLElement>('[data-tile]')];
   const count = document.querySelector<HTMLElement>('[data-count]');
@@ -270,6 +419,8 @@ const pad = (n: number) => String(n).padStart(2, '0');
     }
     // los "Coming soon" no tienen categoría: solo se ven en "All"
     for (const s of document.querySelectorAll<HTMLElement>('[data-soon]')) s.hidden = !!tag;
+    // con un filtro activo la grilla irregular pasa a ser pareja (si no, quedarían huecos)
+    document.querySelector('.grid')?.classList.toggle('is-filtered', !!tag);
     if (count) count.textContent = String(visible).padStart(2, '0');
   });
 </script>

@@ -229,7 +229,6 @@ My first project made with AI. I worked with AI almost 100% of the time and was 
 
 ### Product decisions
 
-- Two platforms, two jobs — Engineering decided to separate electronic voting from the organization of CSE elections. The dashboard is where the organization happens.
 - A simpler architecture — With a small team and limited resources, I proposed solutions that simplified the product and even its architecture.
 - The client in one place — The dashboard is connected to HubSpot, the CRM, so every contact with a client lives in a single place. The operations team has one place with all the client information.
 - Automate the repetitive — Emails, reminders, templates and frequent questions stopped being manual work for the operations team.

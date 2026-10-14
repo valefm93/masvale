@@ -19,10 +19,6 @@ const facts = [
 
 const decisions = [
   {
-    title: 'Two platforms, two jobs',
-    text: 'Engineering decided to separate electronic voting from the organization of CSE elections. The dashboard is where the organization happens.',
-  },
-  {
     title: 'A simpler architecture',
     text: 'With a small team and limited resources, I proposed solutions that simplified the product and even its architecture.',
   },
@@ -123,7 +119,7 @@ const automations = [
     </Fragment>
 
     <section class="hero-shot" data-reveal style="--reveal-i:1">
-      <img src={img('dashboard')} alt="The client dashboard with an election in progress" />
+      <img class="is-mockup" src={img('dashboard-mockup')} alt="The client dashboard with an election in progress, on a laptop" />
     </section>
 
     <section class="chapter" data-reveal>
@@ -280,7 +276,7 @@ const automations = [
       </header>
       <div class="shots">
         <figure>
-          <img src={img('login')} alt="Login screen" loading="lazy" />
+          <img class="is-mockup" src={img('login-mockup')} alt="Login screen, on a laptop" loading="lazy" />
           <figcaption>Login</figcaption>
         </figure>
       </div>
@@ -459,6 +455,11 @@ const automations = [
     display: block;
     width: 100%;
     border: 1px solid var(--color-line);
+  }
+  /* Mockups en laptop: ya traen su propio fondo, sin borde */
+  .hero-shot img.is-mockup,
+  .shots img.is-mockup {
+    border: 0;
   }
 
   /* El problema: dos lados */
