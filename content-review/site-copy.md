@@ -19,7 +19,7 @@ All the text on the site, page by page, in the order it appears. Edit the text d
 - **Email:** valefm93@gmail.com (after copying: "Copied!")
 - **LinkedIn:** linkedin.com/in/valefm93
 - **Behance:** Behance.net/valefm93
-- **Instagram:** Instagram.com/masvale.py
+- **Instagram:** Instagram.com/masvale.jpg
 - **Phone** (blurred), message on hover: Oops! Let’s start by email. Happy to share my number after!
 - **Location:** Paris, France
 

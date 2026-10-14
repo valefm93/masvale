@@ -70,8 +70,8 @@ export const links = [
     description: 'Explore more about my design and art direction past experience.',
   },
   {
-    label: 'Instagram.com/masvale.py',
-    href: 'https://www.instagram.com/masvale.py',
+    label: 'Instagram.com/masvale.jpg',
+    href: 'https://www.instagram.com/masvale.jpg',
     description: 'This is where I express myself through drawings.',
   },
 ];

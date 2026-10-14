@@ -104,7 +104,8 @@ const { project, index = 0, stagger, place = '', fill = false } = Astro.props;
     justify-content: flex-end;
     gap: var(--space-2);
     padding: var(--space-8);
-    background: var(--color-accent);
+    /* lima al 80 %: se alcanza a ver la portada debajo */
+    background: color-mix(in srgb, var(--color-accent) 80%, transparent);
     color: var(--color-on-accent);
     opacity: 0;
     transition: opacity var(--duration) var(--ease);
