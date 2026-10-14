@@ -101,6 +101,6 @@ export const software: { name: string; icon?: string; glyph?: boolean }[] = [
   { name: 'InDesign', icon: cdn('675475e308e6811fbc3d81d4_InDesign.svg') },
   // Sin `icon` se muestra la inicial del nombre dentro del mismo cuadrado
   { name: 'Codex' },
-  { name: 'Claude', icon: 'https://cdn.simpleicons.org/claude/fcfcfc', glyph: true },
-  { name: 'GitHub', icon: 'https://cdn.simpleicons.org/github/fcfcfc', glyph: true },
+  { name: 'Claude', icon: '/images/icons/claude.svg', glyph: true },
+  { name: 'GitHub', icon: '/images/icons/github.svg', glyph: true },
 ];

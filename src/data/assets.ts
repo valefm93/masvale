@@ -1,5 +1,5 @@
-// Por ahora las imágenes se cargan directo desde Webflow.
-// Más adelante conviene copiarlas a /public/images y cambiar esta función.
-const WEBFLOW_CDN = 'https://cdn.prod.website-files.com/67537ecd343a94a9da071f73/';
+// Imágenes que venían del sitio anterior en Webflow, ahora copiadas en /public/images/webflow
+// (el nombre del archivo es el mismo, ya codificado para URL: "Frame%202.jpg" → "Frame 2.jpg" en disco).
+const LOCAL = '/images/webflow/';
 
-export const cdn = (file: string) => WEBFLOW_CDN + file;
+export const cdn = (file: string) => LOCAL + file;
