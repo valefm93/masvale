@@ -146,6 +146,11 @@ general.slice(featured.length * 2).forEach((g) => layout.push({ project: g, plac
   .grid :global(.tile) {
     grid-column: span 4;
   }
+  /* Esquinas levemente redondeadas en las cards de proyectos (prueba) */
+  .grid :global(.tile),
+  .grid .soon {
+    border-radius: 12px;
+  }
   .grid .soon {
     grid-column: span 3;
   }

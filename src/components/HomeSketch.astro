@@ -1,0 +1,376 @@
+---
+// Hero de la home: fondo papel (#E9E3D4) con ilustraciones dibujadas por Vale, su firma y "Product Designer".
+// Todo vive en un lienzo de 1220 × 868 (el tamaño del diseño) que cubre la pantalla, como una portada.
+// Al pasar el mouse, las ilustraciones giran un poquito, y se pueden arrastrar a otro lugar.
+import { nav } from '../data/site';
+
+interface Props {
+  contactHref?: string;
+}
+const { contactHref = '#contact' } = Astro.props;
+
+const W = 1488;
+const H = 1060;
+const img = (name: string) => `/images/home/${name}.png`;
+
+// x, y, ancho en px del lienzo de 1488 × 1060 (la ubicación que Vale armó arrastrándolas);
+// el alto sale de la proporción de cada archivo. rot: giro en grados (la tarjeta va derecha).
+const doodles = [
+  { name: 'glasses', x: 415.6, y: 32.4, w: 205.3, ratio: 304 / 548 },
+  { name: 'card', x: 844.1, y: -24.9, w: 254.0, ratio: 576 / 640, rot: -9 },
+  { name: 'star', x: 79.7, y: 209.1, w: 268.3, ratio: 720 / 715 },
+  { name: 'bulb', x: 1226.9, y: 132.8, w: 120.1, ratio: 340 / 322 },
+  { name: 'squiggle', x: 662.3, y: 905.4, w: 217.9, ratio: 152 / 491 },
+  { name: 'flower', x: 314.2, y: 830.2, w: 142.4, ratio: 494 / 382 },
+  { name: 'cup', x: 77.0, y: 659.2, w: 140.2, ratio: 396 / 377 },
+  { name: 'pencil', x: 1325.2, y: 369.2, w: 82.0, ratio: 297 / 135 },
+  { name: 'laptop', x: 1096.6, y: 626.1, w: 322.6, ratio: 916 / 856 },
+];
+
+// centro de la espiral: de ahí salen todas las ilustraciones al entrar
+const sq = doodles.find((d) => d.name === 'squiggle')!;
+const origin = { x: sq.x + sq.w / 2, y: sq.y + (sq.w * sq.ratio) / 2 };
+
+// líneas de la grilla (medidas sobre el diseño)
+const hLines = [65.5, 73.5, 455.5, 480.5, 505.5, 563.5, 992.5];
+const vLines = [78.5, 343, 1151.5, 1412];
+---
+
+<section class="sketch is-entering" data-sketch style={`--W:${W};--H:${H}`}>
+  <h1 class="visually-hidden">Valeria Ferreira, Product Designer</h1>
+
+  <svg class="canvas" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <g class="rules">
+      {hLines.map((y) => <line class="rule is-h" x1="-40" x2={W + 40} y1={y} y2={y} />)}
+      {vLines.map((x) => <line class="rule is-v" x1={x} x2={x} y1="-40" y2={H + 40} />)}
+    </g>
+
+    <!-- Textos chicos -->
+    <text class="date" x="1412" y="74" text-anchor="end" data-date>Last update</text>
+    <text class="based" transform="translate(94 993) rotate(-90)">BASED IN PARIS</text>
+
+    <!-- Ilustraciones -->
+    {
+      doodles.map((d, i) => (
+        <g
+          class:list={['orbit', { 'is-source': d.name === 'squiggle' }]}
+          style={`--i:${i};transform-origin:${origin.x}px ${origin.y}px`}
+        >
+        <g class="doodle">
+          {/* el giro fijo (la tarjeta) va en un grupo aparte, para no mezclarse con el balanceo */}
+          <g transform={d.rot ? `rotate(${d.rot} ${d.x + d.w / 2} ${d.y + (d.w * d.ratio) / 2})` : undefined}>
+            <image class="ink" href={img(d.name)} x={d.x} y={d.y} width={d.w} height={d.w * d.ratio} />
+          </g>
+        </g>
+        </g>
+      ))
+    }
+
+    <!-- Firma y título -->
+    <image class="signature" href={img('signature')} x="499" y="396.3" width="472.4" height={472.4 * (281 / 1066)} />
+    <text class="title" x="745.5" y="557" text-anchor="middle">Product Designer</text>
+  </svg>
+
+  <!-- Botones del menú, entre la flor y la laptop -->
+  <nav class="hero-nav" aria-label="Main">
+    {nav.map((item) => <a href={item.href === '#contact' ? contactHref : item.href}>{item.label}</a>)}
+  </nav>
+</section>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-sketch]');
+  if (root) {
+    // Fecha de hoy, en inglés: "Last update, Tuesday 14 October"
+    const today = new Date();
+    const date = root.querySelector('[data-date]');
+    if (date)
+      date.textContent =
+        `Last update, ${today.toLocaleDateString('en-GB', { weekday: 'long' })} ` +
+        `${String(today.getDate()).padStart(2, '0')} ${today.toLocaleDateString('en-GB', { month: 'long' })}`;
+
+    // la entrada dura cerca de 2 segundos; después se quita la clase
+    window.setTimeout(() => root.classList.remove('is-entering'), 3200);
+
+    // Si el visitante intenta bajar y no hay nada debajo, los botones dan un saltito invitando a hacer clic
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const navEl = root.querySelector<HTMLElement>('.hero-nav');
+    const nudge = () => {
+      if (!navEl || still.matches || navEl.classList.contains('is-nudging')) return;
+      const atEnd = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+      if (!atEnd) return;
+      navEl.classList.add('is-nudging');
+      window.setTimeout(() => navEl.classList.remove('is-nudging'), 900);
+    };
+    window.addEventListener('wheel', (e) => e.deltaY > 0 && nudge(), { passive: true });
+    window.addEventListener('keydown', (e) => ['ArrowDown', 'PageDown', ' '].includes(e.key) && nudge());
+    let touchY = 0;
+    window.addEventListener('touchstart', (e) => (touchY = e.touches[0].clientY), { passive: true });
+    window.addEventListener('touchmove', (e) => touchY - e.touches[0].clientY > 24 && nudge(), { passive: true });
+
+    // Las ilustraciones se pueden arrastrar: el movimiento se pasa a unidades del lienzo
+    // y la que se agarra pasa al frente
+    const svg = root.querySelector<SVGSVGElement>('.canvas');
+    root.querySelectorAll<SVGGElement>('.doodle').forEach((g) => {
+      let x = 0;
+      let y = 0;
+      let from: { px: number; py: number; x: number; y: number; k: number } | null = null;
+      g.addEventListener('pointerdown', (e) => {
+        const k = svg?.getScreenCTM()?.a || 1;
+        from = { px: e.clientX, py: e.clientY, x, y, k };
+        g.setPointerCapture(e.pointerId);
+        g.classList.add('is-held');
+        const orbit = g.closest('.orbit');
+        orbit?.parentNode?.appendChild(orbit);
+        e.preventDefault();
+      });
+      g.addEventListener('pointermove', (e) => {
+        if (!from) return;
+        x = from.x + (e.clientX - from.px) / from.k;
+        y = from.y + (e.clientY - from.py) / from.k;
+        g.style.translate = `${x}px ${y}px`;
+      });
+      const drop = () => {
+        from = null;
+        g.classList.remove('is-held');
+      };
+      g.addEventListener('pointerup', drop);
+      g.addEventListener('pointercancel', drop);
+    });
+
+    // Header.astro usa este estado para aparecer cuando el hero ya pasó
+    const update = () => {
+      document.documentElement.dataset.heroState = root.getBoundingClientRect().bottom <= 64 ? 'past' : 'start';
+    };
+    window.addEventListener('scroll', update, { passive: true });
+    update();
+  }
+</script>
+
+<style>
+  .sketch {
+    /* un px del lienzo, con la misma escala "cover" del SVG */
+    --px: max(100vw / var(--W), 100svh / var(--H));
+    --paper: var(--color-bg);
+    --ink: #1e1e1e;
+    position: relative;
+    z-index: 1;
+    height: 100svh;
+    overflow: hidden;
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Grilla: horizontales lisas, verticales punteadas */
+  .rule {
+    stroke: var(--gray-light);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+  }
+  .rule.is-v {
+    stroke-dasharray: 4 4;
+  }
+
+  .date {
+    font-size: 14px;
+    letter-spacing: 0.2em;
+    fill: var(--ink);
+  }
+  .based {
+    font-size: 14px;
+    letter-spacing: 1.05em;
+    fill: var(--ink);
+  }
+  .title {
+    font-family: var(--font-body);
+    font-size: 95px;
+    font-weight: 700;
+    letter-spacing: -0.035em;
+    fill: var(--ink);
+  }
+
+  /* Ilustraciones: al pasar el mouse giran un poquito */
+  .doodle {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition:
+      rotate 400ms cubic-bezier(0.3, 1.6, 0.5, 1),
+      scale 200ms ease;
+  }
+  .doodle {
+    cursor: grab;
+    touch-action: none;
+  }
+  .doodle:hover {
+    rotate: -4deg;
+  }
+  .doodle.is-held {
+    cursor: grabbing;
+    rotate: -6deg;
+    scale: 1.06;
+    filter: drop-shadow(0 6px 8px rgb(30 30 30 / 0.18));
+  }
+
+  /* Entrada: las ilustraciones aparecen una por una, la firma se escribe y el título sube */
+  /* Entrada: la espiral aparece primero y de ella salen todas las ilustraciones, girando en espiral
+     alrededor de su centro mientras crecen hasta su lugar */
+  .orbit {
+    transform-box: view-box;
+  }
+  .sketch.is-entering .orbit {
+    animation: spiral-out 1300ms cubic-bezier(0.25, 0.8, 0.3, 1) calc(700ms + var(--i) * 90ms) both;
+  }
+  .sketch.is-entering .orbit.is-source {
+    animation: pop 600ms cubic-bezier(0.3, 1.5, 0.5, 1) 300ms both;
+    transform-box: fill-box;
+    transform-origin: center !important;
+  }
+  @keyframes spiral-out {
+    from {
+      opacity: 0;
+      scale: 0;
+      rotate: -240deg;
+    }
+    25% {
+      opacity: 1;
+    }
+  }
+  /* Después siguen girando muy levemente, cada una a su ritmo */
+  .doodle .ink {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: sway calc(5s + var(--i) * 0.7s) ease-in-out calc(var(--i) * -1.3s) infinite alternate;
+  }
+  @keyframes sway {
+    from {
+      rotate: -2.5deg;
+    }
+    to {
+      rotate: 2.5deg;
+    }
+  }
+  .sketch.is-entering .signature {
+    animation: write 1100ms cubic-bezier(0.6, 0, 0.3, 1) 200ms both;
+  }
+  .sketch.is-entering .title {
+    animation: rise 800ms cubic-bezier(0.2, 0.7, 0.2, 1) 500ms both;
+  }
+  .sketch.is-entering .rules {
+    animation: fade 900ms ease both;
+  }
+  .sketch.is-entering .date,
+  .sketch.is-entering .based {
+    animation: fade 700ms ease 1200ms both;
+  }
+  @keyframes pop {
+    from {
+      opacity: 0;
+      scale: 0.6;
+      rotate: -12deg;
+    }
+  }
+  @keyframes write {
+    from {
+      clip-path: inset(0 100% 0 0);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      translate: 0 24px;
+    }
+  }
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+  }
+
+  /* Botones del menú, entre el título y la espiral (y ≈ 628 del lienzo) */
+  .hero-nav {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(50% + (628 - var(--H) / 2) * var(--px));
+    z-index: 3;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding-inline: var(--gutter);
+    translate: 0 -50%;
+    color: var(--ink);
+    pointer-events: none;
+  }
+  .hero-nav a {
+    padding: 0.75em 1.5em;
+    border: 1px solid currentColor;
+    border-radius: var(--radius-pill);
+    background: rgb(242 238 230 / 0.6);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    font-size: var(--text-xs);
+    line-height: 1;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    text-decoration: none;
+    pointer-events: auto;
+    transition:
+      background var(--duration) var(--ease),
+      color var(--duration) var(--ease),
+      border-color var(--duration) var(--ease);
+  }
+  .hero-nav a:hover {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+  .sketch.is-entering .hero-nav a {
+    animation: rise-btn 600ms cubic-bezier(0.2, 0.7, 0.2, 1) 1450ms both;
+  }
+  .sketch.is-entering .hero-nav a:nth-child(2) {
+    animation-delay: 1530ms;
+  }
+  .sketch.is-entering .hero-nav a:nth-child(3) {
+    animation-delay: 1610ms;
+  }
+  @keyframes rise-btn {
+    from {
+      opacity: 0;
+      translate: 0 14px;
+    }
+  }
+  /* Saltito de invitación: suben uno tras otro y vuelven */
+  .hero-nav.is-nudging a {
+    animation: nudge 700ms cubic-bezier(0.3, 0, 0.2, 1);
+  }
+  .hero-nav.is-nudging a:nth-child(2) {
+    animation-delay: 70ms;
+  }
+  .hero-nav.is-nudging a:nth-child(3) {
+    animation-delay: 140ms;
+  }
+  @keyframes nudge {
+    35% {
+      translate: 0 -18px;
+    }
+    70% {
+      translate: 0 3px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sketch.is-entering *,
+    .doodle .ink {
+      animation: none !important;
+    }
+  }
+</style>

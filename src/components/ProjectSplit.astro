@@ -64,7 +64,7 @@ const { project } = Astro.props;
     grid-template-columns: var(--col-4) minmax(0, 1fr);
     gap: 0;
     align-items: start;
-    padding-block: 0 var(--space-section);
+    padding-block: 0;
   }
   .col-label {
     display: flex;
@@ -139,13 +139,21 @@ const { project } = Astro.props;
     gap: var(--space-2);
     margin-top: var(--space-8);
   }
+  /* Columna de trabajo sobre blanco: el blanco llega hasta el borde derecho de la pantalla
+     (la sombra lo extiende; el recorte evita que se escape hacia la izquierda) */
   .media {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+    align-self: stretch;
     gap: var(--grid-gap);
     min-width: 0;
     padding-left: var(--grid-gap);
+    padding-bottom: var(--space-section);
     border-left: 1px solid var(--color-line);
+    background: var(--white);
+    box-shadow: 0 0 0 100vmax var(--white);
+    clip-path: inset(0 -100vmax 0 0);
   }
   .media .col-label {
     margin-left: calc(var(--grid-gap) * -1);
@@ -210,6 +218,7 @@ const { project } = Astro.props;
     .media {
       padding-left: 0;
       border-left: 0;
+      clip-path: inset(0 -100vmax);
     }
     .media .col-label {
       margin-left: 0;

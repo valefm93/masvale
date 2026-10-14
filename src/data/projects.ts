@@ -73,10 +73,10 @@ export const projects: Project[] = [
   {
     slug: 'electis-client-dashboard',
     categories: ['UX/UI', 'Web'],
-    title: 'Electis, client dashboard',
+    title: 'Electis, CSE election planning platform',
     client: 'Electis',
     summary:
-      'A client dashboard that guides HR teams through their CSE elections, from MVP to delivery.',
+      'A platform where HR teams plan and organize their CSE elections, step by step, from MVP to delivery.',
     cover: '/images/electis-dashboard/cover.jpg',
     tags: ['Product design', 'AI-assisted design', 'Automation', 'MVP to delivery'],
     featured: true,

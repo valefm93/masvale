@@ -204,13 +204,13 @@ A full library of components based on Material Design, built so the product can 
 
 ---
 
-## Project: Electis, client dashboard
+## Project: Electis, CSE election planning platform
 
 `/projects/electis-client-dashboard`
 
-- **Title:** Electis, client dashboard
+- **Title:** Electis, CSE election planning platform
 - **Client label:** Electis
-- **Short summary** (Portfolio card and Google): A client dashboard that guides HR teams through their CSE elections, from MVP to delivery.
+- **Short summary** (Portfolio card and Google): A platform where HR teams plan and organize their CSE elections, step by step, from MVP to delivery.
 - **Tags:** Product design · AI-assisted design · Automation · MVP to delivery
 
 ### Introduction (left column)

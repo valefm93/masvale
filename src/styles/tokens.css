@@ -30,21 +30,23 @@
 
   /* Color */
   /* Paleta */
-  --accent: #e0ff56;
+  --accent: #1e1e1e;
   --dark: #131414;
   --gray: #343434;
-  --gray-light: #ececec;
+  --gray-light: #e3dccd; /* líneas y franjas, en el tono del papel */
   --white: #fcfcfc;
 
   /* Roles: qué color de la paleta se usa para qué */
-  --color-bg: var(--white);
+  --color-bg: #f2eee6; /* papel: el mismo fondo de la home en todas las páginas */
   --color-surface: var(--gray-light);
   --color-text: var(--dark);
   --color-muted: var(--gray);
   --color-line: var(--gray-light);
-  /* El acento es muy claro: va como fondo o resaltado, nunca como color de texto */
+  /* El acento es el oscuro #1E1E1E (antes lima): resaltados y hovers en negro con texto papel */
   --color-accent: var(--accent);
-  --color-on-accent: var(--dark);
+  --color-on-accent: var(--color-bg);
+  /* tono piedra (#9C9381 aclarado): tags de proyectos y resaltador de texto */
+  --color-stone: #c9c2b4;
 
   /* Espaciado */
   --space-1: 0.25rem;

@@ -245,6 +245,14 @@ const maxV = Math.max(...slides.map((s) => s.v.length));
       window.addEventListener('pointerup', () => cursor.classList.remove('is-down'));
     }
 
+    // Stickers: esperan en su lugar hasta que el visitante intenta bajar por primera vez; ahí caen
+    const drop = () => stickers.classList.add('is-falling');
+    window.addEventListener('wheel', (e) => e.deltaY > 0 && drop(), { passive: true });
+    window.addEventListener('keydown', (e) => ['ArrowDown', 'PageDown', ' '].includes(e.key) && drop());
+    let dropY = 0;
+    window.addEventListener('touchstart', (e) => (dropY = e.touches[0].clientY), { passive: true });
+    window.addEventListener('touchmove', (e) => dropY - e.touches[0].clientY > 24 && drop(), { passive: true });
+
     // Stickers: se pueden arrastrar a cualquier lugar del hero
     let top = 1;
     stickers.querySelectorAll<HTMLElement>('[data-sticker]').forEach((el) => {
@@ -632,46 +640,51 @@ const maxV = Math.max(...slides.map((s) => s.v.length));
     transition:
       scale 180ms ease,
       filter 180ms ease;
-    /* aparece en su lugar del diseño, se queda un instante y cae a la base, con dos rebotes */
-    animation: sticker-fall 2000ms calc(1300ms + var(--k) * 140ms) both;
+    /* aparecen en su lugar del diseño y esperan; con el primer scroll del visitante caen a la base */
+    animation: sticker-appear 500ms calc(1300ms + var(--k) * 140ms) both;
+  }
+  .stickers.is-falling .sticker img {
+    animation: sticker-fall 1400ms calc(var(--k) * 120ms) both;
+  }
+  @keyframes sticker-appear {
+    from {
+      opacity: 0;
+      translate: 0 calc(var(--drop) * -1);
+    }
+    to {
+      opacity: 1;
+      translate: 0 calc(var(--drop) * -1);
+    }
   }
   .sticker.is-held img {
     scale: 1.05;
     filter: drop-shadow(0 8px 10px rgb(19 20 20 / 0.22));
   }
   @keyframes sticker-fall {
-    0% {
-      opacity: 0;
-      translate: 0 calc(var(--drop) * -1);
-      rotate: 0deg;
-    }
-    8% {
-      opacity: 1;
-      translate: 0 calc(var(--drop) * -1);
-    }
     /* cae acelerando, como con gravedad */
-    34% {
+    0% {
+      opacity: 1;
       translate: 0 calc(var(--drop) * -1);
       rotate: 0deg;
       animation-timing-function: cubic-bezier(0.5, 0, 1, 0.6);
     }
     /* toca el piso y empieza a volcarse hacia su lado más pesado */
-    62% {
+    42% {
       translate: 0 var(--rest);
       rotate: 0deg;
       animation-timing-function: cubic-bezier(0, 0.4, 0.5, 1);
     }
-    76% {
+    64% {
       translate: 0 calc(var(--rest) - var(--drop) * 0.1);
       rotate: calc(var(--tilt) * 0.55);
       animation-timing-function: cubic-bezier(0.5, 0, 1, 0.6);
     }
-    88% {
+    82% {
       translate: 0 var(--rest);
       rotate: calc(var(--tilt) * 1.06);
       animation-timing-function: cubic-bezier(0, 0.4, 0.5, 1);
     }
-    94% {
+    91% {
       translate: 0 calc(var(--rest) - var(--drop) * 0.02);
       rotate: calc(var(--tilt) * 0.98);
       animation-timing-function: cubic-bezier(0.5, 0, 1, 0.6);

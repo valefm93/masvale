@@ -29,13 +29,10 @@ const items = [
       </p>
     </div>
     <h2 class="title" data-reveal>
-      Let’s work<br />together
-      <svg class="sticker" viewBox="0 0 120 120" aria-hidden="true">
-        <g class="petals"><circle cx="94.0" cy="60.0" r="17" /><circle cx="84.0" cy="84.0" r="17" /><circle cx="60.0" cy="94.0" r="17" /><circle cx="36.0" cy="84.0" r="17" /><circle cx="26.0" cy="60.0" r="17" /><circle cx="36.0" cy="36.0" r="17" /><circle cx="60.0" cy="26.0" r="17" /><circle cx="84.0" cy="36.0" r="17" /><circle cx="60" cy="60" r="34" /></g>
-        <circle cx="50" cy="55" r="4" />
-        <circle cx="70" cy="55" r="4" />
-        <path d="M48 67 Q60 79 72 67" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
-      </svg>
+      <span class="visually-hidden">Let’s work together</span>
+      <!-- escrito a mano por Vale, en el tono papel sobre el fondo oscuro -->
+      <img class="handwritten" src="/images/home/lets-work-together.png" alt="" width="1228" height="663" />
+      <img class="sticker" src="/images/home/star.png" alt="" width="715" height="720" />
     </h2>
     <dl class="list">
       {
@@ -105,12 +102,11 @@ const items = [
 <style>
   /* Fondo oscuro para separarlo del resto de las secciones */
   .footer {
-    /* --r va de 0 a 1 mientras el footer se destapa (lo pone Base.astro):
-       el fondo pasa de lima a oscuro y el texto de oscuro a blanco */
-    --r: 1;
-    --r-text: clamp(0, (var(--r) - 0.45) / 0.25, 1);
-    background: color-mix(in srgb, var(--dark) calc(var(--r) * 100%), var(--accent));
-    color: color-mix(in srgb, var(--white) calc(var(--r-text) * 100%), var(--dark));
+    /* sobre el fondo oscuro, el acento se invierte: resaltados claros con texto oscuro */
+    --color-accent: var(--color-bg);
+    --color-on-accent: var(--dark);
+    background: var(--dark);
+    color: var(--color-bg);
   }
   .inner {
     display: flex;
@@ -130,18 +126,20 @@ const items = [
     line-height: 1;
     letter-spacing: -0.035em;
   }
+  .handwritten {
+    display: block;
+    width: clamp(17rem, 9rem + 24vw, 32rem);
+    height: auto;
+  }
+  /* la estrella dibujada por Vale, en negativo (trazo claro) sobre el fondo oscuro */
   .sticker {
     position: absolute;
-    left: -0.35em;
-    bottom: -0.38em;
-    width: 0.8em;
-    height: 0.8em;
+    left: -0.6em;
+    bottom: -0.95em;
+    width: 1.45em;
+    height: auto;
     rotate: -8deg;
-    color: var(--color-on-accent);
-    fill: currentColor;
-  }
-  .petals {
-    fill: var(--color-accent);
+    filter: invert(1);
   }
   .list {
     display: grid;

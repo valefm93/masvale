@@ -12,7 +12,9 @@ const isActive = (href: string) => href.startsWith('/') && path.startsWith(href)
 
 <header class:list={['header', { overlay }]}>
   <div class="container inner">
-    <a class="logo" href="/" >Vale Ferreira</a>
+    <a class="logo" href="/" aria-label="Vale Ferreira, home">
+      <img src="/images/home/signature.png" alt="" width="1066" height="281" />
+    </a>
     <nav aria-label="Main">
       <ul>
         {
@@ -57,11 +59,18 @@ const isActive = (href: string) => href.startsWith('/') && path.startsWith(href)
     justify-content: space-between;
     min-height: 64px;
   }
+  /* Logo: la firma de Vale */
   .logo {
-    font-size: var(--text-lg);
-    font-weight: 700;
-    letter-spacing: -0.02em;
+    display: block;
     text-decoration: none;
+  }
+  .logo img {
+    display: block;
+    width: auto;
+    height: 1.9rem;
+  }
+  nav a {
+    white-space: nowrap;
   }
   ul {
     display: flex;
@@ -97,8 +106,8 @@ const isActive = (href: string) => href.startsWith('/') && path.startsWith(href)
     color: var(--color-bg);
   }
   @media (max-width: 540px) {
-    .logo {
-      font-size: var(--text-sm);
+    .logo img {
+      height: 1.3rem;
     }
     ul {
       gap: var(--space-1);

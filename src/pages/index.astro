@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
-import HeroCovers from '../components/HeroCovers.astro';
+import HeroCovers from '../components/HeroCovers.astro'; // hero anterior (slider), guardado por si se vuelve
+import HomeSketch from '../components/HomeSketch.astro';
 import Karaoke from '../components/Karaoke.astro';
 import PortfolioTile from '../components/PortfolioTile.astro';
 import RichText from '../components/RichText.astro';
@@ -10,22 +11,28 @@ import { projects } from '../data/projects';
 const { lead, highlight, rest } = site.intro;
 const introParts = [{ text: `${lead} ` }, { text: highlight, mark: true }, { text: rest }];
 // Por ahora la home es SOLO el hero. Cada una de estas secciones vuelve a mostrarse poniendo true.
-const showIntro = false; // la frase "My passion…"
-const showFeatured = false; // Featured projects
+const showIntro = true; // la frase "My passion…"
+const showFeatured = true; // Featured projects
 const showAbout = false; // "Designer first, product always"
-const showFooter = false; // el footer de contacto
+const showFooter = true; // el footer de contacto
 ---
 
 <Base overlayHeader hideFooter={!showFooter}>
-  <HeroCovers contactHref={showFooter ? '#contact' : '/resume#contact'} />
+  <HomeSketch contactHref={showFooter ? '#contact' : '/resume#contact'} />
+
+  <!-- Debajo del hero continúan las líneas verticales de su grilla (mismas posiciones) -->
+  <div class="home-rest">
+  <div class="rest-lines" aria-hidden="true">
+    {[78.5, 343, 1151.5, 1412].map((x) => <span style={`--x:${x}`}></span>)}
+  </div>
 
   <!-- Frase de presentación (oculta con showIntro) -->
   {
     showIntro && (
       <>
-        <div class="under" data-karaoke-track data-start="0.55" data-end-pad="1.25">
+        <div class="under" data-karaoke-track data-start="-0.8" data-end-pad="1.2">
           <section class="under-pin">
-            <div class="container intro">
+            <div class="home-grid intro">
               <Karaoke class="statement" parts={introParts} />
             </div>
           </section>
@@ -40,19 +47,44 @@ const showFooter = false; // el footer de contacto
     showFeatured && (
       <>
         <section id="work" class="section work">
-          <div class="container">
+          <div class="home-grid">
             <div class="section-head" data-reveal>
               <h2>Featured projects</h2>
               <a class="all" href="/portfolio">View all work <span aria-hidden="true">→</span></a>
             </div>
-            <div class="grid">
-              {projects.filter((p) => p.featured).map((p, i) => <PortfolioTile project={p} index={i} />)}
+            <div class="features">
+              {projects
+                .filter((p) => p.featured)
+                .map((p, i) => (
+                  <article class:list={['feature', { 'is-flipped': i % 2 === 1 }]}>
+                    <div class="feature-media">
+                      <PortfolioTile project={p} index={i} />
+                    </div>
+                    <div class="feature-text" data-reveal style="--reveal-i:1">
+                      <p class="feature-client">{p.client}</p>
+                      <h3>
+                        <a href={`/projects/${p.slug}`}>{p.title}</a>
+                      </h3>
+                      <p class="feature-summary">{p.summary}</p>
+                      <ul class="feature-tags">
+                        {p.tags.slice(0, 4).map((tag) => (
+                          <li>{tag}</li>
+                        ))}
+                      </ul>
+                      <a class="feature-link" href={`/projects/${p.slug}`}>
+                        View project <span aria-hidden="true">→</span>
+                      </a>
+                    </div>
+                  </article>
+                ))}
             </div>
           </div>
         </section>
       </>
     )
   }
+
+  </div>
 
   <!-- About ("Designer first, product always"): OCULTA por ahora. Para volver a mostrarla, cambiar showAbout a true (arriba). -->
   {
@@ -98,32 +130,77 @@ const showFooter = false; // el footer de contacto
   }
 
   /*
-    Efecto telón: .under empieza una pantalla antes (debajo del último tramo del hero)
-    y su contenido queda fijo durante una pantalla de scroll, mientras el hero sube.
+    Presentación: una sección normal después del hero (sin quedar fija). Las palabras se encienden
+    mientras la sección cruza la pantalla: empieza cuando asoma (data-start -0.8) y termina un poco
+    antes de que llegue arriba (data-end-pad 1.2).
   */
   .under {
     position: relative;
-    margin-top: -100svh;
   }
   .under-pin {
-    position: sticky;
-    top: 0;
     display: grid;
     align-items: center;
     min-height: 100svh;
     padding-block: var(--space-16);
-    background: var(--color-bg);
   }
-  /* una pantalla para el telón + el tramo en que el texto se va iluminando */
+
+  /*
+    Líneas verticales punteadas que siguen las del hero: mismas x del lienzo de 1488 px,
+    con la misma escala (el hero cubre la pantalla, como una portada)
+  */
+  .home-rest {
+    position: relative;
+    container-type: inline-size;
+  }
+  /* posición de cada línea (l1…l4) y aire interno de las columnas, para que nada toque una línea */
+  .home-rest {
+    --px: max(100cqw / 1488, 100svh / 1060);
+    --l1: max(0px, 50cqw + (78.5 - 744) * var(--px));
+    --l2: calc(50cqw + (343 - 744) * var(--px));
+    --l3: calc(50cqw + (1151.5 - 744) * var(--px));
+    --l4: min(100cqw, 50cqw + (1412 - 744) * var(--px));
+    --pad: clamp(1rem, 2vw, 2rem);
+  }
+  /* 5 columnas entre las líneas: margen | lateral | central | lateral | margen */
+  .home-grid {
+    display: grid;
+    grid-template-columns:
+      var(--l1) calc(var(--l2) - var(--l1)) calc(var(--l3) - var(--l2))
+      calc(var(--l4) - var(--l3)) minmax(0, 1fr);
+  }
+  .intro .statement,
+  .section-head {
+    grid-column: 3;
+    margin-inline: var(--pad);
+  }
+  .rest-lines {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .rest-lines span {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(50% + (var(--x) - 744) * var(--px));
+    width: 1px;
+    background: repeating-linear-gradient(var(--gray-light) 0 4px, transparent 4px 8px);
+  }
+  .home-rest > :not(.rest-lines) {
+    position: relative;
+    z-index: 1;
+  }
   .under-space {
-    height: 230svh;
+    display: none;
   }
 
   /* Intro */
   /* Presentación: centrada en la grilla, como la frase de About me */
   .statement {
     max-width: 36ch;
-    margin-inline: auto;
+    justify-self: center;
     font-family: var(--font-body);
     font-size: var(--text-xl);
     line-height: 1.2;
@@ -143,7 +220,7 @@ const showFooter = false; // el footer de contacto
     justify-content: space-between;
     gap: var(--space-4);
     margin-bottom: var(--space-12);
-    padding-top: var(--space-4);
+    padding-top: var(--space-16);
     border-top: 1px solid var(--color-line);
   }
   h2 {
@@ -159,10 +236,87 @@ const showFooter = false; // el footer de contacto
     color: var(--color-on-accent);
   }
 
-  .grid {
+  /* Destacados: portada en la columna central de la grilla y la descripción en una columna lateral
+     (derecha en el primero, izquierda en el segundo), cada una con aire para no tocar las líneas */
+  .features {
+    grid-column: 1 / -1;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--grid-gap);
+    grid-template-columns: subgrid;
+    row-gap: var(--space-16);
+  }
+  .feature {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+    align-items: end;
+  }
+  .feature-media,
+  .feature-text {
+    grid-row: 1;
+    padding-inline: var(--pad);
+  }
+  .feature-media {
+    grid-column: 3;
+  }
+  .feature-text {
+    grid-column: 4;
+  }
+  .feature.is-flipped .feature-text {
+    grid-column: 2;
+  }
+  .feature-media :global(.tile) {
+    border-radius: 12px;
+  }
+  .feature-text {
+    display: grid;
+    gap: var(--space-3);
+    align-content: end;
+    padding-bottom: var(--space-2);
+  }
+  .feature-client {
+    font-size: var(--text-2xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+  .feature-text h3 {
+    font-size: var(--text-lg);
+    line-height: var(--leading-tight);
+    letter-spacing: -0.02em;
+  }
+  .feature-text h3 a {
+    text-decoration: none;
+  }
+  .feature-summary {
+    max-width: 42ch;
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+  .feature-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: var(--space-2) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .feature-tags li {
+    padding: 0.3em 0.75em;
+    border-radius: var(--radius-pill);
+    background: var(--color-stone);
+    font-size: var(--text-2xs);
+  }
+  .feature-link {
+    justify-self: start;
+    margin-top: var(--space-4);
+    padding-bottom: 2px;
+    border-bottom: 1px solid currentColor;
+    font-size: var(--text-sm);
+    text-decoration: none;
+  }
+  .feature-link:hover {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
   }
 
   /* About */
@@ -192,8 +346,31 @@ const showFooter = false; // el footer de contacto
     .about-grid {
       grid-template-columns: 1fr;
     }
-    .grid {
-      grid-template-columns: 1fr;
+    .rest-lines {
+      display: none;
+    }
+    .home-grid {
+      grid-template-columns: minmax(0, 1fr);
+      padding-inline: var(--gutter);
+    }
+    .intro .statement,
+    .section-head,
+    .features,
+    .feature,
+    .feature-media,
+    .feature-text,
+    .feature.is-flipped .feature-text {
+      grid-column: 1;
+      grid-row: auto;
+      margin-inline: 0;
+      padding-inline: 0;
+    }
+    .features,
+    .feature {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .feature {
+      gap: var(--space-6);
     }
   }
 </style>
