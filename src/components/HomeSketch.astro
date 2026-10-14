@@ -9,69 +9,145 @@ interface Props {
 }
 const { contactHref = '#contact' } = Astro.props;
 
-const W = 1488;
-const H = 1060;
 const img = (name: string) => `/images/home/${name}.png`;
 
-// x, y, ancho en px del lienzo de 1488 × 1060 (la ubicación que Vale armó arrastrándolas);
-// el alto sale de la proporción de cada archivo. rot: giro en grados (la tarjeta va derecha).
-const doodles = [
-  { name: 'glasses', x: 415.6, y: 32.4, w: 205.3, ratio: 304 / 548 },
-  { name: 'card', x: 844.1, y: -24.9, w: 254.0, ratio: 576 / 640, rot: -9 },
-  { name: 'star', x: 79.7, y: 209.1, w: 268.3, ratio: 720 / 715 },
-  { name: 'bulb', x: 1226.9, y: 132.8, w: 120.1, ratio: 340 / 322 },
-  { name: 'squiggle', x: 662.3, y: 905.4, w: 217.9, ratio: 152 / 491 },
-  { name: 'flower', x: 314.2, y: 830.2, w: 142.4, ratio: 494 / 382 },
-  { name: 'cup', x: 77.0, y: 659.2, w: 140.2, ratio: 396 / 377 },
-  { name: 'pencil', x: 1325.2, y: 369.2, w: 82.0, ratio: 297 / 135 },
-  { name: 'laptop', x: 1096.6, y: 626.1, w: 322.6, ratio: 916 / 856 },
-];
+type Doodle = { name: string; x: number; y: number; w: number; ratio: number; rot?: number };
+type Layout = {
+  key: 'desk' | 'mob';
+  W: number;
+  H: number;
+  doodles: Doodle[];
+  hLines: number[];
+  vLines: number[];
+  date: { x: number; y: number };
+  based?: { x: number; y: number };
+  sig: { x: number; y: number; w: number };
+  title: { x: number; lines: { text: string; y: number }[] };
+};
+const R = { glasses: 304 / 548, card: 576 / 640, star: 720 / 715, bulb: 340 / 322, squiggle: 152 / 491, flower: 494 / 382, cup: 396 / 377, pencil: 297 / 135, laptop: 916 / 856 };
 
-// centro de la espiral: de ahí salen todas las ilustraciones al entrar
-const sq = doodles.find((d) => d.name === 'squiggle')!;
-const origin = { x: sq.x + sq.w / 2, y: sq.y + (sq.w * sq.ratio) / 2 };
+// Escritorio: lienzo de 1488 × 1060 (la ubicación que Vale armó arrastrándolas).
+// x, y, ancho en px del lienzo; el alto sale de la proporción de cada archivo. rot: giro en grados.
+const desk: Layout = {
+  key: 'desk',
+  W: 1488,
+  H: 1060,
+  doodles: [
+    { name: 'glasses', x: 415.6, y: 32.4, w: 205.3, ratio: R.glasses },
+    { name: 'card', x: 844.1, y: -24.9, w: 254.0, ratio: R.card, rot: -9 },
+    { name: 'star', x: 79.7, y: 209.1, w: 268.3, ratio: R.star },
+    { name: 'bulb', x: 1226.9, y: 132.8, w: 120.1, ratio: R.bulb },
+    { name: 'squiggle', x: 662.3, y: 905.4, w: 217.9, ratio: R.squiggle },
+    { name: 'flower', x: 314.2, y: 830.2, w: 142.4, ratio: R.flower },
+    { name: 'cup', x: 77.0, y: 659.2, w: 140.2, ratio: R.cup },
+    { name: 'pencil', x: 1325.2, y: 369.2, w: 82.0, ratio: R.pencil },
+    { name: 'laptop', x: 1096.6, y: 626.1, w: 322.6, ratio: R.laptop },
+  ],
+  hLines: [65.5, 73.5, 455.5, 480.5, 505.5, 563.5, 992.5],
+  vLines: [78.5, 343, 1151.5, 1412],
+  date: { x: 1412, y: 74 },
+  based: { x: 94, y: 993 },
+  sig: { x: 499, y: 396.3, w: 472.4 },
+  title: { x: 745.5, lines: [{ text: 'Product Designer', y: 557 }] },
+};
 
-// líneas de la grilla (medidas sobre el diseño)
-const hLines = [65.5, 73.5, 455.5, 480.5, 505.5, 563.5, 992.5];
-const vLines = [78.5, 343, 1151.5, 1412];
+// Celular: lienzo vertical de 390 × 844 con los mismos dibujos alrededor del título en dos líneas
+// (sin "Based in Paris")
+const mob: Layout = {
+  key: 'mob',
+  W: 390,
+  H: 844,
+  doodles: [
+    { name: 'glasses', x: 140, y: 62, w: 105, ratio: R.glasses },
+    { name: 'card', x: 258, y: 170, w: 128, ratio: R.card, rot: -9 },
+    { name: 'star', x: -28, y: 128, w: 142, ratio: R.star },
+    { name: 'bulb', x: 304, y: 70, w: 60, ratio: R.bulb },
+    { name: 'squiggle', x: 125, y: 612, w: 140, ratio: R.squiggle },
+    { name: 'flower', x: 132, y: 690, w: 72, ratio: R.flower },
+    { name: 'cup', x: 34, y: 712, w: 84, ratio: R.cup },
+    { name: 'pencil', x: 22, y: 596, w: 34, ratio: R.pencil },
+    { name: 'laptop', x: 222, y: 652, w: 178, ratio: R.laptop },
+  ],
+  hLines: [44, 50, 368, 446, 512, 818],
+  vLines: [16, 374],
+  date: { x: 374, y: 34 },
+  sig: { x: 70, y: 300, w: 250 },
+  title: {
+    x: 195,
+    lines: [
+      { text: 'Product', y: 432 },
+      { text: 'Designer', y: 500 },
+    ],
+  },
+};
+const layouts = [desk, mob];
+
+// centro de la espiral de cada lienzo: de ahí salen todas las ilustraciones al entrar
+const originOf = (l: Layout) => {
+  const sq = l.doodles.find((d) => d.name === 'squiggle')!;
+  return { x: sq.x + sq.w / 2, y: sq.y + (sq.w * sq.ratio) / 2 };
+};
 ---
 
-<section class="sketch is-entering" data-sketch style={`--W:${W};--H:${H}`}>
+<section class="sketch is-entering" data-sketch>
   <h1 class="visually-hidden">Valeria Ferreira, Product Designer</h1>
 
-  <svg class="canvas" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-    <g class="rules">
-      {hLines.map((y) => <line class="rule is-h" x1="-40" x2={W + 40} y1={y} y2={y} />)}
-      {vLines.map((x) => <line class="rule is-v" x1={x} x2={x} y1="-40" y2={H + 40} />)}
-    </g>
-
-    <!-- Textos chicos -->
-    <text class="date" x="1412" y="74" text-anchor="end" data-date>Last update</text>
-    <text class="based" transform="translate(94 993) rotate(-90)">BASED IN PARIS</text>
-
-    <!-- Ilustraciones -->
-    {
-      doodles.map((d, i) => (
-        <g
-          class:list={['orbit', { 'is-source': d.name === 'squiggle' }]}
-          style={`--i:${i};transform-origin:${origin.x}px ${origin.y}px`}
+  {
+    layouts.map((l) => {
+      const origin = originOf(l);
+      return (
+        <svg
+          class:list={['canvas', `is-${l.key}`]}
+          viewBox={`0 0 ${l.W} ${l.H}`}
+          preserveAspectRatio="xMidYMid slice"
+          aria-hidden="true"
         >
-        <g class="doodle">
-          {/* el giro fijo (la tarjeta) va en un grupo aparte, para no mezclarse con el balanceo */}
-          <g transform={d.rot ? `rotate(${d.rot} ${d.x + d.w / 2} ${d.y + (d.w * d.ratio) / 2})` : undefined}>
-            <image class="ink" href={img(d.name)} x={d.x} y={d.y} width={d.w} height={d.w * d.ratio} />
+          <g class="rules">
+            {l.hLines.map((y) => (
+              <line class="rule is-h" x1="-40" x2={l.W + 40} y1={y} y2={y} />
+            ))}
+            {l.vLines.map((x) => (
+              <line class="rule is-v" x1={x} x2={x} y1="-40" y2={l.H + 40} />
+            ))}
           </g>
-        </g>
-        </g>
-      ))
-    }
 
-    <!-- Firma y título -->
-    <image class="signature" href={img('signature')} x="499" y="396.3" width="472.4" height={472.4 * (281 / 1066)} />
-    <text class="title" x="745.5" y="557" text-anchor="middle">Product Designer</text>
-  </svg>
+          <text class="date" x={l.date.x} y={l.date.y} text-anchor="end" data-date>
+            Last update
+          </text>
+          {l.based && (
+            <text class="based" transform={`translate(${l.based.x} ${l.based.y}) rotate(-90)`}>
+              BASED IN PARIS
+            </text>
+          )}
 
-  <!-- Botones del menú, entre la flor y la laptop -->
+          {l.doodles.map((d, i) => (
+            <g
+              class:list={['orbit', { 'is-source': d.name === 'squiggle' }]}
+              style={`--i:${i};transform-origin:${origin.x}px ${origin.y}px`}
+            >
+              <g class="doodle">
+                {/* el giro fijo (la tarjeta) va en un grupo aparte, para no mezclarse con el balanceo */}
+                <g transform={d.rot ? `rotate(${d.rot} ${d.x + d.w / 2} ${d.y + (d.w * d.ratio) / 2})` : undefined}>
+                  <image class="ink" href={img(d.name)} x={d.x} y={d.y} width={d.w} height={d.w * d.ratio} />
+                </g>
+              </g>
+            </g>
+          ))}
+
+          <image class="signature" href={img('signature')} x={l.sig.x} y={l.sig.y} width={l.sig.w} height={l.sig.w * (281 / 1066)} />
+          <text class="title" text-anchor="middle">
+            {l.title.lines.map((line) => (
+              <tspan x={l.title.x} y={line.y}>
+                {line.text}
+              </tspan>
+            ))}
+          </text>
+        </svg>
+      );
+    })
+  }
+
+  <!-- Botones del menú -->
   <nav class="hero-nav" aria-label="Main">
     {nav.map((item) => <a href={item.href === '#contact' ? contactHref : item.href}>{item.label}</a>)}
   </nav>
@@ -82,11 +158,10 @@ const vLines = [78.5, 343, 1151.5, 1412];
   if (root) {
     // Fecha de hoy, en inglés: "Last update, Tuesday 14 October"
     const today = new Date();
-    const date = root.querySelector('[data-date]');
-    if (date)
-      date.textContent =
-        `Last update, ${today.toLocaleDateString('en-GB', { weekday: 'long' })} ` +
-        `${String(today.getDate()).padStart(2, '0')} ${today.toLocaleDateString('en-GB', { month: 'long' })}`;
+    const stamp =
+      `Last update, ${today.toLocaleDateString('en-GB', { weekday: 'long' })} ` +
+      `${String(today.getDate()).padStart(2, '0')} ${today.toLocaleDateString('en-GB', { month: 'long' })}`;
+    root.querySelectorAll('[data-date]').forEach((d) => (d.textContent = stamp));
 
     // la entrada dura cerca de 2 segundos; después se quita la clase
     window.setTimeout(() => root.classList.remove('is-entering'), 3200);
@@ -109,13 +184,12 @@ const vLines = [78.5, 343, 1151.5, 1412];
 
     // Las ilustraciones se pueden arrastrar: el movimiento se pasa a unidades del lienzo
     // y la que se agarra pasa al frente
-    const svg = root.querySelector<SVGSVGElement>('.canvas');
     root.querySelectorAll<SVGGElement>('.doodle').forEach((g) => {
       let x = 0;
       let y = 0;
       let from: { px: number; py: number; x: number; y: number; k: number } | null = null;
       g.addEventListener('pointerdown', (e) => {
-        const k = svg?.getScreenCTM()?.a || 1;
+        const k = g.ownerSVGElement?.getScreenCTM()?.a || 1;
         from = { px: e.clientX, py: e.clientY, x, y, k };
         g.setPointerCapture(e.pointerId);
         g.classList.add('is-held');
@@ -149,6 +223,10 @@ const vLines = [78.5, 343, 1151.5, 1412];
 <style>
   .sketch {
     /* un px del lienzo, con la misma escala "cover" del SVG */
+    /* lienzo activo (escritorio) y altura de los botones en ese lienzo */
+    --W: 1488;
+    --H: 1060;
+    --navY: 628;
     --px: max(100vw / var(--W), 100svh / var(--H));
     --paper: var(--color-bg);
     --ink: #1e1e1e;
@@ -294,12 +372,12 @@ const vLines = [78.5, 343, 1151.5, 1412];
     }
   }
 
-  /* Botones del menú, entre el título y la espiral (y ≈ 628 del lienzo) */
+  /* Botones del menú, entre el título y la espiral (y = --navY del lienzo activo) */
   .hero-nav {
     position: absolute;
     left: 0;
     right: 0;
-    top: calc(50% + (628 - var(--H) / 2) * var(--px));
+    top: calc(50% + (var(--navY) - var(--H) / 2) * var(--px));
     z-index: 3;
     display: flex;
     justify-content: center;
@@ -364,6 +442,42 @@ const vLines = [78.5, 343, 1151.5, 1412];
     }
     70% {
       translate: 0 3px;
+    }
+  }
+
+  /* Dos lienzos: el horizontal en pantallas anchas y el vertical en celulares (pantallas verticales) */
+  .canvas.is-mob {
+    display: none;
+  }
+  .is-mob .title {
+    font-size: 76px;
+    letter-spacing: -0.04em;
+  }
+  .is-mob .date {
+    font-size: 9px;
+    letter-spacing: 0.16em;
+  }
+  @media (max-aspect-ratio: 4 / 5) {
+    .sketch {
+      --W: 390;
+      --H: 844;
+      --navY: 566;
+    }
+    .canvas.is-desk {
+      display: none;
+    }
+    .canvas.is-mob {
+      display: block;
+    }
+    /* los tres botones en una sola fila */
+    .hero-nav {
+      flex-wrap: nowrap;
+      gap: 6px;
+      padding-inline: 12px;
+    }
+    .hero-nav a {
+      padding: 0.75em 1em;
+      white-space: nowrap;
     }
   }
 
