@@ -82,11 +82,9 @@ const mob: Layout = {
 };
 const layouts = [desk, mob];
 
-// centro de la espiral de cada lienzo: de ahí salen todas las ilustraciones al entrar
-const originOf = (l: Layout) => {
-  const sq = l.doodles.find((d) => d.name === 'squiggle')!;
-  return { x: sq.x + sq.w / 2, y: sq.y + (sq.w * sq.ratio) / 2 };
-};
+// centro del lienzo (donde está el título): todas las ilustraciones llegan girando en círculo
+// alrededor de este punto, cada una por su órbita, hasta su lugar
+const originOf = (l: Layout) => ({ x: l.W / 2, y: l.H / 2 });
 ---
 
 <section class="sketch is-entering" data-sketch>
@@ -122,7 +120,7 @@ const originOf = (l: Layout) => {
 
           {l.doodles.map((d, i) => (
             <g
-              class:list={['orbit', { 'is-source': d.name === 'squiggle' }]}
+              class="orbit"
               style={`--i:${i};transform-origin:${origin.x}px ${origin.y}px`}
             >
               <g class="doodle">
@@ -182,6 +180,41 @@ const originOf = (l: Layout) => {
     window.addEventListener('touchstart', (e) => (touchY = e.touches[0].clientY), { passive: true });
     window.addEventListener('touchmove', (e) => touchY - e.touches[0].clientY > 24 && nudge(), { passive: true });
 
+    // Entrada en óvalo: cada ilustración recorre un tramo de una elipse centrada en el hero
+    // (más ancha que alta) que pasa por su lugar final, y frena ahí. Mantiene su tamaño.
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reduce) {
+      const K = 0.55; // alto del óvalo respecto del ancho
+      const SWEEP = (150 * Math.PI) / 180; // cuánto giran antes de llegar
+      root.querySelectorAll<SVGSVGElement>('.canvas').forEach((svg) => {
+        const vb = svg.viewBox.baseVal;
+        const cx = vb.width / 2;
+        const cy = vb.height / 2;
+        svg.querySelectorAll<SVGGElement>('.orbit').forEach((g, i) => {
+          const box = g.querySelector<SVGImageElement>('image')!.getBBox();
+          const px = box.x + box.width / 2 - cx;
+          const py = box.y + box.height / 2 - cy;
+          const a = Math.hypot(px, py / K);
+          const end = Math.atan2(py / K, px);
+          const frames: Keyframe[] = [];
+          const steps = 30;
+          for (let s = 0; s <= steps; s++) {
+            const t = s / steps;
+            const ang = end - SWEEP * (1 - t);
+            const x = a * Math.cos(ang) - px;
+            const y = a * K * Math.sin(ang) - py;
+            frames.push({ translate: `${x.toFixed(2)}px ${y.toFixed(2)}px`, opacity: Math.min(1, t * 5) });
+          }
+          g.animate(frames, {
+            duration: 1500,
+            delay: 500 + i * 70,
+            easing: 'cubic-bezier(0.3, 0.7, 0.25, 1)',
+            fill: 'both',
+          });
+        });
+      });
+    }
+
     // Las ilustraciones se pueden arrastrar: el movimiento se pasa a unidades del lienzo
     // y la que se agarra pasa al frente
     root.querySelectorAll<SVGGElement>('.doodle').forEach((g) => {
@@ -233,7 +266,10 @@ const originOf = (l: Layout) => {
     position: relative;
     z-index: 1;
     height: 100svh;
-    overflow: hidden;
+    /* los costados se recortan (el lienzo cubre la pantalla), pero hacia abajo las ilustraciones
+       pueden seguir visibles sobre la sección siguiente */
+    overflow-x: clip;
+    overflow-y: visible;
     background: var(--paper);
     color: var(--ink);
   }
@@ -242,6 +278,7 @@ const originOf = (l: Layout) => {
     inset: 0;
     width: 100%;
     height: 100%;
+    overflow: visible;
   }
 
   /* Grilla: horizontales lisas, verticales punteadas */
@@ -295,26 +332,16 @@ const originOf = (l: Layout) => {
   }
 
   /* Entrada: las ilustraciones aparecen una por una, la firma se escribe y el título sube */
-  /* Entrada: la espiral aparece primero y de ella salen todas las ilustraciones, girando en espiral
-     alrededor de su centro mientras crecen hasta su lugar */
+  /* Las ilustraciones llegan juntas girando por un mismo óvalo alrededor del centro del hero */
   .orbit {
     transform-box: view-box;
   }
+  /* el recorrido en óvalo lo arma el script; hasta que arranca, no se ven (sin parpadeo inicial) */
   .sketch.is-entering .orbit {
-    animation: spiral-out 1300ms cubic-bezier(0.25, 0.8, 0.3, 1) calc(700ms + var(--i) * 90ms) both;
+    opacity: 0;
   }
-  .sketch.is-entering .orbit.is-source {
-    animation: pop 600ms cubic-bezier(0.3, 1.5, 0.5, 1) 300ms both;
-    transform-box: fill-box;
-    transform-origin: center !important;
-  }
-  @keyframes spiral-out {
-    from {
-      opacity: 0;
-      scale: 0;
-      rotate: -240deg;
-    }
-    25% {
+  @media (prefers-reduced-motion: reduce) {
+    .sketch.is-entering .orbit {
       opacity: 1;
     }
   }

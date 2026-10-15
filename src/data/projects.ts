@@ -28,8 +28,10 @@ export type Project = {
   cover: string;
   /** Tipo de trabajo, para el filtro de /portfolio */
   categories: Category[];
-  /** Etiquetas detalladas: se muestran dentro de la página del proyecto */
+  /** Etiquetas detalladas: son las "Skills" del resumen en la página del proyecto */
   tags: string[];
+  /** Resumen con el que arranca cada página: problema, solución, rol y metodología (las skills son las tags) */
+  brief?: { problem: string; solution: string; role: string; methodology: string };
   /** true = aparece también en "Featured projects" de la home. Todos salen en /portfolio */
   featured?: boolean;
   /** true = tiene su propia página hecha a mano en src/pages/projects/<slug>.astro (no usa la plantilla) */
@@ -50,6 +52,16 @@ export const projects: Project[] = [
       'An AI cooking assistant that suggests meals from what is already in your kitchen. UX/UI design, naming, branding and design system for the MVP.',
     cover: '/images/chefy/cover.jpg',
     tags: ['UX/UI design', 'Design Sprint', 'Naming', 'Branding', 'Design system'],
+    brief: {
+      problem:
+        'College students and busy families let ingredients go to waste that could have been a meal.',
+      solution:
+        'Chefy, an AI cooking assistant that starts from what is already in your kitchen and suggests real meals to make with it.',
+      role:
+        'UX/UI Designer at 10 Grounds, in a cross-functional team of designers, content specialists and AI developers.',
+      methodology:
+        'A Design Sprint in Figma and Miro to understand the problem and map the user journey, then the MVP definition, and from there the naming, branding and design system.',
+    },
     featured: true,
     // La página está en src/pages/projects/ai-cooking-app.astro
     custom: true,
@@ -79,6 +91,16 @@ export const projects: Project[] = [
       'A platform where HR teams plan and organize their CSE elections, step by step, from MVP to delivery.',
     cover: '/images/electis-dashboard/cover.jpg',
     tags: ['Product design', 'AI-assisted design', 'Automation', 'MVP to delivery'],
+    brief: {
+      problem:
+        'CSE elections were organized by exchanging emails, with an overloaded project manager on one side and confused clients on the other.',
+      solution:
+        'A platform that orders the process for both: a personalized calendar, document templates turned into auto-completed tools, legal steps turned into tasks, and a place for every document and answer.',
+      role:
+        'Product Designer, in charge of the project from the MVP to the final delivery and its operation.',
+      methodology:
+        'MVP first, then iterations up to delivery, designed and built with AI almost 100% of the time on top of the design system we already had.',
+    },
     featured: true,
     custom: true,
     blocks: [],
@@ -94,6 +116,16 @@ export const projects: Project[] = [
       'Redesigning how an election is set up on an online voting platform: from one long technical page to guided steps, with a design system behind it.',
     cover: '/images/electis/cover.jpg',
     tags: ['Product design', 'Information architecture', 'Prototyping', 'User testing', 'Design system', 'Design QA'],
+    brief: {
+      problem:
+        'Setting up a CSE election is a legal process with many parameters, and on the platform it was one long technical page.',
+      solution:
+        'The setup redesigned and restructured from its architecture: the same information in clear steps, so users can set up a CSE election on their own.',
+      role:
+        'Product Designer, in a team of three with an operations specialist and an engineer.',
+      methodology:
+        'Information architecture first, then prototyping, user testing and design QA on every release.',
+    },
     caseStudy: true,
     custom: true,
     blocks: [],
@@ -109,6 +141,16 @@ export const projects: Project[] = [
       'The brand identity for an electronic voting platform: logo, colors, typography and brand applications, trustworthy and friendly.',
     cover: '/images/electis-brand/cover.jpg',
     tags: ['Branding', 'Logo', 'Color', 'Typography'],
+    brief: {
+      problem:
+        'Electis needed to look as trustworthy as an encryption company while staying friendly and close to people.',
+      solution:
+        'A brand identity built on trust and transparency: a logo of four radio buttons with one selected, a blue palette and a friendly sans serif.',
+      role:
+        'Brand designer.',
+      methodology:
+        'Brand personality and key words first, then logo, color and typography, and finally their applications on the website and the product.',
+    },
     custom: true,
     blocks: [],
   },
@@ -145,6 +187,16 @@ export const projects: Project[] = [
       'A redesign of the system scholars use to submit proposals to the American Academy of Religion: a simpler submission flow, a Bootstrap 5 design system and a mobile version, without touching the architecture.',
     cover: '/images/aar/cover.jpg',
     tags: ['UX/UI design', 'Redesign', 'Design system', 'Bootstrap 5', 'Responsive'],
+    brief: {
+      problem:
+        'PAPERS worked, but it read like unstyled defaults: stacked buttons, long paragraphs and plain tables, and its architecture could not change.',
+      solution:
+        'A redesign inside Bootstrap 5 that reorganizes and restyles what was already there, focused on the submission flow and adapted to mobile.',
+      role:
+        'UX/UI Designer at 10 Grounds.',
+      methodology:
+        'Audit of the existing screens, then the submission flow first, restyling Bootstrap 5 components, and finally every screen adapted to mobile.',
+    },
     custom: true,
     blocks: [],
   },
@@ -182,6 +234,16 @@ export const projects: Project[] = [
       'A concept app to find activities for your free time and meet people nearby who share them. An experimental personal project with its own illustration set and a design system.',
     cover: '/images/hobbies/cover.jpg',
     tags: ['UI design', 'UX design', 'Design system', 'Illustration', 'Concept'],
+    brief: {
+      problem:
+        'Finding a new activity for your free time, and people nearby to share it with, is hard to do in one place.',
+      solution:
+        'Hobbies, a concept app that suggests activities based on your interests and connects you with people nearby who share them.',
+      role:
+        'Everything, as a personal project: UX, UI, illustration and design system.',
+      methodology:
+        'An illustration set drawn first, then a design system (a purple palette, type and components) and the app screens built from it.',
+    },
     custom: true,
     blocks: [],
   },

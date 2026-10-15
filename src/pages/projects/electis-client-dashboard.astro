@@ -10,7 +10,6 @@ const next = projects[(projects.indexOf(project) + 1) % projects.length];
 const img = (name: string) => `/images/electis-dashboard/${name}.jpg`;
 
 const facts = [
-  { label: 'Role', value: 'Product Designer, from MVP to delivery' },
   { label: 'Platform', value: 'Web' },
   { label: 'Users', value: 'HR teams organizing CSE elections · Electis operations team' },
   { label: 'Design system', value: 'The voting platform’s system (Figma, based on Material Design)' },
@@ -79,19 +78,10 @@ const automations = [
   <ProjectSplit project={project}>
     <Fragment slot="text">
       <p>
-        CSE elections used to be organized by exchanging emails, with an overloaded project manager on one side and
-        confused clients on the other. The dashboard orders and simplifies the process for both: a personalized
-        calendar, document templates turned into auto-completed tools inside the dashboard, legal steps turned into
-        tasks, and a place for every document and answer.
-      </p>
-      <p>
         The interface reuses the design system we already had for the voting platform, designed in Figma on top of
         Material Design.
       </p>
-      <p>
-        My first project made with AI. I worked with AI almost 100% of the time and was in charge of executing the
-        project from the MVP to the final delivery and its operation.
-      </p>
+      <p>My first project made with AI: I worked with AI almost 100% of the time.</p>
     </Fragment>
     <Fragment slot="extra">
       <dl class="facts">

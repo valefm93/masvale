@@ -665,3 +665,48 @@ The components the MVP is assembled from, rebuilt here in code.
 - Electis branding: are "Figma · Illustrator" the right tools? What was the period?
 - AAR Papers: can the American Academy of Religion be named?
 
+
+## Project briefs (top of every project page) — DRAFT, please review
+Each project page now starts with: title, Problem, Solution, My role, Skills (the tags) and Methodology; then the rest.
+
+### Chefy, AI cooking app
+- **Problem:** College students and busy families let ingredients go to waste that could have been a meal.
+- **Solution:** Chefy, an AI cooking assistant that starts from what is already in your kitchen and suggests real meals to make with it.
+- **My role:** UX/UI Designer at 10 Grounds, in a cross-functional team of designers, content specialists and AI developers.
+- **Methodology:** A Design Sprint in Figma and Miro to understand the problem and map the user journey, then the MVP definition, and from there the naming, branding and design system.
+- **Skills:** UX/UI design, Design Sprint, Naming, Branding, Design system
+
+### Electis, CSE election planning platform
+- **Problem:** CSE elections were organized by exchanging emails, with an overloaded project manager on one side and confused clients on the other.
+- **Solution:** A platform that orders the process for both: a personalized calendar, document templates turned into auto-completed tools, legal steps turned into tasks, and a place for every document and answer.
+- **My role:** Product Designer, in charge of the project from the MVP to the final delivery and its operation.
+- **Methodology:** MVP first, then iterations up to delivery, designed and built with AI almost 100% of the time on top of the design system we already had.
+- **Skills:** Product design, AI-assisted design, Automation, MVP to delivery
+
+### Electis, online CSE voting platform
+- **Problem:** Setting up a CSE election is a legal process with many parameters, and on the platform it was one long technical page.
+- **Solution:** The setup redesigned and restructured from its architecture: the same information in clear steps, so users can set up a CSE election on their own.
+- **My role:** Product Designer, in a team of three with an operations specialist and an engineer.
+- **Methodology:** Information architecture first, then prototyping, user testing and design QA on every release.
+- **Skills:** Product design, Information architecture, Prototyping, User testing, Design system, Design QA
+
+### Electis, branding
+- **Problem:** Electis needed to look as trustworthy as an encryption company while staying friendly and close to people.
+- **Solution:** A brand identity built on trust and transparency: a logo of four radio buttons with one selected, a blue palette and a friendly sans serif.
+- **My role:** Brand designer.
+- **Methodology:** Brand personality and key words first, then logo, color and typography, and finally their applications on the website and the product.
+- **Skills:** Branding, Logo, Color, Typography
+
+### 10 Grounds website
+- **Problem:** PAPERS worked, but it read like unstyled defaults: stacked buttons, long paragraphs and plain tables, and its architecture could not change.
+- **Solution:** A redesign inside Bootstrap 5 that reorganizes and restyles what was already there, focused on the submission flow and adapted to mobile.
+- **My role:** UX/UI Designer at 10 Grounds.
+- **Methodology:** Audit of the existing screens, then the submission flow first, restyling Bootstrap 5 components, and finally every screen adapted to mobile.
+- **Skills:** UX/UI design, Redesign, Design system, Bootstrap 5, Responsive
+
+### AI News app
+- **Problem:** Finding a new activity for your free time, and people nearby to share it with, is hard to do in one place.
+- **Solution:** Hobbies, a concept app that suggests activities based on your interests and connects you with people nearby who share them.
+- **My role:** Everything, as a personal project: UX, UI, illustration and design system.
+- **Methodology:** An illustration set drawn first, then a design system (a purple palette, type and components) and the app screens built from it.
+- **Skills:** UI design, UX design, Design system, Illustration, Concept

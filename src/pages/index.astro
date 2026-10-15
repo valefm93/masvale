@@ -30,7 +30,7 @@ const showFooter = true; // el footer de contacto
   {
     showIntro && (
       <>
-        <div class="under" data-karaoke-track data-start="-0.8" data-end-pad="1.2">
+        <div class="under" data-karaoke-track data-start="0" data-end-pad="1.15">
           <section class="under-pin">
             <div class="home-grid intro">
               <Karaoke class="statement" parts={introParts} />
@@ -130,14 +130,16 @@ const showFooter = true; // el footer de contacto
   }
 
   /*
-    Presentación: una sección normal después del hero (sin quedar fija). Las palabras se encienden
-    mientras la sección cruza la pantalla: empieza cuando asoma (data-start -0.8) y termina un poco
-    antes de que llegue arriba (data-end-pad 1.2).
+    Presentación: llega con scroll normal después del hero y, como en About me, queda fija
+    mientras las palabras se encienden; después sigue la página.
   */
   .under {
     position: relative;
+    height: 220svh;
   }
   .under-pin {
+    position: sticky;
+    top: 0;
     display: grid;
     align-items: center;
     min-height: 100svh;

@@ -24,9 +24,11 @@ featured.forEach((p, k) => {
 });
 // los generales que sobren (si hay más de dos por destacado) siguen en tamaño normal
 general.slice(featured.length * 2).forEach((g) => layout.push({ project: g, place: '', fill: false }));
+import EdgeLines from '../components/EdgeLines.astro';
 ---
 
 <Base title="Projects" description="Product design work by Vale Ferreira.">
+  <EdgeLines />
   <section class="container page">
     <header class="head" data-reveal>
       <div class="title" data-typewriter="auto" data-text={portfolioNote}>
@@ -73,22 +75,35 @@ general.slice(featured.length * 2).forEach((g) => layout.push({ project: g, plac
     para que entren al menos dos filas de proyectos en la pantalla.
   */
   .page {
-    padding-block: var(--space-6) var(--space-section);
+    padding-block: var(--space-16) var(--space-section);
   }
+  /* Título y contador arriba; los filtros en una fila debajo */
   .head {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--space-3) var(--space-8);
-    margin-bottom: var(--space-6);
-    padding-bottom: var(--space-4);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'title count'
+      'filters filters';
+    align-items: end;
+    gap: var(--space-6) var(--space-8);
+    margin-bottom: var(--space-12);
+    padding-bottom: var(--space-8);
     border-bottom: 1px solid var(--color-line);
   }
   h1 {
-    font-size: var(--text-xl);
+    font-size: var(--text-2xl);
+    line-height: 1;
+    letter-spacing: -0.035em;
+  }
+  .head .title {
+    grid-area: title;
+  }
+  .head .filters {
+    grid-area: filters;
   }
   .count {
-    margin-left: auto;
+    grid-area: count;
+    padding-bottom: 0.4em;
     font-size: var(--text-sm);
     color: var(--color-muted);
   }
@@ -349,6 +364,11 @@ general.slice(featured.length * 2).forEach((g) => layout.push({ project: g, plac
     }
   }
   @media (max-width: 860px) {
+    /* el contador se alinea con la palabra Projects (el mensaje que se escribe va debajo) */
+    .count {
+      align-self: start;
+      padding: 1.1em 0 0;
+    }
     /* Sin espacio al costado: el mensaje va debajo del título */
     .msg {
       position: static;

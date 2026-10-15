@@ -14,9 +14,11 @@ const sections = [
   { id: 'software', label: 'Software' },
   { id: 'education', label: 'Education' },
 ];
+import EdgeLines from '../components/EdgeLines.astro';
 ---
 
 <Base title="Resume" description="Experience, skills and education of Vale Ferreira, Product Designer.">
+  <EdgeLines />
   <!-- La frase queda fija y se ilumina tipo karaoke mientras se hace scroll por este tramo -->
   <div class="intro-track" data-karaoke-track data-start="0" data-end-pad="1.15">
     <header class="container head">

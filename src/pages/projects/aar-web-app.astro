@@ -14,7 +14,6 @@ const project = projects.find((p) => p.slug === 'aar-web-app')!;
 const next = projects[(projects.indexOf(project) + 1) % projects.length];
 
 const facts = [
-  { label: 'Role', value: 'UX/UI Designer' },
   { label: 'Platform', value: 'Web, desktop & mobile' },
   { label: 'Users', value: 'Submitters · Chairs and steering committees' },
   { label: 'Flows', value: 'Create paper · Paper session · Roundtable session · Submit proposal · Search units' },
@@ -116,12 +115,8 @@ const svg = (name: keyof typeof icon, size = 18) =>
     <Fragment slot="text">
       <p>
         PAPERS is the system scholars use to submit paper and session proposals to the meetings of the American Academy
-        of Religion. It worked, but it read like unstyled defaults: stacked buttons, long paragraphs and plain tables.
-      </p>
-      <p>
-        The brief at 10 Grounds was to improve the experience without touching the underlying architecture, on a short
-        timeline and with little room for design complexity. So the redesign stays inside Bootstrap 5: I reorganized
-        and restyled what was already there, focusing on the submission flow, and then adapted every screen to mobile.
+        of Religion. The brief was to improve the experience on a short timeline and with little room for design
+        complexity.
       </p>
       <p>
         The work covers both sides of the system: the people who submit proposals, and the chairs and steering

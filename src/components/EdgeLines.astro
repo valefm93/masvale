@@ -1,0 +1,46 @@
+---
+// Las dos líneas punteadas de los bordes de la grilla de la home (sin las del centro),
+// para las páginas Projects y About me. Van detrás del contenido, a todo el alto de la página,
+// en la misma posición que en el hero de la home. En pantallas angostas no se muestran.
+// Mientras están, el contenido de la página se acomoda por dentro de ellas.
+---
+
+<div class="edge-lines" aria-hidden="true">
+  <span style="--x:78.5"></span>
+  <span style="--x:1412"></span>
+</div>
+
+<style is:global>
+  /* posición de la línea izquierda, con la misma escala del hero (lienzo de 1488 × 1060) */
+  :root {
+    --edge-px: max(100vw / 1488, 100svh / 1060);
+    --edge: max(0px, 50vw + (78.5 - 744) * var(--edge-px));
+  }
+  .edge-lines {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    container-type: inline-size;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .edge-lines span {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(50cqw + (var(--x) - 744) * max(100cqw / 1488, 100svh / 1060));
+    width: 1px;
+    background: repeating-linear-gradient(var(--gray-light) 0 4px, transparent 4px 8px);
+  }
+  /* el contenido queda por dentro de las líneas, con un poco de aire */
+  @media (min-width: 861px) {
+    main:has(.edge-lines) .container {
+      padding-inline: calc(var(--edge) + clamp(1rem, 2vw, 2rem));
+    }
+  }
+  @media (max-width: 860px) {
+    .edge-lines {
+      display: none;
+    }
+  }
+</style>

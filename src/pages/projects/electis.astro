@@ -11,7 +11,6 @@ const project = projects.find((p) => p.slug === 'electis')!;
 const next = projects[(projects.indexOf(project) + 1) % projects.length];
 
 const facts = [
-  { label: 'Role', value: 'Product Designer' },
   { label: 'Team', value: '1 Operations specialist · 1 Engineer · 1 Product Designer' },
   { label: 'Period', value: '2023 – 2024' },
   { label: 'Platform', value: 'Web' },
@@ -88,11 +87,6 @@ const groups = [
 <Base title="Electis" description={project.summary}>
   <ProjectSplit project={project}>
     <Fragment slot="text">
-      <p>
-        Setting up a CSE election is a legal process with many parameters, and on the platform it was one long
-        technical page. I redesigned and restructured it from its architecture, so that users could set up a CSE
-        election on their own.
-      </p>
       <p>
         Electis is an online voting platform built on open-source code, designed for transparent and secure elections
         in companies.

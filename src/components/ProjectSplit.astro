@@ -19,10 +19,46 @@ const { project } = Astro.props;
     <a class="back" href="/portfolio" data-back>← All projects</a>
     <p class="eyebrow">{project.client}</p>
     <h1>{project.title}</h1>
+    {
+      /* Todas las páginas arrancan igual: problema, solución, rol, skills y metodología; después, el resto */
+      project.brief ? (
+        <dl class="brief">
+          <div>
+            <dt>Problem</dt>
+            <dd>{project.brief.problem}</dd>
+          </div>
+          <div>
+            <dt>Solution</dt>
+            <dd>{project.brief.solution}</dd>
+          </div>
+          <div>
+            <dt>My role</dt>
+            <dd>{project.brief.role}</dd>
+          </div>
+          <div>
+            <dt>Skills</dt>
+            <dd class="tags">
+              {project.tags.map((t) => (
+                <Pill tone="accent">{t}</Pill>
+              ))}
+            </dd>
+          </div>
+          <div>
+            <dt>Methodology</dt>
+            <dd>{project.brief.methodology}</dd>
+          </div>
+        </dl>
+      ) : (
+        <div class="tags">
+          {project.tags.map((t) => (
+            <Pill tone="accent">{t}</Pill>
+          ))}
+        </div>
+      )
+    }
     <div class="side-text">
       <slot name="text" />
     </div>
-    <div class="tags">{project.tags.map((t) => <Pill tone="accent">{t}</Pill>)}</div>
     <slot name="extra" />
   </div>
 
@@ -121,9 +157,36 @@ const { project } = Astro.props;
   .back:hover {
     color: var(--color-text);
   }
+  /* Título del proyecto: mismo estilo que el H1 de la página Projects */
   h1 {
     margin-top: var(--space-3);
     font-size: var(--text-xl);
+    text-wrap: balance;
+  }
+  /* Resumen del proyecto: etiqueta chica arriba y el texto debajo, separados por líneas finas */
+  .brief {
+    display: grid;
+    margin: var(--space-6) 0 0;
+  }
+  .brief > div {
+    display: grid;
+    gap: var(--space-1, 0.25rem);
+    padding-block: var(--space-4);
+    border-top: 1px solid var(--color-line);
+  }
+  .brief dt {
+    font-size: var(--text-2xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+  .brief dd {
+    margin: 0;
+    font-size: var(--text-sm);
+    line-height: 1.5;
+  }
+  .brief dd.tags {
+    margin-top: var(--space-1, 0.25rem);
   }
   .side-text {
     display: grid;
@@ -158,6 +221,41 @@ const { project } = Astro.props;
   .media .col-label {
     margin-left: calc(var(--grid-gap) * -1);
     padding-left: var(--grid-gap);
+  }
+  /* Esquinas redondeadas en los contenedores e imágenes de la columna de trabajo
+     (bloques de fondo de cada caso, capturas, comparadores antes/después, tarjetas de los kits) */
+  .media {
+    --r-box: 14px;
+  }
+  .media
+    :global(
+      :is(
+          .panel,
+          .showcase,
+          .strip-wrap,
+          .kit,
+          .stage,
+          .ds,
+          .flow,
+          .sides,
+          .shift,
+          .result,
+          .uses,
+          .ba,
+          .hero-shot img,
+          img.shot,
+          .group img,
+          .shots img,
+          .kit-grid .card,
+          .ds-grid .card,
+          .guide img
+        )
+    ) {
+    border-radius: var(--r-box);
+  }
+  /* los que tienen contenido pegado al borde recortan sus esquinas */
+  .media :global(:is(.panel, .sides, .shift, .result, .uses, .ba)) {
+    overflow: hidden;
   }
   /* nada dentro de la columna puede ensancharla (por ejemplo una tira con scroll lateral) */
   .media > :global(*) {
