@@ -14,14 +14,27 @@ interface Props {
   overlayHeader?: boolean;
   /** Oculta el footer (la home, por ahora, es solo el hero) */
   hideFooter?: boolean;
+  /** Imagen para compartir en redes (ruta dentro de /public) */
+  image?: string;
 }
 
 const {
   title,
   overlayHeader = false,
   hideFooter = false,
+  image = '/images/hero/landscape.jpg',
   description = 'Vale Ferreira — Product Designer. UX/UI, prototyping, user testing and branding.',
 } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const ogImage = new URL(image, Astro.site).href;
+const personSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Vale Ferreira',
+  jobTitle: 'Product Designer',
+  url: 'https://www.vale-ferreira.com',
+  sameAs: ['https://www.linkedin.com/in/valefm93/', 'https://www.behance.net/valefm93'],
+};
 const fullTitle = title ? `${title} · Vale Ferreira` : 'Vale Ferreira · Product Designer';
 ---
 
@@ -34,6 +47,13 @@ const fullTitle = title ? `${title} · Vale Ferreira` : 'Vale Ferreira · Produc
     <meta name="description" content={description} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="canonical" href={canonical} />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <script type="application/ld+json" set:html={JSON.stringify(personSchema)} />
     <script is:inline>
       document.documentElement.classList.add('js');
     </script>
