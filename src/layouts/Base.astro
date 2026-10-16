@@ -23,19 +23,22 @@ const {
   overlayHeader = false,
   hideFooter = false,
   image = '/images/hero/landscape.jpg',
-  description = 'Vale Ferreira — Product Designer. UX/UI, prototyping, user testing and branding.',
+  description = 'Valeria (Vale) Ferreira, Product Designer based in Paris. UX/UI, design systems, prototyping, user testing and AI-first product workflows. Portfolio and case studies.',
 } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const ogImage = new URL(image, Astro.site).href;
 const personSchema = {
   '@context': 'https://schema.org',
   '@type': 'Person',
-  name: 'Vale Ferreira',
+  name: 'Valeria Ferreira',
+  alternateName: 'Vale Ferreira',
   jobTitle: 'Product Designer',
+  address: { '@type': 'PostalAddress', addressLocality: 'Paris', addressCountry: 'FR' },
+  knowsAbout: ['Product design', 'UX/UI design', 'Design systems', 'User testing', 'Branding', 'AI-assisted design'],
   url: 'https://www.vale-ferreira.com',
   sameAs: ['https://www.linkedin.com/in/valefm93/', 'https://www.behance.net/valefm93'],
 };
-const fullTitle = title ? `${title} · Vale Ferreira` : 'Vale Ferreira · Product Designer';
+const fullTitle = title ? `${title} | Vale Ferreira` : 'Valeria (Vale) Ferreira · Product Designer';
 ---
 
 <!doctype html>
