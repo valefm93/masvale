@@ -29,7 +29,7 @@ const images = [
 ].filter((img, i, all) => all.findIndex((other) => other.src === img.src) === i);
 ---
 
-<Base title={project.client} description={project.summary} image={project.cover}>
+<Base title={project.title} description={project.summary} image={project.cover}>
   {
     project.caseStudy ? (
       <Fragment>
